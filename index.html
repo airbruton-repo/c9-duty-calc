@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- PWA / WEB APP META TAGS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#002244" id="themeColor">
+    <meta name="application-name" content="C9 Duty Calc">
+    <meta name="apple-mobile-web-app-title" content="C9 Duty Calc">
+
+    <title>C9 Duty Max Calculator</title>
+    
+    <!-- EXTERNAL LIBRARIES -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* CORE LAYOUT & SCROLLING */
+        html, body { height: 100%; overscroll-behavior-y: none; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f0f4f8; 
+            -webkit-tap-highlight-color: transparent; 
+            transition: background-color 0.3s ease;
+            padding-top: max(4px, env(safe-area-inset-top));
+            padding-bottom: max(4px, env(safe-area-inset-bottom));
+            padding-left: max(4px, env(safe-area-inset-left));
+            padding-right: max(4px, env(safe-area-inset-right));
+        }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        
+        /* FORM ELEMENTS */
+        input:focus, select:focus { outline: none; border-color: #005DAA; box-shadow: 0 0 0 2px rgba(0, 93, 170, 0.1); }
+        input, button, select, label { touch-action: manipulation; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .valid-airport { border-color: #10B981 !important; color: #065F46; }
+        .invalid-airport { border-color: #F59E0B !important; color: #92400E; }
+
+        /* Dynamic Labels */
+        .dynamic-city-label { color: #005DAA; transition: color 0.3s; } /* Blue pop in light mode */
+
+        /* SEGMENTED CONTROL */
+        .seg-control input:checked + label { background-color: #005DAA; color: white !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .seg-control input:checked + label:hover { color: white !important; }
+        .seg-control label { transition: all 0.2s ease; color: #6b7280; }
+        .seg-control label:hover { color: #111827 !important; }
+
+        /* TOGGLES & PILLS */
+        .toggle-checkbox:checked + div { background-color: #002244; color: white; border-color: #002244; }
+        .toggle-checkbox:disabled + div { opacity: 0.4; cursor: not-allowed; background-color: #e5e7eb; color: #9ca3af; border-color: #d1d5db; }
+        .opt-pill { background-color: #374151; border-color: #4b5563; color: #d1d5db; }
+        body:not(.dark-mode) .opt-pill { background-color: #f3f4f6; border-color: #e5e7eb; color: #6b7280; }
+        .opt-pill.active { background-color: #005DAA !important; border-color: #005DAA !important; color: white !important; }
+        .opt-pill.disabled { background-color: #e5e7eb; color: #9ca3af; opacity: 0.5; pointer-events: none; }
+
+        /* UTILITY BOXES */
+        .disclaimer-box { background-color: #fff1f2; border-left: 3px solid #e11d48; color: #881337; }
+        .group-bg { background-color: rgba(249, 250, 251, 0.5); border: 1px solid rgba(0, 34, 68, 0.2); }
+        .info-field { background-color: #52525b; color: white; border: none; font-family: 'JetBrains Mono', monospace; }
+        .manual-zone-select { background-color: #fef9c3; border-color: #fde047; color: #1f2937; }
+        
+        /* ERROR PULSE ANIMATION */
+        @keyframes errorPulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); border-color: #dc2626; }
+            50% { box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1); border-color: #ef4444; }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); border-color: #dc2626; }
+        }
+        .input-missing {
+            animation: errorPulse 1.5s infinite;
+            border-color: #dc2626 !important; /* Red-600 */
+        }
+
+        /* STRIP BACKGROUNDS */
+        .calc-strip { 
+            border-top: 1px solid #374151; 
+            border-bottom: 1px solid #374151; 
+        }
+        .strip-dom, .strip-int { 
+            background-color: #1f2937; 
+            border-color: #374151; 
+            color: #e5e7eb; 
+        }
+
+        /* NUDGE BUTTONS */
+        .nudge-btn { background-color: #e5e7eb; color: #374151; font-weight: bold; border: 1px solid #d1d5db; transition: all 0.2s; }
+        .nudge-btn:hover { background-color: #d1d5db; }
+        .nudge-btn:active { background-color: #9ca3af; }
+
+        /* DARK MODE OVERRIDES */
+        body.dark-mode { background-color: #111827; }
+        .dark-mode .card-bg { background-color: #1f2937; border-color: #374151; }
+        .dark-mode .text-main { color: #f3f4f6; }
+        .dark-mode .text-sub { color: #9ca3af; }
+        .dark-mode .input-bg { background-color: #374151; border-color: #4b5563; color: white; }
+        .dark-mode .input-bg::placeholder { color: #9ca3af; }
+        .dark-mode .header-bg { background-color: #0f172a; }
+        .dark-mode .seg-bg { background-color: #374151; }
+        .dark-mode .seg-control label { color: #9ca3af; }
+        .dark-mode .seg-control label:hover { color: #ffffff !important; }
+        .dark-mode .seg-control input:checked + label:hover { color: #ffffff !important; }
+        .dark-mode .valid-airport { border-color: #059669 !important; color: #34d399; background-color: #064e3b; }
+        .dark-mode .invalid-airport { border-color: #b45309 !important; color: #fbbf24; background-color: #451a03; }
+        .dark-mode .section-title { color: #e5e7eb; border-color: #4b5563; }
+        .dark-mode .section-icon { color: #60a5fa; }
+        .dark-mode .group-bg { background-color: #1f2937; border-color: #374151; }
+        .dark-mode .info-strip { background-color: #1e3a8a; border-color: #1e40af; color: #bfdbfe; }
+        .dark-mode .info-text { color: #bfdbfe; }
+        .dark-mode .dynamic-city-label { color: #4ade80; } /* Green pop in dark mode */
+        .dark-mode .info-field { background-color: #4b5563; color: #e5e7eb; }
+        
+        .dark-mode .strip-dom, .dark-mode .strip-int { 
+            background-color: #111827; 
+            border-color: #374151; 
+            color: #e5e7eb; 
+        }
+
+        .dark-mode .manual-zone-select { background-color: #422006; border-color: #a16207; color: #fde047; }
+        .dark-mode .nudge-btn { background-color: #374151; color: #d1d5db; border-color: #4b5563; }
+        .dark-mode .opt-pill.disabled { background-color: #1f2937; color: #4b5563; }
+        .dark-mode .modal-bg { background-color: #1f2937; color: #f3f4f6; }
+        .dark-mode .modal-text { color: #d1d5db; }
+        .dark-mode .coterm-bg { background-color: #1e3a8a; border-color: #1e40af; color: #bfdbfe; }
+        .dark-mode .coterm-select { background-color: #172554; border-color: #1e40af; color: white; }
+        .dark-mode .icon-blue { color: #60a5fa; }
+    </style>
+</head>
+<body class="flex items-start justify-center min-h-screen p-1">
+
+    <div class="card-bg w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100 flex flex-col relative transition-colors duration-300">
+        
+        <!-- HEADER -->
+        <div class="header-bg bg-[#002244] text-white px-3 py-2 relative shrink-0 flex justify-between items-center transition-colors duration-300">
+            <div class="flex flex-col">
+                <h1 class="text-sm font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-plane-departure text-xs"></i> C9 Duty Max Calculator
+                </h1>
+                <button onclick="showInfo('firstTime')" class="text-[10px] italic text-[#4ade80] hover:text-white transition-colors text-left mt-0.5">
+                    First time using the calculator?
+                </button>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button onclick="toggleDarkMode()" class="text-white/70 hover:text-white transition-colors flex items-center gap-1.5" title="Toggle Theme">
+                    <i id="darkModeIcon" class="fa-solid fa-moon text-[10px]"></i>
+                    <span id="darkModeText" class="text-[10px] font-medium">Dark Mode</span>
+                </button>
+                <div class="w-px h-3 bg-white/20"></div>
+                <button onclick="resetForm()" class="text-[10px] text-blue-200 hover:text-white underline">Reset</button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="p-2 space-y-2">
+            
+            <!-- MODE TOGGLE -->
+            <div class="seg-bg bg-gray-100 p-0.5 rounded-md flex seg-control w-full transition-colors duration-300">
+                <input type="radio" name="mode" id="modeDom" value="dom" class="sr-only" checked onchange="toggleMode()">
+                <label for="modeDom" class="seg-text flex-1 text-center py-1 text-[10px] font-bold rounded cursor-pointer">DOMESTIC</label>
+                
+                <input type="radio" name="mode" id="modeInt" value="int" class="sr-only" onchange="toggleMode()">
+                <label for="modeInt" class="seg-text flex-1 text-center py-1 text-[10px] font-bold rounded cursor-pointer">INTERNATIONAL</label>
+            </div>
+            
+            <!-- MIXED PAIRING HELPER -->
+            <div class="text-center -mt-1 mb-1">
+                <button onclick="showInfo('mixed')" class="icon-blue text-[#005DAA] text-[10px] font-medium hover:underline flex items-center justify-center gap-1 w-full">
+                    Mixed Pairing (?)
+                </button>
+            </div>
+
+            <!-- ROW 1: Date & Base -->
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <div class="flex justify-between items-baseline mb-0.5 min-h-[14px]">
+                        <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase">Duty Period Date</label>
+                    </div>
+                    <input type="date" id="dutyDate" class="input-bg w-full px-2 bg-gray-50 border border-gray-200 rounded text-xs font-medium text-gray-900 h-8 transition-colors duration-300" onchange="updateAllLabels(); resetResult(); updateLiveCalc();">
+                </div>
+                <div>
+                    <div class="flex justify-between items-baseline mb-0.5 min-h-[14px]">
+                        <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase">Pairing Origination</label>
+                    </div>
+                    <div class="relative">
+                        <select id="homeBase" class="input-bg w-full px-2 bg-gray-50 border border-gray-200 rounded text-xs font-bold text-[#002244] appearance-none h-8 transition-colors duration-300" onchange="checkCoTerminal(); resetResult(); updateLiveCalc();">
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-2 top-2.5 text-[8px] text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CO-TERMINAL (Dynamic) -->
+            <div id="coTermContainer" class="hidden coterm-bg bg-blue-50 border border-blue-100 rounded p-1.5 transition-all">
+                <div class="flex items-center gap-1">
+                    <input type="checkbox" id="isCoTerm" class="w-3.5 h-3.5 text-[#005DAA] rounded" onchange="toggleCoTermDropdown(); resetResult(); updateLiveCalc();">
+                    <label for="isCoTerm" class="text-[10px] font-bold text-[#002244] select-none text-current cursor-pointer">End at Co-Terminal?</label>
+                    <button onclick="showInfo('coterm')" class="icon-blue text-[#005DAA] text-[10px] hover:underline p-1">(?)</button>
+                </div>
+                <div id="coTermDropdownContainer" class="hidden mt-1 pl-5">
+                    <select id="coTermSelect" class="coterm-select w-full p-1 text-[10px] bg-white border border-blue-200 rounded text-gray-700 h-7 transition-colors duration-300" onchange="resetResult(); updateLiveCalc();">
+                        <option value="0">Select Terminal...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- REPORT INFO GROUP -->
+            <div class="group-bg rounded p-2 pt-1.5 transition-colors duration-300">
+                <div class="flex items-center gap-1 mb-1.5 border-b border-gray-200 pb-1 section-title">
+                    <i class="fa-solid fa-clock text-[#005DAA] text-xs section-icon"></i>
+                    <h3 class="text-[11px] font-bold text-[#002244] uppercase tracking-widest section-title">Report for Duty Info</h3>
+                    <button onclick="showInfo('report')" class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1">(?)</button>
+                </div>
+                
+                <!-- ROW 1: City & Time Zone -->
+                <div class="grid grid-cols-[1.2fr,1.8fr] gap-2 mb-2">
+                    <!-- City -->
+                    <div class="relative">
+                        <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase mb-0.5">Report City</label>
+                        <input type="text" id="reportAirport" placeholder="CODE" maxlength="3" class="input-bg w-full px-2 bg-white border border-gray-200 rounded text-xs font-black text-gray-900 uppercase h-8 placeholder-gray-400 transition-colors duration-300" oninput="validateAirport(this); resetResult(); updateLiveCalc();">
+                    </div>
+                    
+                    <!-- Time Zone -->
+                    <div class="relative">
+                        <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase mb-0.5 text-center">Time Zone</label>
+                        <div id="repZoneAutoContainer" class="w-full">
+                            <input type="text" id="repZoneAuto" readonly tabindex="-1" value="--" class="info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300">
+                        </div>
+                        <div id="repManualContainer" class="hidden w-full grid grid-cols-[24px_minmax(0,1fr)_24px] gap-1">
+                            <button onclick="nudgeZone('rep', -1)" class="nudge-btn rounded text-xs flex items-center justify-center h-8" title="Move West"><i class="fa-solid fa-minus"></i></button>
+                            <select id="repManualZone" onchange="updateLiveCalc();" class="manual-zone-select w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold min-w-0"><option value="" disabled selected>Select</option></select>
+                            <button onclick="nudgeZone('rep', 1)" class="nudge-btn rounded text-xs flex items-center justify-center h-8" title="Move East"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 2: Local Report Time -->
+                <div class="grid grid-cols-[3.2fr,2.2fr] gap-2 items-center mb-2">
+                    <div class="text-right text-[10px] font-bold text-gray-900 uppercase dark:text-gray-400 leading-tight">
+                        <span id="rtLabelCity">Local</span> Report Time
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="reportTime" inputmode="numeric" placeholder="HHMM (24hr)" maxlength="11" class="input-bg w-full px-2 bg-white border border-gray-200 rounded text-xs font-medium text-gray-900 font-mono tracking-wider h-8 placeholder-gray-400 transition-colors duration-300" oninput="formatTimeInput(this); resetResult(); updateLiveCalc();" onblur="padTimeInput(this)">
+                    </div>
+                </div>
+
+                <!-- ROW 3: HDT Conversion Display -->
+                <div class="grid grid-cols-[3.2fr,2.2fr] gap-2 items-center">
+                    <div class="text-right text-[10px] font-bold text-gray-500 uppercase tracking-wide dark:text-gray-400 leading-tight">
+                        Your report time converted to HDT:
+                    </div>
+                    <div>
+                        <input type="text" id="reportTimeHDT" readonly tabindex="-1" value="--:--" class="info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIVE CALC STRIP -->
+            <div id="hdtInfoStrip" class="calc-strip p-2 text-center transition-all mt-1 rounded strip-dom">
+                <div class="text-sm">
+                    <span id="liveCalcText" class="font-normal"><b class="uppercase">DOMESTIC</b> Actual Max Duty = <b class="font-bold">--:--</b>. This is based on your report time of <b class="font-bold">--:--</b> (HDT).</span>
+                </div>
+            </div>
+
+            <!-- DEPARTURE FLIGHT GROUP -->
+            <div class="group-bg rounded p-2 pt-1.5 transition-colors duration-300 mt-1">
+                <div class="flex items-center gap-1 mb-1.5 border-b border-gray-200 pb-1 section-title">
+                    <i class="fa-solid fa-plane-departure text-[#005DAA] text-xs section-icon"></i>
+                    <h3 class="text-[11px] font-bold text-[#002244] uppercase tracking-widest section-title">Departure Flight Info</h3>
+                    <button onclick="showInfo('departure')" class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1">(?)</button>
+                </div>
+                
+                <!-- ROW 1: City & Time Zone -->
+                <div class="grid grid-cols-[1.2fr,1.8fr] gap-2 mb-2">
+                    <!-- City -->
+                    <div class="relative">
+                        <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase mb-0.5">Dep City</label>
+                        <input type="text" id="depAirport" placeholder="CODE" maxlength="3" class="input-bg w-full px-2 bg-white border border-gray-200 rounded text-xs font-black text-gray-900 uppercase h-8 placeholder-gray-400 transition-colors duration-300" oninput="validateAirport(this); resetResult(); updateLiveCalc();">
+                    </div>
+
+                    <!-- Time Zone -->
+                    <div class="relative">
+                        <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase mb-0.5 text-center">Time Zone</label>
+                        <div id="depZoneAutoContainer" class="w-full">
+                            <input type="text" id="depZoneAuto" readonly tabindex="-1" value="--" class="info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300">
+                        </div>
+                        <div id="depManualContainer" class="hidden w-full grid grid-cols-[24px_minmax(0,1fr)_24px] gap-1">
+                            <button onclick="nudgeZone('dep', -1)" class="nudge-btn rounded text-xs flex items-center justify-center h-8" title="Move West"><i class="fa-solid fa-minus"></i></button>
+                            <select id="depManualZone" onchange="updateLiveCalc(); resetResult();" class="manual-zone-select w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold min-w-0"><option value="" disabled selected>Select</option></select>
+                            <button onclick="nudgeZone('dep', 1)" class="nudge-btn rounded text-xs flex items-center justify-center h-8" title="Move East"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 2: Flight Time (Aligned) -->
+                <div class="grid grid-cols-[3.2fr,2.2fr] gap-2 items-center">
+                    <div class="text-right text-[10px] font-bold text-gray-900 uppercase dark:text-gray-400 leading-tight">
+                        Scheduled Flight Time
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="flightTimeInput" inputmode="numeric" placeholder="HHMM" maxlength="5" class="input-bg w-full px-2 bg-white border border-gray-200 rounded text-xs font-medium text-gray-900 font-mono tracking-wider h-8 placeholder-gray-400 transition-colors duration-300" oninput="formatTimeInput(this); resetResult(); updateLiveCalc();" onblur="padTimeInput(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODIFIERS GROUP -->
+            <div class="group-bg rounded p-2 pt-1.5 transition-colors duration-300 mt-1">
+                <div class="flex items-center gap-1 mb-1.5 border-b border-gray-200 pb-1 section-title">
+                    <i class="fa-solid fa-sliders text-[#005DAA] text-xs section-icon"></i>
+                    <h3 class="text-[11px] font-bold text-[#002244] uppercase tracking-widest section-title">Modifiers</h3>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2">
+                    <div id="hvtContainer" class="flex flex-col items-center gap-1 transition-opacity">
+                        <label class="cursor-pointer w-full"><input type="checkbox" id="isHVT" class="toggle-checkbox sr-only" onchange="updateLiveCalc(); resetResult()"><div class="opt-pill h-7 rounded border font-bold flex items-center justify-center transition-colors select-none text-[10px]">HVT</div></label>
+                        <button onclick="showInfo('hvt')" class="icon-blue text-[#005DAA] text-[12px] hover:underline pt-0.5"><i class="fa-solid fa-circle-question"></i></button>
+                    </div>
+                    
+                    <div class="flex flex-col items-center gap-1">
+                        <label class="cursor-pointer w-full"><input type="checkbox" id="isDHD" class="toggle-checkbox sr-only" onchange="updateLiveCalc(); resetResult()"><div class="opt-pill h-7 rounded border font-bold flex items-center justify-center transition-colors select-none text-[10px]">DHD</div></label>
+                        <button onclick="showInfo('dhd')" class="icon-blue text-[#005DAA] text-[12px] hover:underline pt-0.5"><i class="fa-solid fa-circle-question"></i></button>
+                    </div>
+                    
+                    <div class="flex flex-col items-center gap-1">
+                        <label class="cursor-pointer w-full"><input type="checkbox" id="customsStart" class="toggle-checkbox sr-only" onchange="updateLiveCalc(); resetResult()"><div class="opt-pill h-7 rounded border font-bold flex items-center justify-center transition-colors select-none text-center leading-none text-[10px]">Customs<br>at Start</div></label>
+                        <button onclick="showInfo('custStart')" class="icon-blue text-[#005DAA] text-[12px] hover:underline pt-0.5"><i class="fa-solid fa-circle-question"></i></button>
+                    </div>
+                    
+                    <div class="flex flex-col items-center gap-1">
+                        <label class="cursor-pointer w-full"><input type="checkbox" id="customsEnd" class="toggle-checkbox sr-only" onchange="updateLiveCalc(); resetResult()"><div class="opt-pill h-7 rounded border font-bold flex items-center justify-center transition-colors select-none text-center leading-none text-[10px]">Customs<br>at End</div></label>
+                        <button onclick="showInfo('custEnd')" class="icon-blue text-[#005DAA] text-[12px] hover:underline pt-0.5"><i class="fa-solid fa-circle-question"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CALCULATE BUTTON -->
+            <button id="btnCalculate" class="w-full bg-[#005DAA] active:bg-[#004c8c] text-white font-bold py-2.5 rounded shadow-sm text-xs mt-1 transition-transform active:scale-[0.98]">CALCULATE DOOR CLOSE</button>
+
+            <!-- ERROR MESSAGE -->
+            <div id="errorContainer" class="hidden bg-red-50 border border-red-200 text-red-700 p-1.5 rounded text-[10px] flex items-center gap-2"><i class="fa-solid fa-circle-exclamation"></i><span id="errorMsg"></span></div>
+
+            <!-- RESULT CARD -->
+            <div id="resultCard" class="hidden bg-gray-900 text-white rounded-lg shadow border-t-2 border-[#005DAA] overflow-hidden">
+                <div class="p-3 text-center relative">
+                    <button id="btnCopyReceipt" class="absolute right-2 top-2 text-gray-500 hover:text-white transition-colors" title="Copy Receipt for Scheduling">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+
+                    <h2 class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Latest Legal Door Closure</h2>
+                    <div class="flex flex-col items-center">
+                        <span id="resultTime" class="text-3xl font-bold text-white leading-none">--:--</span>
+                        <span id="resultZone" class="text-blue-300 text-[10px] font-medium mt-0.5">Local Time</span>
+                    </div>
+                </div>
+                
+                <!-- BREAKDOWN ACCORDION -->
+                <details class="group border-t border-gray-800">
+                    <summary class="flex items-center justify-center gap-2 p-1.5 bg-gray-800/50 cursor-pointer text-[9px] text-gray-400 uppercase font-bold tracking-wider hover:bg-gray-800 select-none">
+                        <span>Show Breakdown</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-2 bg-gray-800 text-[11px] font-mono space-y-1 text-gray-300">
+                        <div class="grid grid-cols-[1fr,auto] gap-x-2 gap-y-1">
+                            <div class="text-gray-400">Report (Local)</div>
+                            <div id="calcStepReportLocal" class="text-right text-white">--</div>
+                            
+                            <div class="text-blue-300 text-[10px] pl-2">↳ Report (HDT)</div>
+                            <div id="calcStepReportHDT" class="text-right text-blue-300 text-[10px]">--</div>
+                            
+                            <div class="col-span-2 border-t border-gray-700 my-0.5"></div>
+                            
+                            <div class="text-white">= Report (Dep City)</div>
+                            <div id="calcStepReportDep" class="text-right text-white">--</div>
+                            
+                            <div class="text-blue-300">+ Max Duty</div>
+                            <div id="calcStepMax" class="text-right text-blue-300">--</div>
+                            
+                            <div class="col-span-2 text-right text-[10px] text-blue-400 italic" id="calcStepMaxExplanation"></div>
+                            
+                            <div class="col-span-2 border-b border-gray-600 my-0.5"></div>
+                            
+                            <div class="text-gray-300 font-bold" id="calcStepStopLabel">= Duty Hard Stop</div>
+                            <div id="calcStepStop" class="text-right text-white font-bold">--</div>
+                            
+                            <div id="rowCoTermLabel" class="text-red-300 hidden">- Co-Term Travel</div>
+                            <div id="valCoTerm" class="text-right text-red-300 hidden">--</div>
+                            
+                            <div class="text-red-300" id="calcStepDebriefLabel">- Debrief</div>
+                            <div id="calcStepDebriefVal" class="text-right text-red-300">--</div>
+                            
+                            <div id="calcStepCustomsRowLabel" class="text-red-300 hidden">- Customs</div>
+                            <div id="calcStepCustoms" class="text-right text-red-300 hidden">--</div>
+                            
+                            <div class="text-red-300">- Scheduled Flt Time</div>
+                            <div id="calcStepFlight" class="text-right text-red-300">--</div>
+                            
+                            <div class="col-span-2 border-t border-gray-600 my-0.5"></div>
+                            
+                            <div class="text-white font-bold text-sm pt-0.5">= Door Closure</div>
+                            <div id="calcStepResult" class="text-right text-white font-bold text-sm pt-0.5">--</div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- DISCLAIMER -->
+                <div class="disclaimer-box p-3 text-xs leading-snug">
+                    <strong class="block mb-0.5"><i class="fa-solid fa-triangle-exclamation"></i> INFORMATIONAL ONLY</strong>
+                    Never refuse a trip based on this tool. If you believe you are illegal, contact a Scheduling Supervisor. If unresolved, fly the trip and file a Local Council Worksheet. Refusal may constitute insubordination.
+                </div>
+            </div>
+        </div>
+
+        <!-- INFO MODAL -->
+        <div id="infoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div class="modal-bg bg-white rounded-lg shadow-2xl w-full max-w-xs p-4 text-center">
+                <div class="icon-blue mb-2 text-[#005DAA] text-2xl"><i class="fa-solid fa-circle-info"></i></div>
+                <h3 id="modalTitle" class="text-sm font-bold mb-1"></h3>
+                <div id="modalText" class="modal-text text-xs text-gray-600 leading-relaxed mb-3 whitespace-pre-wrap text-left"></div>
+                <button onclick="closeInfo()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-1.5 rounded text-xs transition-colors text-black">Close</button>
+            </div>
+        </div>
+        
+        <!-- HIDDEN COPY AREA -->
+        <textarea id="copyArea" class="absolute -left-96 opacity-0"></textarea>
+    </div>
+
+    <!-- DATA LIST FOR AIRPORTS -->
+    <datalist id="airportList"></datalist>
+
+    <script>
+        // --- DATA OBJECTS (EXPANDED FOR READABILITY) ---
+        const ZONES = { E:"America/New_York", C:"America/Chicago", M:"America/Denver", P:"America/Los_Angeles", H:"Pacific/Honolulu", AK:"America/Anchorage", G:"Pacific/Guam", AZ:"America/Phoenix", ATL:"America/Halifax", YHZ:"America/Halifax", NFLD:"America/St_Johns", MXC:"America/Mexico_City", MXE:"America/Cancun", MXM:"America/Mazatlan", MXS:"America/San_Jose_Cabo", PVR:"America/Bahia_Banderas", LHR:"Europe/London", DUB:"Europe/Dublin", LIS:"Europe/Lisbon", WET:"Europe/Lisbon", AZO:"Atlantic/Azores", CET:"Europe/Paris", EET:"Europe/Athens", UK:"Europe/London", UTC:"UTC", JST:"Asia/Tokyo", HKG:"Asia/Hong_Kong", SIN:"Asia/Singapore", HKT:"Asia/Taipei", KST:"Asia/Seoul", IST:"Asia/Kolkata", DXB:"Asia/Dubai", TLV:"Asia/Jerusalem", SYD:"Australia/Sydney", MEL:"Australia/Melbourne", BNE:"Australia/Brisbane", AKL:"Pacific/Auckland", PPT:"Pacific/Tahiti", MNL:"Asia/Manila", GRU:"America/Sao_Paulo", EZE:"America/Argentina/Buenos_Aires", SCL:"America/Santiago", LIM:"America/Lima", BOG:"America/Bogota", JNB:"Africa/Johannesburg", LOS:"Africa/Lagos", ACC:"Africa/Accra", DKR:"Africa/Dakar", GOH:"America/Nuuk", FNC:"Atlantic/Madeira", UBN:"Asia/Ulaanbaatar", EAT:"Africa/Addis_Ababa", ICT:"Asia/Bangkok", TRT:"Europe/Istanbul", EGY:"Africa/Cairo", REC_Z:"America/Recife", BRT:"America/Sao_Paulo" };
+        
+        // Truncated list for brevity in code, but includes major hubs and international stations
+        const AIRPORTS = { "ITM":"JST","CAI":"EGY","IST":"TRT","SAW":"TRT","CNF":"BRT","REC":"REC_Z","WAW":"CET","ADD":"EAT","OSL":"CET","BKK":"ICT","VIE":"CET","CPH":"CET","ARN":"CET","TPE":"HKT","ICN":"KST","LAS":"P","SAN":"P","SEA":"P","PDX":"P","PHX":"AZ","DFW":"C","AUS":"C","ORD":"C","DEN":"M","IAH":"C","EWR":"E","IAD":"E","SFO":"P","LAX":"P","BOS":"E","MCO":"E","TPA":"E","HNL":"H","GUM":"G","LHR":"LHR","EDI":"LHR","GLA":"LHR","DUB":"DUB","SNN":"DUB","LIS":"LIS","OPO":"LIS","FAO":"LIS","FNC":"FNC","CDG":"CET","NCE":"CET","AMS":"CET","BRU":"CET","FRA":"CET","MUC":"CET","BER":"CET","ZRH":"CET","GVA":"CET","MXP":"CET","FCO":"CET","VCE":"CET","NAP":"CET","PMO":"CET","MAD":"CET","BCN":"CET","AGP":"CET","PMI":"CET","BIO":"CET","ATH":"EET","DBV":"CET","SPU":"CET","KEF":"UTC","NRT":"JST","HND":"JST","KIX":"JST","NGO":"JST","FUK":"JST","PEK":"HKT","PVG":"HKT","HKG":"HKG","KHH":"HKT","UBN":"UBN","SIN":"SIN","MNL":"MNL","CEB":"MNL","DEL":"IST","BOM":"IST","TLV":"TLV","DXB":"DXB","AMM":"EET","SYD":"SYD","MEL":"MEL","BNE":"BNE","AKL":"AKL","CHC":"AKL","PPT":"PPT","SPN":"G","ROR":"G","YAP":"G","TKK":"G","PNI":"G","KSA":"G","MAJ":"G","GRU":"GRU","GIG":"GRU","EZE":"EZE","SCL":"SCL","LIM":"LIM","BOG":"BOG","MDE":"BOG","UIO":"BOG","PTY":"BOG","SJO":"C","LIR":"C","GUA":"C","SAL":"C","BZE":"C","RTB":"C","SAP":"C","MEX":"MXC","CUN":"MXE","SJD":"MXS","PVR":"PVR","MZT":"MXM","GDL":"MXC","MTY":"MXC","YVR":"P","YYC":"M","YEG":"M","YWG":"C","YYZ":"E","YUL":"E","YOW":"E","YHZ":"YHZ","YYT":"NFLD","GOH":"GOH","JNB":"JNB","CPT":"JNB","ACC":"ACC","LOS":"LOS","DKR":"DKR","RAK":"CET","DCA":"E","BWI":"E","LGA":"E","JFK":"E","MDW":"C","OAK":"P","BUR":"P","SNA":"P","SMF":"P","PSP":"P","RNO":"P","ONT":"P","LGB":"P","SJC":"P","FAT":"P","MRY":"P","SBA":"P","SBP":"P","ACV":"P","RDD":"P","BFL":"P","EUG":"P","MFR":"P","RDM":"P","GEG":"P","PSC":"P","EAT":"P","YKM":"P","ALW":"P","PUW":"P","LWS":"P","STS":"P","SLC":"M","ABQ":"M","BOI":"M","BIL":"M","BZN":"M","JAC":"M","COS":"M","ASE":"M","EGE":"M","GJT":"M","DRO":"M","MTJ":"M","HDN":"M","PUB":"M","GUC":"M","SAF":"M","ROW":"M","HOB":"M","FMN":"M","LARC":"M","CPR":"M","GCC":"M","RKS":"M","COD":"M","IDA":"M","SUN":"M","TWF":"M","PIH":"M","HLN":"M","GTF":"M","FCA":"M","MSO":"M","BTM":"M","RAP":"M","ELP":"M","SGU":"M","TUS":"AZ","FLG":"AZ","YUM":"AZ","PRC":"AZ","SAT":"C","MSY":"C","BNA":"C","STL":"C","MCI":"C","MSP":"C","OMA":"C","OKC":"C","TUL":"C","ICT":"C","DSM":"C","CID":"C","MEM":"C","LIT":"C","XNA":"C","FSM":"C","SGF":"C","JLN":"C","COU":"C","DAL":"C","HOU":"C","MAF":"C","LBB":"C","AMA":"C","CRP":"C","MFE":"C","BRO":"C","LRD":"C","ABI":"C","SJT":"C","TYR":"C","GGG":"C","BPT":"C","LFT":"C","BTR":"C","SHV":"C","MLU":"C","AEX":"C","GPT":"C","JAN":"C","MOB":"C","BHM":"C","HSV":"C","MGM":"C","VPS":"C","ECP":"C","PNS":"C","DHN":"C","EVV":"C","FSD":"C","FAR":"C","BIS":"C","MOT":"C","DIK":"C","XWA":"C","JMS":"C","DVL":"C","BRD":"C","HIB":"C","INL":"C","BJI":"C","RST":"C","DLH":"C","LSE":"C","CWA":"C","AUW":"C","EAU":"C","RHI":"C","ATW":"C","GRB":"C","MSN":"C","MKE":"C","MLI":"C","PIA":"C","BMI":"C","CMI":"C","DEC":"C","SPI":"C","SBN":"C","FWA":"C","IND":"C","PHL":"E","CLT":"E","MIA":"E","ATL":"E","DTW":"E","CLE":"E","PIT":"E","RDU":"E","CVG":"E","CMH":"E","DAY":"E","CAK":"E","TOL":"E","RIC":"E","ORF":"E","ROA":"E","CHO":"E","LYH":"E","SHD":"E","CRW":"E","CKB":"E","MGW":"E","HTS":"E","PKB":"E","LWB":"E","BKW":"E","EKE":"E","AVP":"E","MDT":"E","ABE":"E","SCE":"E","ERI":"E","JST":"E","AOO":"E","DUJ":"E","FKL":"E","BFD":"E","IPT":"E","BUF":"E","ROC":"E","SYR":"E","ALB":"E","HPN":"E","ISP":"E","SWF":"E","BGM":"E","ELM":"E","ITH":"E","ART":"E","OGS":"E","MSS":"E","PLB":"E","SLK":"E","BTV":"E","RUT":"E","MPV":"E","PWM":"E","BGR":"E","PQI":"E","BHB":"E","RKD":"E","AUG":"E","MHT":"E","LEB":"E","PVD":"E","BDL":"E","HVN":"E","GON":"E","ILM":"E","AVL":"E","FAY":"E","OAJ":"E","EWN":"E","PGV":"E","GSP":"E","CHS":"E","MYR":"E","CAE":"E","HXD":"E","SAV":"E","AGS":"E","CSG":"E","VLD":"E","ABY":"E","BQK":"E","TLH":"E","JAX":"E","DAB":"E","MLB":"E","VRB":"E","PBI":"E","RSW":"E","SRQ":"E","PIE":"E","GNV":"E","EYW":"E","GRR":"E","TVC":"E","LAN":"E","FNT":"E","AZO":"E","MBS":"E","CMX":"E","PLN":"E","MQT":"E","IMT":"E","ESC":"E","APN":"E","CIU":"E","SDF":"E","LEX":"E","PAH":"E","CHA":"E","TYS":"E","TRI":"E","ANC":"AK","FAI":"AK","JNU":"AK","KTN":"AK","SIT":"AK","CDV":"AK","YAK":"AK","PSG":"AK","WRG":"AK","OME":"AK","BET":"AK","SCC":"AK","BRW":"AK","OTZ":"AK","ADQ":"AK","DLG":"AK","AKN":"AK","DUT":"AK","OGG":"H","KOA":"H","LIH":"H","ITO":"H","CZM":"MXE","ZIH":"MXC","HUX":"MXC","ACA":"MXC","BJX":"MXC","QRO":"MXC","SLP":"MXC","MID":"MXC","VER":"MXC","TAM":"MXC","OAX":"MXC","ZCL":"MXC","HMO":"AZ" };
+
+        const MANUAL_ZONES = {
+            "North America": [
+                {name: "Eastern Time", val: "America/New_York", short: "ET"},
+                {name: "Central Time", val: "America/Chicago", short: "CT"},
+                {name: "Mountain Time", val: "America/Denver", short: "MT"},
+                {name: "Pacific Time", val: "America/Los_Angeles", short: "PT"},
+                {name: "Arizona (No DST)", val: "America/Phoenix", short: "AZ"},
+                {name: "Alaska Time", val: "America/Anchorage", short: "AKT"},
+                {name: "Hawaii Time", val: "Pacific/Honolulu", short: "HST"},
+                {name: "Atlantic (Halifax)", val: "America/Halifax", short: "AST"},
+                {name: "Newfoundland", val: "America/St_Johns", short: "NST"}
+            ],
+            "Europe": [
+                {name: "London (UK)", val: "Europe/London", short: "UK"},
+                {name: "Central Europe (Paris/FRA)", val: "Europe/Paris", short: "CET"},
+                {name: "Eastern Europe (Athens)", val: "Europe/Athens", short: "EET"},
+                {name: "Western Europe (Lisbon)", val: "Europe/Lisbon", short: "WET"},
+                {name: "Turkey (TRT)", val: "Europe/Istanbul", short: "TRT"},
+                {name: "Iceland (UTC)", val: "UTC", short: "UTC"}
+            ],
+            "Asia & Pacific": [
+                {name: "Japan/Korea", val: "Asia/Tokyo", short: "JST"},
+                {name: "China/Taiwan/HK", val: "Asia/Hong_Kong", short: "HKT"},
+                {name: "Singapore/Manila", val: "Asia/Singapore", short: "SGT"},
+                {name: "Thailand/Vietnam", val: "Asia/Bangkok", short: "ICT"},
+                {name: "India", val: "Asia/Kolkata", short: "IST"},
+                {name: "Guam (Chamorro)", val: "Pacific/Guam", short: "ChST"},
+                {name: "Sydney (AEST)", val: "Australia/Sydney", short: "AEST"},
+                {name: "Auckland (NZ)", val: "Pacific/Auckland", short: "NZT"},
+                {name: "Tahiti", val: "Pacific/Tahiti", short: "TAHT"}
+            ],
+            "Other": [
+                {name: "Dubai", val: "Asia/Dubai", short: "GST"},
+                {name: "Tel Aviv", val: "Asia/Jerusalem", short: "IST"},
+                {name: "Cairo", val: "Africa/Cairo", short: "EGY"},
+                {name: "Addis Ababa", val: "Africa/Addis_Ababa", short: "EAT"},
+                {name: "South Africa", val: "Africa/Johannesburg", short: "SAST"},
+                {name: "Sao Paulo", val: "America/Sao_Paulo", short: "BRT"},
+                {name: "Recife (No DST)", val: "America/Recife", short: "REC"}
+            ]
+        };
+
+        const BASES = [
+            {c:"AUS",z:"C"},{c:"BOS",z:"E"},{c:"CLE",z:"E"},{c:"DEN",z:"M"},{c:"EWR",z:"E"},
+            {c:"FLL",z:"E"},{c:"GUM",z:"G"},{c:"HNL",z:"H"},{c:"IAD",z:"E"},{c:"IAH",z:"C"},
+            {c:"LAS",z:"P"},{c:"LAX",z:"P"},{c:"LHR",z:"LHR"},{c:"MCO",z:"E"},{c:"ORD",z:"C"},
+            {c:"PHX",z:"AZ"},{c:"SAN",z:"P"},{c:"SFO",z:"P"},{c:"TPA",z:"E"},{c:"DCA",z:"E"},
+            {c:"BWI",z:"E"},{c:"LGA",z:"E"},{c:"JFK",z:"E"},{c:"MDW",z:"C"},{c:"OAK",z:"P"},
+            {c:"BUR",z:"P"},{c:"SNA",z:"P"}
+        ];
+
+        // Populate base zones
+        BASES.forEach(b => AIRPORTS[b.c] = b.z);
+        const ALL_CODES = {...AIRPORTS};
+
+        const CO_TERMS = {
+            'DCA':{'BWI':70,'IAD':70}, 'IAD':{'DCA':70,'BWI':105}, 'BWI':{'DCA':70,'IAD':105},
+            'EWR':{'LGA':90,'JFK':105}, 'LGA':{'EWR':90,'JFK':60}, 'JFK':{'EWR':105,'LGA':60},
+            'ORD':{'MDW':120}, 'MDW':{'ORD':120},
+            'SFO':{'OAK':60}, 'OAK':{'SFO':60},
+            'LAX':{'BUR':75,'SNA':120}, 'BUR':{'LAX':75,'SNA':135}, 'SNA':{'LAX':120,'BUR':135}
+        };
+
+        const INFO_CONTENT = {
+            'dhd':{title:'Deadhead (DHD)',text:'Select if your final segment is a Deadhead. Deadheads have a 0-minute debrief time.'},
+            'custStart':{title:'Customs at Start',text:'Select if you must clear customs at the beginning of your duty period. Adds 15 minutes to your duty day.'},
+            'custEnd':{title:'Customs at End',text:'Select if you must clear customs after your final segment. Adds 15 minutes to your duty day.'},
+            'hvt':{title:'High Value Trip (JCBA Sec 6.S.1)',text:'A High Value Trip (HVT) shall be limited to a single duty period containing:\n• No more than three (3) flight segments\n• Total flight time of nine hours (9:00) or more'},
+            'mixed':{title:'Mixed Pairings (Sec 6.U)',text:'• Use DOMESTIC mode if your duty period today contains ONLY domestic flights.\n• Use INTERNATIONAL mode if your duty period today contains ANY international flights.'},
+            'coterm':{title:'Co-Terminal Extension', text:'Check this box ONLY if this is the final duty period of your pairing AND it terminates at a different co-terminal than your pairing began.\n\n(Example: Pairing started at EWR but ends at LGA).'},
+            'report':{title:'Report for Duty Info',text:'• Enter the airport code of the city you reported to at the start of the duty day. If the timezone does not populate, check your airport code or you can adjust it manually.\n• Next, in the Local Report Time field, enter your local report time from your pairing OR the time you actually reported (if different).\n• Then proceed to the Departure Fight Info section.'},
+            'departure':{title:'Departure Flight Info',text:'• Enter the airport code of the departure city of your next flight segment.\n• Enter the scheduled flight time for this segment as HHMM.'},
+            'firstTime':{title:'Quick Start Guide', text:'1. Select your Mode (Domestic/International).\n2. Enter your Duty Date and Pairing Origination.\n3. Enter your Report City and Time. The calculator will auto-detect time zones (or ask you if it\'s unsure).\n4. Enter your Departure City and Flight Time.\n5. Select any modifiers (HVT, Deadhead, Customs).\n6. Click Calculate to see your legal Door Closure time.'},
+            'domMatrix':{title:'Domestic Actual Max Duty Limits',text:'Report Time (Home Domicile Time)\n\n0500 - 1859 .... 15:00\n1900 - 0459 .... 13:00\nHigh Value Trip .... 16:00\n\n(Source: JCBA Section 6.S.1)'},
+            'intMatrix':{title:'International Actual Max Duty Limits',text:'Flight Time (Scheduled)\n\nMulti/Non-Stop ≤ 8:00 .... 16:00\nMulti/Non-Stop 8:01 - 12:00 .... 16:30\nNon-Stop > 12:00 .... Check-in + Flight + Customs + Debrief + 3:30\n\n(Source: JCBA Section 6.T.1)'}
+        };
+
+        // --- UTILITIES ---
+
+        function copyReceipt() {
+            const txt = `C9 Duty Check:Report: ${lastCalc.rTime} ${lastCalc.rAir} (${lastCalc.hdt} ${lastCalc.hb} Time)Scheduled FLT Time: ${lastCalc.flt}Max Duty: ${lastCalc.max}Hard Stop: ${lastCalc.hardStop}Deductions: ${lastCalc.deducts.join(', ')}LATEST DOOR CLOSE: ${lastCalc.final}(Generated by C9 Duty Max)`;
+            const ta = document.getElementById('copyArea');
+            ta.value = txt;
+            ta.select();
+            document.execCommand('copy');
+            const btn = document.querySelector('#resultCard button i');
+            btn.className = "fa-solid fa-check text-green-400";
+            setTimeout(() => btn.className = "fa-regular fa-copy", 1500);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('darkModeIcon');
+            const text = document.getElementById('darkModeText');
+            const themeMeta = document.getElementById('themeColor');
+            
+            if(document.body.classList.contains('dark-mode')){
+                icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
+                text.textContent = "Light Mode";
+                themeMeta.content = "#1f2937"; 
+                document.querySelectorAll('[id$="ZoneAuto"]').forEach(z => { 
+                    z.className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300";
+                });
+                document.getElementById('reportTimeHDT').className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-blue-900/30 text-blue-200 border-blue-800";
+            } else {
+                icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
+                text.textContent = "Dark Mode";
+                themeMeta.content = "#002244";  
+                document.querySelectorAll('[id$="ZoneAuto"]').forEach(z => { 
+                    z.className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300";
+                }); 
+                document.getElementById('reportTimeHDT').className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-gray-100 text-gray-700 border-gray-200";
+            }
+            validateAirport(document.getElementById('reportAirport'));
+            validateAirport(document.getElementById('depAirport'));
+        }
+
+        function toggleMode(){
+            const isDom=document.getElementById('modeDom').checked;
+            const hvtCheck=document.getElementById('isHVT');
+            const hvtPill=hvtCheck.nextElementSibling; 
+            const hvtCont=document.getElementById('hvtContainer');
+            
+            if(isDom){
+                // Re-enable in DOM mode, but updateLiveCalc will immediately disable it if time is night
+                hvtCheck.disabled=false;
+                hvtCont.style.opacity="1";
+                hvtPill.classList.remove('disabled');
+            } else {
+                hvtCheck.disabled=true;
+                hvtCheck.checked=false;
+                hvtCont.style.opacity="0.4";
+                hvtPill.classList.remove('active'); 
+                hvtPill.classList.add('disabled');
+            }
+            resetResult();
+            updateLiveCalc();
+        }
+
+        function checkCoTerminal(){
+            const hb=document.getElementById('homeBase').value;
+            const container=document.getElementById('coTermContainer');
+            const check=document.getElementById('isCoTerm');
+            check.checked=false;
+            toggleCoTermDropdown();
+            if(CO_TERMS[hb]){
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function toggleCoTermDropdown(){
+            const isChecked=document.getElementById('isCoTerm').checked;
+            const ddCont=document.getElementById('coTermDropdownContainer');
+            const dd=document.getElementById('coTermSelect');
+            const hb=document.getElementById('homeBase').value;
+            dd.innerHTML='<option value="0">Select Arrival Terminal...</option>';
+            if(isChecked&&CO_TERMS[hb]){
+                ddCont.classList.remove('hidden');
+                Object.entries(CO_TERMS[hb]).forEach(([code,mins])=>{
+                    const opt=document.createElement('option');
+                    const h=Math.floor(mins/60);
+                    const m=mins%60;
+                    const dur=`${h}:${m.toString().padStart(2,'0')}`;
+                    opt.value=mins;
+                    opt.text=`${code} (Surface: ${dur})`;
+                    dd.appendChild(opt);
+                });
+            } else {
+                ddCont.classList.add('hidden');
+            }
+        }
+
+        function resetResult(){
+            document.getElementById('resultCard').classList.add('hidden');
+            document.getElementById('errorContainer').classList.add('hidden');
+            const isDom = document.getElementById('modeDom').checked;
+            const prefix = isDom ? "<b class='uppercase'>DOMESTIC</b>" : "<b class='uppercase'>INTERNATIONAL</b>";
+            document.getElementById('liveCalcText').innerHTML = `${prefix} Actual Max Duty = <b class="font-bold">--:--</b>. This is based on your report time of <b class="font-bold">--:--</b> (HDT).`;
+            document.getElementById('reportTimeHDT').value = "--:--";
+        }
+
+        function resetForm(){
+            const d=new Date();
+            const denverDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Denver', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+            document.getElementById('dutyDate').value = denverDate;
+            document.getElementById('homeBase').value='DEN';
+            ['reportAirport','reportTime','depAirport','flightTimeInput'].forEach(id=>{const el=document.getElementById(id);el.value='';el.classList.remove('valid-airport','invalid-airport');});
+            document.querySelectorAll('.toggle-checkbox').forEach(el=>{el.checked=false; el.nextElementSibling.classList.remove('active');});
+            ['repManualZone','depManualZone'].forEach(id=>{const el=document.getElementById(id);el.classList.add('hidden');el.value='';});
+            
+            ['rep', 'dep'].forEach(pfx => { 
+                const autoCont = document.getElementById(pfx + 'ZoneAutoContainer'); 
+                const manCont = document.getElementById(pfx + 'ManualContainer'); 
+                const autoInput = document.getElementById(pfx + 'ZoneAuto'); 
+                if(autoCont && manCont) {
+                    autoCont.classList.remove('hidden');
+                    manCont.classList.add('hidden');
+                    autoInput.value = '--';
+                    autoInput.className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300";
+                }
+            });
+            
+            // Explicitly reset the labels here
+            const lblRep = document.getElementById('rtLabelCity');
+            if(lblRep) { lblRep.textContent = "Local"; lblRep.className = ""; }
+
+            document.getElementById('reportTimeHDT').value = "--:--";
+            document.getElementById('modeDom').click();
+            checkCoTerminal();
+            resetResult();
+        }
+
+        function getZone(c){return ALL_CODES[c]?(ZONES[ALL_CODES[c]]||ALL_CODES[c]):null;}
+        
+        function getZoneName(iana,manId){
+            if(!iana&&manId)iana=document.getElementById(manId).value;
+            if(!iana)return"Loc";
+            try{
+                const dtStr=document.getElementById('dutyDate').value;
+                const dt=dtStr?new Date(dtStr+'T12:00:00'):new Date();
+                const parts=new Intl.DateTimeFormat('en-US',{timeZone:iana,timeZoneName:'short'}).formatToParts(dt);
+                return parts.find(p=>p.type==='timeZoneName')?.value||"Loc";
+            }catch(e){return"Loc";}
+        }
+
+        function padTimeInput(el){
+            let v=el.value.trim();if(!v)return;
+            v=v.replace(/\D/g,'');
+            if(v.length>2){const i=v.length===3?1:2;v=v.slice(0,i)+':'+v.slice(i);}
+            const p=v.split(':');
+            if(p.length===2)el.value=`${p[0].padStart(2,'0')}:${p[1].padStart(2,'0')}`;
+        }
+
+        function formatTimeInput(el){
+            let v=el.value.replace(/\D/g,'');
+            if(v.length>4)v=v.slice(0,4);
+            if(v.length>2){const i=v.length===3?1:2;v=v.slice(0,i)+':'+v.slice(i);}
+            el.value=v;
+        }
+
+        function nudgeZone(pfx, dir) {
+            const sel = document.getElementById(pfx + 'ManualZone');
+            const count = sel.options.length;
+            let idx = sel.selectedIndex;
+            if (idx === 0) idx = 1; 
+            else idx += dir;
+            if (idx < 1) idx = count - 1;
+            if (idx >= count) idx = 1;
+            sel.selectedIndex = idx;
+            sel.onchange(); 
+        }
+
+        function validateAirport(el){
+            el.value=el.value.toUpperCase();
+            const code=el.value;
+            const pfx=el.id==='reportAirport'?'rep':'dep';
+            const zoneAutoCont = document.getElementById(pfx+'ZoneAutoContainer');
+            const zoneManualCont = document.getElementById(pfx+'ManualContainer');
+            const zoneAuto = document.getElementById(pfx+'ZoneAuto');
+            if(!zoneAutoCont || !zoneManualCont) return;
+            const isDark = document.body.classList.contains('dark-mode');
+            zoneAuto.style.pointerEvents = "none";
+
+            if(code.length===3){
+                if(ALL_CODES[code]){
+                    el.classList.add('valid-airport');
+                    el.classList.remove('invalid-airport');
+                    
+                    // Dynamic Label Logic
+                    if(el.id === 'reportAirport') {
+                        const lbl = document.getElementById('rtLabelCity');
+                        if(lbl) {lbl.textContent = code; lbl.className = "dynamic-city-label font-bold";}
+                    }
+
+                    const iana = getZone(code);
+                    const shortZone = getZoneName(iana); 
+                    zoneAuto.value = shortZone;
+                    zoneAutoCont.classList.remove('hidden');
+                    zoneManualCont.classList.add('hidden');
+                    if (shortZone.includes('DT') || shortZone.includes('BST') || shortZone.includes('CEST') || shortZone.includes('EEST')) { 
+                        zoneAuto.className = isDark ? "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-green-900/30 border border-green-800 text-green-200" : "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-green-100 border border-green-300 text-green-800";
+                    } else { 
+                        zoneAuto.className = isDark ? "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-blue-900/30 border border-blue-800 text-blue-200" : "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-blue-100 border border-blue-300 text-blue-800";
+                    }
+                }else{
+                    el.classList.remove('valid-airport');
+                    el.classList.add('invalid-airport');
+                    // Reset labels if invalid
+                    if(el.id === 'reportAirport') {
+                        const lbl = document.getElementById('rtLabelCity');
+                        if(lbl) {lbl.textContent = "Local"; lbl.className = "";}
+                    }
+                    zoneAutoCont.classList.add('hidden');
+                    zoneManualCont.classList.remove('hidden');
+                }
+            }else{
+                el.classList.remove('valid-airport','invalid-airport');
+                // Reset labels if empty/partial
+                if(el.id === 'reportAirport') {
+                    const lbl = document.getElementById('rtLabelCity');
+                    if(lbl) {lbl.textContent = "Local"; lbl.className = "";}
+                }
+                zoneAuto.value = "--";
+                zoneAutoCont.classList.remove('hidden');
+                zoneManualCont.classList.add('hidden');
+                zoneAuto.className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300";
+            }
+        }
+
+        function updateAllLabels() {
+            if(document.getElementById('reportAirport').value) validateAirport(document.getElementById('reportAirport'));
+            if(document.getElementById('depAirport').value) validateAirport(document.getElementById('depAirport'));
+        }
+
+        function showInfo(k){
+            const title = document.getElementById('modalTitle');
+            const text = document.getElementById('modalText');
+            const modal = document.getElementById('infoModal');
+            
+            if(title && text && modal && INFO_CONTENT[k]) {
+                title.textContent = INFO_CONTENT[k].title;
+                text.innerText = INFO_CONTENT[k].text;
+                modal.classList.remove('hidden');
+            }
+        }
+        function closeInfo(){document.getElementById('infoModal').classList.add('hidden');}
+
+        // --- CORE CALCULATION LOGIC ---
+
+        function getDateInZone(dateStr,timeStr,ianaZone){
+            const cleanTime=timeStr.replace(':','').padStart(4, '0');
+            const h=cleanTime.slice(0,2);
+            const m=cleanTime.slice(2,4);
+            const inputYear=parseInt(dateStr.split('-')[0]);
+            const inputMonth=parseInt(dateStr.split('-')[1])-1;
+            const inputDay=parseInt(dateStr.split('-')[2]);
+            const inputHour=parseInt(h);
+            const inputMin=parseInt(m);
+            let guess=Date.UTC(inputYear,inputMonth,inputDay,inputHour,inputMin);
+            for(let i=0;i<3;i++){
+                const parts=new Intl.DateTimeFormat('en-US',{timeZone:ianaZone,year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric',hour12:false}).formatToParts(guess);
+                const getP=(t)=>parseInt(parts.find(p=>p.type===t).value);
+                const gY=getP('year');const gM=getP('month')-1;const gD=getP('day');const gH=getP('hour')===24?0:getP('hour');const gMin=getP('minute');
+                const guessTimeInZone=Date.UTC(gY,gM,gD,gH,gMin);
+                const actualTarget=Date.UTC(inputYear,inputMonth,inputDay,inputHour,inputMin);
+                const diff=actualTarget-guessTimeInZone;
+                if(diff===0)break;
+                guess+=diff;
+            }
+            return guess;
+        }
+
+        function getDynamicZoneName(utcTime, ianaZone) {
+            try {
+                const parts = new Intl.DateTimeFormat('en-US', { timeZone: ianaZone, timeZoneName: 'short' }).formatToParts(new Date(utcTime));
+                return parts.find(p => p.type === 'timeZoneName')?.value || "Loc";
+            } catch (e) { return "Loc"; }
+        }
+
+        function updateLiveCalc() {
+            const hb = document.getElementById('homeBase').value;
+            const rTimeStr = document.getElementById('reportTime').value;
+            let rAir = document.getElementById('reportAirport').value.toUpperCase();
+            const dateStr = document.getElementById('dutyDate').value;
+            const isDom = document.getElementById('modeDom').checked;
+            const strip = document.getElementById('liveCalcText');
+            const stripDiv = document.getElementById('hdtInfoStrip');
+            const footer = document.getElementById('hdtInfoStrip');
+            const hdtConvertedInput = document.getElementById('reportTimeHDT');
+            
+            // --- NEW: Update Strip Colors Logic ---
+            if (isDom) {
+                stripDiv.className = "calc-strip p-2 text-center transition-all mt-1 rounded strip-dom";
+            } else {
+                stripDiv.className = "calc-strip p-2 text-center transition-all mt-1 rounded strip-int";
+            }
+
+            if (!rTimeStr || rTimeStr.length < 4 || !rAir || !dateStr || !hb) {
+                const prefix = isDom ? "<b class='uppercase'>DOMESTIC</b> Actual Max Duty" : "<b class='uppercase'>INTERNATIONAL</b> Actual Max Duty";
+                strip.innerHTML = `${prefix} = <b class="font-bold">--:--</b>. This is based on your report time of <b class="font-bold">--:--</b> (HDT).`;
+                hdtConvertedInput.value = "--:--";
+                return;
+            }
+            
+            const rZone = ALL_CODES[rAir] ? getZone(rAir) : document.getElementById('repManualZone').value;
+            if(!rZone) { 
+                const prefix = isDom ? "<b class='uppercase'>DOMESTIC</b> Actual Max Duty" : "<b class='uppercase'>INTERNATIONAL</b> Actual Max Duty";
+                strip.innerHTML = `${prefix} = <b class="font-bold">--:--</b>. This is based on your report time of <b class="font-bold">--:--</b> (HDT).`;
+                hdtConvertedInput.value = "--:--";
+                return;
+            }
+            const hZone = getZone(hb);
+            const reportUTC = getDateInZone(dateStr, rTimeStr, rZone);
+            const hdtParts = new Intl.DateTimeFormat('en-US', { timeZone: hZone, hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(reportUTC);
+            const hHStr = hdtParts.find(p=>p.type==='hour').value;
+            const hHNum = parseInt(hHStr);
+            const hMStr = hdtParts.find(p=>p.type==='minute').value;
+            const hdtMins = hHNum*60 + parseInt(hMStr);
+            const hdtDisplay = `${hHStr.padStart(2,'0')}:${hMStr.padStart(2,'0')}`;
+            hdtConvertedInput.value = hdtDisplay;
+            
+            // --- NEW: HVT Disable Logic (1900-0459) ---
+            const hvtCheck = document.getElementById('isHVT');
+            const hvtPill = hvtCheck.nextElementSibling;
+            const hvtCont = document.getElementById('hvtContainer');
+            
+            // 19:00 = 1140 mins, 04:59 = 299 mins (actually check < 300)
+            const isNight = hdtMins < 300 || hdtMins >= 1140; 
+
+            if (isDom) {
+                if (isNight) {
+                    hvtCheck.disabled = true;
+                    if(hvtCheck.checked) {
+                         hvtCheck.checked = false;
+                         hvtPill.classList.remove('active');
+                    }
+                    hvtCont.style.opacity = "0.4";
+                    hvtPill.classList.add('disabled');
+                } else {
+                    // Only re-enable if we are in DOM mode (which we are inside this block)
+                    hvtCheck.disabled = false;
+                    hvtCont.style.opacity = "1";
+                    hvtPill.classList.remove('disabled');
+                }
+            }
+            // International mode logic handles disabling in toggleMode
+            
+            let maxDutyText = "--:--";
+            let schedDisplay = "--:--";
+            let prefix = "";
+            let matrixKey = "";
+            
+            if (isDom) {
+                prefix = "<b class='uppercase'>DOMESTIC</b> Actual Max Duty";
+                matrixKey = "domMatrix";
+                const isHVT = document.getElementById('isHVT').checked;
+                const isDay = hdtMins >= 300 && hdtMins <= 1139; // 0500-1859 HDT
+                let limit = 13;
+                if (isHVT) {
+                    limit = 16;
+                } else { 
+                    if (isDay) limit = 15;
+                }
+                maxDutyText = `${limit}:00`;
+                let suffix = "";
+                if (isHVT) { suffix = " and that this is a High Value Trip."; }
+                strip.innerHTML = `${prefix} = <b>${maxDutyText}</b>. This is based on your report time of <b>${hdtDisplay}</b> (HDT)${suffix} <button onclick="showInfo('${matrixKey}')" class="ml-1 text-blue-300 hover:text-white hover:underline font-bold transition-colors">(?)</button>`;
+            } else {
+                prefix = "<b class='uppercase'>INTERNATIONAL</b> Actual Max Duty";
+                matrixKey = "intMatrix";
+                const fStr = document.getElementById('flightTimeInput').value.replace(':','').padStart(4, '0');
+                const fVal = document.getElementById('flightTimeInput').value;
+                if (fVal && fStr.length >= 3) { 
+                    const fH = parseInt(fStr.slice(0,2))||0; 
+                    const fM = parseInt(fStr.slice(2,4))||0; 
+                    schedDisplay = `${fH.toString().padStart(2,'0')}:${fM.toString().padStart(2,'0')}`;
+                    const schedMins = fH*60 + fM;
+                    if (schedMins <= 480) maxDutyText = "16:00"; 
+                    else if (schedMins <= 720) maxDutyText = "16:30"; 
+                    else { 
+                        const checkIn = 75; const buffer = 210;
+                        let total = checkIn + schedMins + buffer;
+                        const debrief = document.getElementById('isDHD').checked ? 0 : 15;
+                        let cust=0;
+                        if(document.getElementById('customsStart').checked) cust+=15;
+                        if(document.getElementById('customsEnd').checked) cust+=15;
+                        total += (debrief + cust);
+                        const tH = Math.floor(total/60);
+                        const tM = total%60;
+                        maxDutyText = `${tH}:${tM.toString().padStart(2,'0')}`;
+                    }
+                } else {
+                    maxDutyText = "--:--";
+                }
+                strip.innerHTML = `${prefix} = <b>${maxDutyText}</b>. This is based on your Scheduled Flight Time of <b>${schedDisplay}</b> <button onclick="showInfo('${matrixKey}')" class="ml-1 text-blue-300 hover:text-white hover:underline font-bold transition-colors">(?)</button>`;
+            }
+            footer.classList.remove('hidden');
+        }
+
+        let lastCalc = {}; 
+
+        function calculateDuty(){
+            const errCont=document.getElementById('errorContainer'),errMsg=document.getElementById('errorMsg');errCont.classList.add('hidden');
+            
+            // --- NEW: Reset Error Classes Before Checking ---
+            ['dutyDate','homeBase','reportAirport','reportTime','depAirport','flightTimeInput'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.remove('input-missing');
+            });
+
+            const req=[{id:'dutyDate',n:'Duty Date'},{id:'homeBase',n:'Home Base'},{id:'reportAirport',n:'Report City'},{id:'reportTime',n:'Report Time'},{id:'depAirport',n:'Dep City'},{id:'flightTimeInput',n:'Flight Time'}];
+            
+            let hasError = false;
+            let firstMissing = null;
+
+            // --- NEW: Loop to highlight ALL missing fields ---
+            for(let r of req){
+                const el = document.getElementById(r.id);
+                if(!el.value){
+                    el.classList.add('input-missing');
+                    if(!firstMissing) firstMissing = r.n;
+                    hasError = true;
+                }
+            }
+
+            if(hasError) {
+                errMsg.textContent=`Missing: ${firstMissing}`;
+                errCont.classList.remove('hidden');
+                return;
+            }
+            
+            // ... rest of logic
+            
+            const hb=document.getElementById('homeBase').value;
+            const rTimeStr=document.getElementById('reportTime').value;
+            let rAir=document.getElementById('reportAirport').value.toUpperCase();
+            let dAir=document.getElementById('depAirport').value.toUpperCase();
+            const dateStr=document.getElementById('dutyDate').value;
+            const isDom=document.getElementById('modeDom').checked;
+            
+            if(rAir !== 'ZZZ') {
+                if(!ALL_CODES[rAir]&&document.getElementById('repManualZone').value===""){errMsg.textContent="Invalid Report City: Select Zone";errCont.classList.remove('hidden');return;}
+            }
+            if(!ALL_CODES[dAir]&&document.getElementById('depManualZone').value===""){errMsg.textContent="Invalid Dep City: Select Zone";errCont.classList.remove('hidden');return;}
+            
+            let rZone;
+            if (rAir === 'ZZZ') { rZone = getZone('DEN'); } else { rZone = ALL_CODES[rAir] ? getZone(rAir) : document.getElementById('repManualZone').value; }
+            const dZone=ALL_CODES[dAir]?getZone(dAir):document.getElementById('depManualZone').value;
+            const hZone=getZone(hb);
+            
+            const reportUTC=getDateInZone(dateStr,rTimeStr,rZone);
+            const rZnStr = getDynamicZoneName(reportUTC, rZone);
+            const hdtParts=new Intl.DateTimeFormat('en-US',{timeZone:hZone,hour:'numeric',minute:'numeric',hour12:false}).formatToParts(reportUTC);
+            const hH=parseInt(hdtParts.find(p=>p.type==='hour').value)%24;const hM=parseInt(hdtParts.find(p=>p.type==='minute').value);
+            const hdtMins=hH*60+hM;
+            const hZnStr = getDynamicZoneName(reportUTC, hZone); 
+
+            const fStr=document.getElementById('flightTimeInput').value.replace(':','').padStart(4, '0');const fH=parseInt(fStr.slice(0,2))||0,fM=parseInt(fStr.slice(2,4))||0;
+            const schedFlightMins=fH*60+fM;
+            let maxDutyMins=0;let expl="";const fmt=(m)=>{let h=Math.floor(m/60),mn=m%60;return`${h.toString().padStart(2,'0')}:${mn.toString().padStart(2,'0')}`;}
+            
+            if(isDom){
+                const isHVT=document.getElementById('isHVT').checked;const isDay=hdtMins>=300&&hdtMins<=1139;let limit=13;
+                expl=`13hrs (Report ${fmt(hdtMins)} HDT, 1900-0459)`;
+                if(isHVT){
+                    limit=16;
+                    expl=`16hrs (HVT)`;
+                } else {
+                    if(isDay){limit=15;expl=`15hrs (Report ${fmt(hdtMins)} HDT, 0500-1859)`;}
+                }
+                maxDutyMins=limit*60;
+            } else {
+                if(schedFlightMins<=480){maxDutyMins=16*60;expl="16:00 (Int'l, Flt ≤ 8:00)";}
+                else if(schedFlightMins<=720){maxDutyMins=16*60+30;expl="16:30 (Int'l, Flt 8:01-12:00)";}
+                else{const checkIn=75;const buffer=210;maxDutyMins=checkIn+schedFlightMins+buffer;const debrief=document.getElementById('isDHD').checked?0:15;let cust=0;if(document.getElementById('customsStart').checked)cust+=15;if(document.getElementById('customsEnd').checked)cust+=15;maxDutyMins+=(debrief+cust);expl="Variable (Check-in + Flt + Cust + Debr + 3:30)";}
+            }
+            
+            const debrief=document.getElementById('isDHD').checked?0:15;
+            let cust=0;if(document.getElementById('customsStart').checked)cust+=15;if(document.getElementById('customsEnd').checked)cust+=15;
+            let coTermDed=0;const isCoTerm=document.getElementById('isCoTerm').checked;if(isCoTerm&&!document.getElementById('coTermContainer').classList.contains('hidden')){coTermDed=parseInt(document.getElementById('coTermSelect').value)||0;}
+            const flightMs=schedFlightMins*60000;
+            const deductionsMs=(debrief+cust+coTermDed)*60000;
+            const maxDutyMs=maxDutyMins*60000;
+            const hardStopUTC=reportUTC+maxDutyMs;
+            const doorCloseUTC=hardStopUTC-deductionsMs-flightMs;
+            
+            const timeInZone=(utc,z)=>{const f=new Intl.DateTimeFormat('en-US',{timeZone:z,hour:'numeric',minute:'numeric',hour12:false});const p=f.formatToParts(utc);const h=p.find(x=>x.type==='hour').value.padStart(2,'0');const m=p.find(x=>x.type==='minute').value.padStart(2,'0');return`${h}:${m}`;};
+            
+            const dZnStr = getDynamicZoneName(doorCloseUTC, dZone); 
+            const stopZnStr = getDynamicZoneName(hardStopUTC, dZone);
+            const repInDepZn=getDynamicZoneName(reportUTC,dZone);
+            const doorCloseStr = timeInZone(doorCloseUTC,dZone);
+
+            document.getElementById('resultTime').textContent=doorCloseStr;
+            document.getElementById('resultZone').textContent=`${dAir} Time (${dZnStr})`;
+            
+            document.getElementById('calcStepReportLocal').textContent=`${rTimeStr.replace(/(\d{2})(\d{2})/,'$1:$2')} ${rAir} (${rZnStr})`;
+            document.getElementById('calcStepReportHDT').textContent=`${timeInZone(reportUTC,hZone)} ${hb} (${hZnStr})`;
+            
+            const repInDep=timeInZone(reportUTC,dZone);
+            document.getElementById('calcStepReportDep').textContent=`${repInDep} ${dAir} (${repInDepZn})`;
+            document.getElementById('calcStepMax').textContent=`+${fmt(maxDutyMins)}`;
+            document.getElementById('calcStepMaxExplanation').textContent=expl;
+            
+            const stopLabel = document.getElementById('calcStepStopLabel');
+            if (repInDepZn !== stopZnStr) { 
+                stopLabel.textContent = "= Duty Hard Stop (DST Adj.)";
+            } else { 
+                stopLabel.textContent = "= Duty Hard Stop";
+            }
+            document.getElementById('calcStepStop').textContent=`${timeInZone(hardStopUTC,dZone)} ${dAir} (${stopZnStr})`;
+            
+            const rowCT=document.getElementById('rowCoTermLabel');
+            const rowCTVal=document.getElementById('valCoTerm');
+            if(coTermDed>0){rowCT.classList.remove('hidden');rowCTVal.classList.remove('hidden');rowCTVal.textContent=`-${coTermDed}`;}else{rowCT.classList.add('hidden');rowCTVal.classList.add('hidden');}
+            
+            document.getElementById('calcStepDebriefLabel').textContent=debrief===0?"- Debrief (DHD)":"- Debrief";document.getElementById('calcStepDebriefVal').textContent=`-${debrief}`;
+            
+            const crL=document.getElementById('calcStepCustomsRowLabel');
+            const crV=document.getElementById('calcStepCustoms');
+            if(cust>0){crL.classList.remove('hidden');crV.classList.remove('hidden');crV.textContent=`-${cust}`;}else{crL.classList.add('hidden');crV.classList.add('hidden');}
+            
+            document.getElementById('calcStepFlight').textContent=`-${fH}:${fM.toString().padStart(2,'0')}`;
+            document.getElementById('calcStepResult').textContent=`${doorCloseStr} ${dAir} (${dZnStr})`;
+            
+            const rc=document.getElementById('resultCard');rc.classList.remove('hidden');rc.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+            lastCalc = {
+                rTime: rTimeStr.replace(/(\d{2})(\d{2})/,'$1:$2'), 
+                rAir: rAir, hdt: `${fmt(hdtMins)}`, hb: hb,
+                flt: `${fH}:${fM.toString().padStart(2,'0')}`,
+                max: expl, hardStop: `${timeInZone(hardStopUTC,dZone)} ${dAir}`,
+                deducts: [],
+                final: `${doorCloseStr} ${dAir}`
+            };
+            if(debrief>0) lastCalc.deducts.push(`Debrief ${debrief}m`);
+            if(cust>0) lastCalc.deducts.push(`Customs ${cust}m`);
+            if(coTermDed>0) lastCalc.deducts.push(`Co-Term Travel ${coTermDed}m`);
+            if(lastCalc.deducts.length===0) lastCalc.deducts.push("None");
+        }
+
+        // --- INIT ---
+
+        function checkTestTrigger() { 
+            const city = document.getElementById('reportAirport').value.toUpperCase(); 
+            validateAirport(document.getElementById('reportAirport'));
+        }
+
+        function init(){
+            const d=new Date();
+            const denverDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Denver', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+            document.getElementById('dutyDate').value = denverDate;
+            const bs=document.getElementById('homeBase');
+            bs.innerHTML = '';
+            BASES.sort((a,b)=>a.c.localeCompare(b.c)).forEach(b=>{const o=document.createElement('option');o.value=b.c;o.text=`${b.c} Pairing`;if(b.c==='DEN')o.selected=true;bs.appendChild(o);});
+            const dl=document.getElementById('airportList');
+            dl.innerHTML = '';
+            Object.keys(ALL_CODES).sort().forEach(c=>{const o=document.createElement('option');o.value=c;dl.appendChild(o);});
+            
+            const pZ=(id)=>{
+                const s=document.getElementById(id);
+                s.innerHTML = '<option value="" disabled selected>Select Zone</option>'; 
+                Object.keys(MANUAL_ZONES).forEach(group => {
+                    const grp = document.createElement('optgroup');
+                    grp.label = group;
+                    MANUAL_ZONES[group].forEach(z => {
+                        const o = document.createElement('option');
+                        o.value = z.val;
+                        o.text = z.name;
+                        o.dataset.short = z.short;
+                        grp.appendChild(o);
+                    });
+                    s.appendChild(grp);
+                });
+            };
+            pZ('repManualZone');pZ('depManualZone');
+            
+            document.querySelectorAll('.toggle-checkbox').forEach(chk => {
+                chk.addEventListener('change', function() {
+                    const pillDiv = this.nextElementSibling;
+                    if(this.checked) {
+                        pillDiv.classList.add('active');
+                    } else {
+                        pillDiv.classList.remove('active');
+                    }
+                    resetResult();
+                    updateLiveCalc();
+                });
+            });
+            
+            checkCoTerminal();
+            document.getElementById('reportAirport').addEventListener('input', checkTestTrigger);
+            const copyBtn = document.getElementById('btnCopyReceipt');
+            if(copyBtn) { copyBtn.addEventListener('click', copyReceipt); }
+            const calcBtn = document.getElementById('btnCalculate');
+            if(calcBtn) { calcBtn.addEventListener('click', calculateDuty); }
+
+            // --- NEW: Add listeners to clear errors ---
+            ['dutyDate','homeBase','reportAirport','reportTime','depAirport','flightTimeInput'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.addEventListener('input', function() {
+                        this.classList.remove('input-missing');
+                        // Optional: Hide error banner immediately?
+                        // document.getElementById('errorContainer').classList.add('hidden');
+                    });
+                    // For select elements, input might not trigger
+                    el.addEventListener('change', function() {
+                        this.classList.remove('input-missing');
+                    });
+                }
+            });
+        }
+
+        window.nudgeZone = nudgeZone;
+        window.updateLiveCalc = updateLiveCalc;
+        window.calculateDuty = calculateDuty;
+        window.resetForm = resetForm;
+        window.toggleMode = toggleMode;
+        window.toggleDarkMode = toggleDarkMode;
+        window.checkCoTerminal = checkCoTerminal;
+        window.toggleCoTermDropdown = toggleCoTermDropdown;
+        window.validateAirport = validateAirport;
+        window.formatTimeInput = formatTimeInput;
+        window.padTimeInput = padTimeInput;
+        window.copyReceipt = copyReceipt;
+        window.showInfo = showInfo;
+        window.closeInfo = closeInfo;
+        window.updateAllLabels = updateAllLabels;
+        
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
