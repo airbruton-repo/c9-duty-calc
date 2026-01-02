@@ -1,0 +1,341 @@
+/* CORE LAYOUT & SCROLLING */
+html,
+body {
+    height: 100%;
+    overscroll-behavior-y: none;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f4f8;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.3s ease;
+    padding-top: max(4px, env(safe-area-inset-top));
+    padding-bottom: max(4px, env(safe-area-inset-bottom));
+    padding-left: max(4px, env(safe-area-inset-left));
+    padding-right: max(4px, env(safe-area-inset-right));
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+/* FORM ELEMENTS */
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #005DAA;
+    box-shadow: 0 0 0 2px rgba(0, 93, 170, 0.1);
+}
+
+input,
+button,
+select,
+label {
+    touch-action: manipulation;
+}
+
+.font-mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.valid-airport {
+    border-color: #10B981 !important;
+    color: #065F46;
+}
+
+.invalid-airport {
+    border-color: #F59E0B !important;
+    color: #92400E;
+}
+
+/* Dynamic Labels */
+.dynamic-city-label {
+    color: #005DAA;
+    transition: color 0.3s;
+}
+
+/* Blue pop in light mode */
+
+/* SEGMENTED CONTROL */
+.seg-control input:checked+label {
+    background-color: #005DAA;
+    color: white !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.seg-control input:checked+label:hover {
+    color: white !important;
+}
+
+.seg-control label {
+    transition: all 0.2s ease;
+    color: #6b7280;
+}
+
+.seg-control label:hover {
+    color: #111827 !important;
+}
+
+/* TOGGLES & PILLS */
+.toggle-checkbox:checked+div {
+    background-color: #002244;
+    color: white;
+    border-color: #002244;
+}
+
+.toggle-checkbox:disabled+div {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    border-color: #d1d5db;
+}
+
+.opt-pill {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+}
+
+body:not(.dark-mode) .opt-pill {
+    background-color: #f3f4f6;
+    border-color: #e5e7eb;
+    color: #6b7280;
+}
+
+.opt-pill.active {
+    background-color: #005DAA !important;
+    border-color: #005DAA !important;
+    color: white !important;
+}
+
+.opt-pill.disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* UTILITY BOXES */
+.disclaimer-box {
+    background-color: #fff1f2;
+    border-left: 3px solid #e11d48;
+    color: #881337;
+}
+
+.group-bg {
+    background-color: rgba(249, 250, 251, 0.5);
+    border: 1px solid rgba(0, 34, 68, 0.2);
+}
+
+.info-field {
+    background-color: #52525b;
+    color: white;
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.manual-zone-select {
+    background-color: #fef9c3;
+    border-color: #fde047;
+    color: #1f2937;
+}
+
+/* ERROR PULSE ANIMATION */
+@keyframes errorPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+        border-color: #dc2626;
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+        border-color: #ef4444;
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+        border-color: #dc2626;
+    }
+}
+
+.input-missing {
+    animation: errorPulse 1.5s infinite;
+    border-color: #dc2626 !important;
+    /* Red-600 */
+}
+
+/* STRIP BACKGROUNDS */
+.calc-strip {
+    border-top: 1px solid #374151;
+    border-bottom: 1px solid #374151;
+}
+
+.strip-dom,
+.strip-int {
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #e5e7eb;
+}
+
+/* NUDGE BUTTONS */
+.nudge-btn {
+    background-color: #e5e7eb;
+    color: #374151;
+    font-weight: bold;
+    border: 1px solid #d1d5db;
+    transition: all 0.2s;
+}
+
+.nudge-btn:hover {
+    background-color: #d1d5db;
+}
+
+.nudge-btn:active {
+    background-color: #9ca3af;
+}
+
+/* DARK MODE OVERRIDES */
+body.dark-mode {
+    background-color: #111827;
+}
+
+.dark-mode .card-bg {
+    background-color: #1f2937;
+    border-color: #374151;
+}
+
+.dark-mode .text-main {
+    color: #f3f4f6;
+}
+
+.dark-mode .text-sub {
+    color: #9ca3af;
+}
+
+.dark-mode .input-bg {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: white;
+}
+
+.dark-mode .input-bg::placeholder {
+    color: #9ca3af;
+}
+
+.dark-mode .header-bg {
+    background-color: #0f172a;
+}
+
+.dark-mode .seg-bg {
+    background-color: #374151;
+}
+
+.dark-mode .seg-control label {
+    color: #9ca3af;
+}
+
+.dark-mode .seg-control label:hover {
+    color: #ffffff !important;
+}
+
+.dark-mode .seg-control input:checked+label:hover {
+    color: #ffffff !important;
+}
+
+.dark-mode .valid-airport {
+    border-color: #059669 !important;
+    color: #34d399;
+    background-color: #064e3b;
+}
+
+.dark-mode .invalid-airport {
+    border-color: #b45309 !important;
+    color: #fbbf24;
+    background-color: #451a03;
+}
+
+.dark-mode .section-title {
+    color: #e5e7eb;
+    border-color: #4b5563;
+}
+
+.dark-mode .section-icon {
+    color: #60a5fa;
+}
+
+.dark-mode .group-bg {
+    background-color: #1f2937;
+    border-color: #374151;
+}
+
+.dark-mode .info-strip {
+    background-color: #1e3a8a;
+    border-color: #1e40af;
+    color: #bfdbfe;
+}
+
+.dark-mode .info-text {
+    color: #bfdbfe;
+}
+
+.dark-mode .dynamic-city-label {
+    color: #4ade80;
+}
+
+/* Green pop in dark mode */
+.dark-mode .info-field {
+    background-color: #4b5563;
+    color: #e5e7eb;
+}
+
+.dark-mode .strip-dom,
+.dark-mode .strip-int {
+    background-color: #111827;
+    border-color: #374151;
+    color: #e5e7eb;
+}
+
+.dark-mode .manual-zone-select {
+    background-color: #422006;
+    border-color: #a16207;
+    color: #fde047;
+}
+
+.dark-mode .nudge-btn {
+    background-color: #374151;
+    color: #d1d5db;
+    border-color: #4b5563;
+}
+
+.dark-mode .opt-pill.disabled {
+    background-color: #1f2937;
+    color: #4b5563;
+}
+
+.dark-mode .modal-bg {
+    background-color: #1f2937;
+    color: #f3f4f6;
+}
+
+.dark-mode .modal-text {
+    color: #d1d5db;
+}
+
+.dark-mode .coterm-bg {
+    background-color: #1e3a8a;
+    border-color: #1e40af;
+    color: #bfdbfe;
+}
+
+.dark-mode .coterm-select {
+    background-color: #172554;
+    border-color: #1e40af;
+    color: white;
+}
+
+.dark-mode .icon-blue {
+    color: #60a5fa;
+}
