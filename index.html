@@ -28,7 +28,7 @@
 <body class="flex items-start justify-center min-h-screen p-1">
 
     <div
-        class="card-bg w-full max-w-lg bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100 flex flex-col relative transition-colors duration-300">
+        class="card-bg w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100 flex flex-col relative transition-colors duration-300">
 
         <!-- HEADER -->
         <div
@@ -38,7 +38,7 @@
                     <i class="fa-solid fa-plane-departure text-xs"></i> C9 Duty Max Calculator
                 </h1>
                 <button onclick="showInfo('firstTime')"
-                    class="text-xs italic text-[#4ade80] hover:text-white transition-colors text-left mt-0.5">
+                    class="text-[10px] italic text-[#4ade80] hover:text-white transition-colors text-left mt-0.5">
                     First time using the calculator?
                 </button>
             </div>
@@ -47,8 +47,8 @@
                 <button onclick="toggleDarkMode()"
                     class="text-white/70 hover:text-white transition-colors flex items-center gap-1.5"
                     title="Toggle Theme">
-                    <i id="darkModeIcon" class="fa-solid fa-moon text-xs"></i>
-                    <span id="darkModeText" class="text-xs font-medium">Dark Mode</span>
+                    <i id="darkModeIcon" class="fa-solid fa-moon text-[10px]"></i>
+                    <span id="darkModeText" class="text-[10px] font-medium">Dark Mode</span>
                 </button>
                 <div class="w-px h-3 bg-white/20"></div>
                 <button onclick="resetForm()"
@@ -57,20 +57,20 @@
         </div>
 
         <!-- MAIN CONTENT AREA -->
-        <div class="p-4 space-y-4">
+        <div class="p-2 space-y-2">
 
             <!-- MODE TOGGLE -->
-            <div class="seg-bg bg-gray-100 p-1 rounded-md flex seg-control w-full transition-colors duration-300 gap-1">
+            <div class="seg-bg bg-gray-100 p-0.5 rounded-md flex seg-control w-full transition-colors duration-300">
                 <input type="radio" name="mode" id="modeDom" value="dom" class="sr-only" checked
                     onchange="toggleMode()">
                 <label for="modeDom"
-                    class="seg-text flex-1 text-center py-2 text-xs font-bold rounded cursor-pointer flex items-center justify-center gap-4">
+                    class="seg-text flex-1 text-center py-1 text-[10px] font-bold rounded cursor-pointer flex items-center justify-center gap-4">
                     DOMESTIC
                 </label>
 
                 <input type="radio" name="mode" id="modeInt" value="int" class="sr-only" onchange="toggleMode()">
                 <label for="modeInt"
-                    class="seg-text flex-1 text-center py-2 text-xs font-bold rounded cursor-pointer flex items-center justify-center gap-4">
+                    class="seg-text flex-1 text-center py-1 text-[10px] font-bold rounded cursor-pointer flex items-center justify-center gap-4">
                     INTERNATIONAL
                 </label>
             </div>
@@ -78,7 +78,7 @@
             <!-- MIXED PAIRING HELPER -->
             <div class="flex justify-center mb-1 px-1">
                 <button onclick="showInfo('mixed')"
-                    class="text-[#005DAA] text-xs font-medium hover:underline flex items-center gap-1">
+                    class="text-[#005DAA] text-[10px] font-medium hover:underline flex items-center gap-1">
                     Not sure? See Definitions <i class="fa-solid fa-circle-question"></i>
                 </button>
             </div>
@@ -86,22 +86,22 @@
             <!-- ROW 1: Date & Base -->
             <div class="grid grid-cols-2 gap-2">
                 <div>
-                    <div class="flex justify-between items-baseline mb-1 min-h-[16px]">
-                        <label class="text-sub block text-xs font-bold text-gray-500 uppercase">Duty Period
+                    <div class="flex justify-between items-baseline mb-0.5 min-h-[14px]">
+                        <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase">Duty Period
                             Date</label>
                     </div>
                     <input type="date" id="dutyDate"
-                        class="input-bg w-full px-3 bg-gray-50 border border-gray-200 rounded text-sm font-medium text-gray-900 h-10 transition-colors duration-300"
+                        class="input-bg w-full px-2 bg-gray-50 border border-gray-200 rounded text-xs font-medium text-gray-900 h-8 transition-colors duration-300"
                         onchange="updateAllLabels(); resetResult();">
                 </div>
                 <div>
-                    <div class="flex justify-between items-baseline mb-1 min-h-[16px]">
-                        <label class="text-sub block text-xs font-bold text-gray-500 uppercase">Pairing
+                    <div class="flex justify-between items-baseline mb-0.5 min-h-[14px]">
+                        <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase">Pairing
                             Origination</label>
                     </div>
                     <div class="relative">
                         <select id="homeBase"
-                            class="input-bg w-full px-3 bg-gray-50 border border-gray-200 rounded text-sm font-bold text-[#002244] appearance-none h-10 transition-colors duration-300"
+                            class="input-bg w-full px-2 bg-gray-50 border border-gray-200 rounded text-xs font-bold text-[#002244] appearance-none h-8 transition-colors duration-300"
                             onchange="checkCoTerminal(); resetResult();">
                         </select>
                         <i
@@ -117,7 +117,7 @@
                     <input type="checkbox" id="isCoTerm" class="w-3.5 h-3.5 text-[#005DAA] rounded"
                         onchange="toggleCoTermDropdown(); resetResult();">
                     <label for="isCoTerm"
-                        class="text-xs font-bold text-[#002244] select-none text-current cursor-pointer">End at
+                        class="text-[10px] font-bold text-[#002244] select-none text-current cursor-pointer">End at
                         Co-Terminal?</label>
                     <button onclick="showInfo('coterm')"
                         class="icon-blue text-[#005DAA] text-[10px] hover:underline p-1"><i
@@ -134,46 +134,46 @@
 
             <!-- REPORT INFO GROUP -->
             <div class="group-bg rounded p-2 pt-1.5 transition-colors duration-300">
-                <div class="flex items-center gap-2 mb-2 border-b border-gray-200 pb-2 section-title">
-                    <i class="fa-solid fa-clock text-[#005DAA] text-sm section-icon"></i>
-                    <h3 class="text-sm font-bold text-[#002244] uppercase tracking-widest section-title">Report for
+                <div class="flex items-center gap-1 mb-1.5 border-b border-gray-200 pb-1 section-title">
+                    <i class="fa-solid fa-clock text-[#005DAA] text-xs section-icon"></i>
+                    <h3 class="text-[11px] font-bold text-[#002244] uppercase tracking-widest section-title">Report for
                         Duty Info</h3>
                     <button onclick="showInfo('report')"
-                        class="icon-blue text-[#005DAA] text-xs hover:underline ml-1"><i
+                        class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1"><i
                             class="fa-solid fa-circle-question"></i></button>
                 </div>
 
                 <!-- ROW 1: City, Time Zone, Local Report Time -->
-                <div class="grid grid-cols-[1fr_1.8fr_1.8fr] gap-3 mb-2 items-end">
+                <div class="grid grid-cols-[1fr_1.8fr_1.8fr] gap-2 mb-2 items-end">
                     <!-- City -->
                     <div class="relative">
                         <label
-                            class="text-sub block text-xs font-bold text-gray-500 uppercase mb-1 w-[60px] leading-tight">Report<br>City</label>
+                            class="text-sub block text-[10px] font-bold text-gray-500 uppercase mb-0.5 w-[50px] leading-tight">Report<br>City</label>
                         <input type="text" id="reportAirport" placeholder="CODE" maxlength="3"
-                            class="input-bg w-full px-3 bg-white border border-gray-200 rounded text-sm font-black text-gray-900 uppercase h-10 placeholder-gray-400 transition-colors duration-300"
+                            class="input-bg w-full px-2 bg-white border border-gray-200 rounded text-xs font-black text-gray-900 uppercase h-8 placeholder-gray-400 transition-colors duration-300"
                             oninput="validateAirport(this); resetResult(); updateLiveCalc();">
                     </div>
 
                     <!-- Time Zone -->
                     <div class="relative">
                         <!-- Label Row with Nudge Buttons -->
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center justify-between mb-0.5">
                             <button id="repNudgeWest" onclick="nudgeZone('rep', -1); event.preventDefault();"
-                                class="invisible text-gray-400 hover:text-[#005DAA] transition-colors text-xs px-2"
+                                class="invisible text-gray-400 hover:text-[#005DAA] transition-colors text-xs px-1"
                                 title="Move West"><i class="fa-solid fa-minus"></i></button>
                             <label
-                                class="text-sub block text-xs font-bold text-gray-500 uppercase text-center leading-tight">Time<br>Zone</label>
+                                class="text-sub block text-[10px] font-bold text-gray-500 uppercase text-center leading-tight">Time<br>Zone</label>
                             <button id="repNudgeEast" onclick="nudgeZone('rep', 1); event.preventDefault();"
-                                class="invisible text-gray-400 hover:text-[#005DAA] transition-colors text-xs px-2"
+                                class="invisible text-gray-400 hover:text-[#005DAA] transition-colors text-xs px-1"
                                 title="Move East"><i class="fa-solid fa-plus"></i></button>
                         </div>
                         <div id="repZoneAutoContainer" class="w-full">
                             <input type="text" id="repZoneAuto" readonly tabindex="-1" value="--"
-                                class="info-field w-full px-3 rounded text-sm font-bold text-center h-10 pointer-events-none transition-colors duration-300">
+                                class="info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300">
                         </div>
                         <div id="repManualContainer" class="hidden w-full">
                             <select id="repManualZone"
-                                class="manual-zone-select w-full px-2 border rounded text-xs h-10 appearance-none text-center font-bold">
+                                class="manual-zone-select w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold">
                                 <option value="" disabled selected>Select</option>
                             </select>
                         </div>
@@ -182,11 +182,11 @@
                     <!-- Local Report Time -->
                     <div class="relative">
                         <label
-                            class="text-sub block text-xs font-bold text-gray-500 uppercase mb-1 text-center leading-tight">
+                            class="text-sub block text-[10px] font-bold text-gray-500 uppercase mb-0.5 text-center leading-tight">
                             <span id="rtLabelCity">Local</span><br>Report Time
                         </label>
                         <input type="text" id="reportTime" inputmode="numeric" placeholder="HHMM" maxlength="11"
-                            class="input-bg w-full px-3 bg-white border border-gray-200 rounded text-sm font-medium text-gray-900 font-mono tracking-wider h-10 placeholder-gray-400 text-center transition-colors duration-300"
+                            class="input-bg w-full px-2 bg-white border border-gray-200 rounded text-xs font-medium text-gray-900 font-mono tracking-wider h-8 placeholder-gray-400 text-center transition-colors duration-300"
                             oninput="formatTimeInput(this); resetResult(); updateLiveCalc();"
                             onblur="padTimeInput(this)">
                     </div>
@@ -198,47 +198,47 @@
 
 
             <!-- DEPARTURE FLIGHT GROUP -->
-            <div class="group-bg rounded p-2 pt-2 transition-colors duration-300 mt-2">
-                <div class="flex items-center gap-2 mb-2 border-b border-gray-200 pb-2 section-title">
-                    <i class="fa-solid fa-plane-departure text-[#005DAA] text-sm section-icon"></i>
-                    <h3 class="text-sm font-bold text-[#002244] uppercase tracking-widest section-title">Departure
+            <div class="group-bg rounded p-2 pt-1.5 transition-colors duration-300 mt-1">
+                <div class="flex items-center gap-1 mb-1.5 border-b border-gray-200 pb-1 section-title">
+                    <i class="fa-solid fa-plane-departure text-[#005DAA] text-xs section-icon"></i>
+                    <h3 class="text-[11px] font-bold text-[#002244] uppercase tracking-widest section-title">Departure
                         Flight Info</h3>
                     <button onclick="showInfo('departure')"
-                        class="icon-blue text-[#005DAA] text-xs hover:underline ml-1"><i
+                        class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1"><i
                             class="fa-solid fa-circle-question"></i></button>
                 </div>
 
                 <!-- ROW 1: City, Time Zone, Flight Time -->
-                <div class="grid grid-cols-[1fr_1.8fr_1.8fr] gap-3 mb-2 items-end">
+                <div class="grid grid-cols-[1fr_1.8fr_1.8fr] gap-2 mb-2 items-end">
                     <!-- City -->
                     <div class="relative">
                         <label
-                            class="text-sub block text-xs font-bold text-gray-500 uppercase mb-1 leading-tight">Departure<br>City</label>
+                            class="text-sub block text-[10px] font-bold text-gray-500 uppercase mb-0.5 leading-tight">Departure<br>City</label>
                         <input type="text" id="depAirport" placeholder="CODE" maxlength="3"
-                            class="input-bg w-full px-3 bg-white border border-gray-200 rounded text-sm font-black text-gray-900 uppercase h-10 placeholder-gray-400 transition-colors duration-300"
+                            class="input-bg w-full px-2 bg-white border border-gray-200 rounded text-xs font-black text-gray-900 uppercase h-8 placeholder-gray-400 transition-colors duration-300"
                             oninput="validateAirport(this); resetResult(); updateLiveCalc();">
                     </div>
 
                     <!-- Time Zone -->
                     <div class="relative">
                         <!-- Label Row with Nudge Buttons -->
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center justify-between mb-0.5">
                             <button id="depNudgeWest" onclick="nudgeZone('dep', -1); event.preventDefault();"
-                                class="invisible text-gray-400 hover:text-[#005DAA] transition-colors text-xs px-2"
+                                class="invisible text-gray-400 hover:text-[#005DAA] transition-colors text-xs px-1"
                                 title="Move West"><i class="fa-solid fa-minus"></i></button>
                             <label
-                                class="text-sub block text-xs font-bold text-gray-500 uppercase text-center leading-tight">Time<br>Zone</label>
+                                class="text-sub block text-[10px] font-bold text-gray-500 uppercase text-center leading-tight">Time<br>Zone</label>
                             <button id="depNudgeEast" onclick="nudgeZone('dep', 1); event.preventDefault();"
-                                class="invisible text-gray-400 hover:text-[#005DAA] transition-colors text-xs px-2"
+                                class="invisible text-gray-400 hover:text-[#005DAA] transition-colors text-xs px-1"
                                 title="Move East"><i class="fa-solid fa-plus"></i></button>
                         </div>
                         <div id="depZoneAutoContainer" class="w-full">
                             <input type="text" id="depZoneAuto" readonly tabindex="-1" value="--"
-                                class="info-field w-full px-3 rounded text-sm font-bold text-center h-10 pointer-events-none transition-colors duration-300">
+                                class="info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300">
                         </div>
                         <div id="depManualContainer" class="hidden w-full">
                             <select id="depManualZone" onchange="resetResult();"
-                                class="manual-zone-select w-full px-2 border rounded text-xs h-10 appearance-none text-center font-bold">
+                                class="manual-zone-select w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold">
                                 <option value="" disabled selected>Select</option>
                             </select>
                         </div>
@@ -256,11 +256,11 @@
                         </div>
 
                         <label
-                            class="text-sub block text-xs font-bold text-gray-500 uppercase mb-1 text-center leading-tight">
+                            class="text-sub block text-[10px] font-bold text-gray-500 uppercase mb-0.5 text-center leading-tight">
                             Scheduled<br>Flight Time
                         </label>
                         <input type="text" id="flightTimeInput" inputmode="numeric" placeholder="HHMM" maxlength="5"
-                            class="input-bg w-full px-3 bg-white border border-gray-200 rounded text-sm font-medium text-gray-900 font-mono tracking-wider h-10 placeholder-gray-400 text-center transition-colors duration-300"
+                            class="input-bg w-full px-2 bg-white border border-gray-200 rounded text-xs font-medium text-gray-900 font-mono tracking-wider h-8 placeholder-gray-400 text-center transition-colors duration-300"
                             oninput="formatTimeInput(this); resetResult(); updateLiveCalc();"
                             onblur="padTimeInput(this)">
                     </div>
@@ -268,21 +268,21 @@
             </div>
 
             <!-- MODIFIERS GROUP -->
-            <div class="group-bg rounded p-2 pt-2 transition-colors duration-300 mt-2">
-                <div class="flex items-center gap-2 mb-2 border-b border-gray-200 pb-2 section-title">
-                    <i class="fa-solid fa-sliders text-[#005DAA] text-sm section-icon"></i>
-                    <h3 class="text-sm font-bold text-[#002244] uppercase tracking-widest section-title">Modifiers
+            <div class="group-bg rounded p-2 pt-1.5 transition-colors duration-300 mt-1">
+                <div class="flex items-center gap-1 mb-1 border-b border-gray-200 pb-1 section-title">
+                    <i class="fa-solid fa-sliders text-[#005DAA] text-xs section-icon"></i>
+                    <h3 class="text-[11px] font-bold text-[#002244] uppercase tracking-widest section-title">Modifiers
                     </h3>
                 </div>
-                <div class="text-xs text-gray-600 font-medium italic mb-2 ml-0.5">Select all that apply:</div>
+                <div class="text-[11px] text-gray-600 font-medium italic mb-1.5 ml-0.5">Select all that apply:</div>
 
-                <div class="grid grid-cols-4 gap-3">
+                <div class="grid grid-cols-4 gap-2">
                     <!-- HVT (Moved Back) -->
                     <div class="flex flex-col items-center gap-1" id="hvtContainer">
                         <label class="cursor-pointer w-full"><input type="checkbox" id="isHVT"
                                 class="toggle-checkbox sr-only" onchange="resetResult()">
                             <div
-                                class="opt-pill h-10 rounded border font-bold flex items-center justify-center transition-colors select-none text-xs">
+                                class="opt-pill h-7 rounded border font-bold flex items-center justify-center transition-colors select-none text-[10px]">
                                 HVT</div>
                         </label>
                         <button onclick="showInfo('hvt')"
@@ -294,7 +294,7 @@
                         <label class="cursor-pointer w-full"><input type="checkbox" id="isDHD"
                                 class="toggle-checkbox sr-only" onchange="resetResult()">
                             <div
-                                class="opt-pill h-10 rounded border font-bold flex items-center justify-center transition-colors select-none text-xs">
+                                class="opt-pill h-7 rounded border font-bold flex items-center justify-center transition-colors select-none text-[10px]">
                                 DHD</div>
                         </label>
                         <button onclick="showInfo('dhd')"
@@ -306,7 +306,7 @@
                         <label class="cursor-pointer w-full"><input type="checkbox" id="customsStart"
                                 class="toggle-checkbox sr-only" onchange="resetResult()">
                             <div
-                                class="opt-pill h-10 rounded border font-bold flex items-center justify-center transition-colors select-none text-center leading-none text-xs">
+                                class="opt-pill h-7 rounded border font-bold flex items-center justify-center transition-colors select-none text-center leading-none text-[10px]">
                                 Customs<br>at Start</div>
                         </label>
                         <button onclick="showInfo('custStart')"
@@ -318,7 +318,7 @@
                         <label class="cursor-pointer w-full"><input type="checkbox" id="customsEnd"
                                 class="toggle-checkbox sr-only" onchange="resetResult()">
                             <div
-                                class="opt-pill h-10 rounded border font-bold flex items-center justify-center transition-colors select-none text-center leading-none text-xs">
+                                class="opt-pill h-7 rounded border font-bold flex items-center justify-center transition-colors select-none text-center leading-none text-[10px]">
                                 Customs<br>at End</div>
                         </label>
                         <button onclick="showInfo('custEnd')"

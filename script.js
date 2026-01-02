@@ -109,7 +109,7 @@ function resetForm() {
             autoCont.classList.remove('hidden');
             manCont.classList.add('hidden');
             autoInput.value = '--';
-            autoInput.className = "info-field w-full px-3 rounded text-sm font-bold text-center h-10 pointer-events-none transition-colors duration-300";
+            autoInput.className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300";
             // Hide nudge buttons on reset
             const nWest = document.getElementById(pfx + 'NudgeWest');
             const nEast = document.getElementById(pfx + 'NudgeEast');
@@ -202,9 +202,9 @@ function validateAirport(el) {
             if (nudgeEast) nudgeEast.classList.add('invisible');
 
             if (shortZone.includes('DT') || shortZone.includes('BST') || shortZone.includes('CEST') || shortZone.includes('EEST')) {
-                zoneAuto.className = isDark ? "w-full px-3 rounded text-sm font-bold text-center h-10 pointer-events-none transition-colors duration-300 bg-emerald-900/50 border border-emerald-700 text-emerald-200" : "w-full px-3 rounded text-sm font-bold text-center h-10 pointer-events-none transition-colors duration-300 bg-emerald-100 border border-emerald-300 text-emerald-800";
+                zoneAuto.className = isDark ? "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-emerald-900/50 border border-emerald-700 text-emerald-200" : "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-emerald-100 border border-emerald-300 text-emerald-800";
             } else {
-                zoneAuto.className = isDark ? "w-full px-3 rounded text-sm font-bold text-center h-10 pointer-events-none transition-colors duration-300 bg-sky-900/50 border border-sky-700 text-sky-200" : "w-full px-3 rounded text-sm font-bold text-center h-10 pointer-events-none transition-colors duration-300 bg-sky-100 border border-sky-300 text-sky-800";
+                zoneAuto.className = isDark ? "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-sky-900/50 border border-sky-700 text-sky-200" : "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-sky-100 border border-sky-300 text-sky-800";
             }
         } else {
             el.classList.remove('valid-airport');
@@ -231,7 +231,7 @@ function validateAirport(el) {
         zoneManualCont.classList.add('hidden');
         if (nudgeWest) nudgeWest.classList.add('invisible');
         if (nudgeEast) nudgeEast.classList.add('invisible');
-        zoneAuto.className = "info-field w-full px-3 rounded text-sm font-bold text-center h-10 pointer-events-none transition-colors duration-300";
+        zoneAuto.className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300";
     }
 }
 
