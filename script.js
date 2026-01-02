@@ -14,17 +14,14 @@ function copyReceipt() {
 function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     const icon = document.getElementById('darkModeIcon');
-    const text = document.getElementById('darkModeText');
     const themeMeta = document.getElementById('themeColor');
 
     if (document.body.classList.contains('dark-mode')) {
         icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
-        text.textContent = "Light Mode";
         themeMeta.content = "#1f2937";
 
     } else {
         icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
-        text.textContent = "Dark Mode";
         themeMeta.content = "#002244";
 
     }
