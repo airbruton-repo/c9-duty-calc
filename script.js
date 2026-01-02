@@ -21,18 +21,12 @@ function toggleDarkMode() {
         icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
         text.textContent = "Light Mode";
         themeMeta.content = "#1f2937";
-        document.querySelectorAll('[id$="ZoneAuto"]').forEach(z => {
-            z.className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300";
-        });
-        document.getElementById('reportTimeHDT').className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-blue-900/30 text-blue-200 border-blue-800";
+
     } else {
         icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
         text.textContent = "Dark Mode";
         themeMeta.content = "#002244";
-        document.querySelectorAll('[id$="ZoneAuto"]').forEach(z => {
-            z.className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300";
-        });
-        document.getElementById('reportTimeHDT').className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-gray-100 text-gray-700 border-gray-200";
+
     }
     validateAirport(document.getElementById('reportAirport'));
     validateAirport(document.getElementById('depAirport'));
@@ -41,23 +35,17 @@ function toggleDarkMode() {
 function toggleMode() {
     const isDom = document.getElementById('modeDom').checked;
     const hvtCheck = document.getElementById('isHVT');
-    const hvtPill = hvtCheck.nextElementSibling;
     const hvtCont = document.getElementById('hvtContainer');
 
     if (isDom) {
-        // Re-enable in DOM mode, but updateLiveCalc will immediately disable it if time is night
         hvtCheck.disabled = false;
         hvtCont.style.opacity = "1";
-        hvtPill.classList.remove('disabled');
     } else {
         hvtCheck.disabled = true;
         hvtCheck.checked = false;
-        hvtCont.style.opacity = "0.4";
-        hvtPill.classList.remove('active');
-        hvtPill.classList.add('disabled');
+        hvtCont.style.opacity = "0.5";
     }
     resetResult();
-    updateLiveCalc();
 }
 
 function checkCoTerminal() {
@@ -101,7 +89,7 @@ function resetResult() {
     const isDom = document.getElementById('modeDom').checked;
     const prefix = isDom ? "<b class='uppercase'>DOMESTIC</b>" : "<b class='uppercase'>INTERNATIONAL</b>";
     document.getElementById('liveCalcText').innerHTML = `${prefix} Actual Max Duty = <b class="font-bold">--:--</b>. This is based on your report time of <b class="font-bold">--:--</b> (HDT).`;
-    document.getElementById('reportTimeHDT').value = "--:--";
+
 }
 
 function resetForm() {
@@ -122,6 +110,11 @@ function resetForm() {
             manCont.classList.add('hidden');
             autoInput.value = '--';
             autoInput.className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300";
+            // Hide nudge buttons on reset
+            const nWest = document.getElementById(pfx + 'NudgeWest');
+            const nEast = document.getElementById(pfx + 'NudgeEast');
+            if (nWest) nWest.classList.add('invisible');
+            if (nEast) nEast.classList.add('invisible');
         }
     });
 
@@ -129,7 +122,7 @@ function resetForm() {
     const lblRep = document.getElementById('rtLabelCity');
     if (lblRep) { lblRep.textContent = "Local"; lblRep.className = ""; }
 
-    document.getElementById('reportTimeHDT').value = "--:--";
+
     document.getElementById('modeDom').click();
     checkCoTerminal();
     resetResult();
@@ -182,6 +175,9 @@ function validateAirport(el) {
     const zoneAutoCont = document.getElementById(pfx + 'ZoneAutoContainer');
     const zoneManualCont = document.getElementById(pfx + 'ManualContainer');
     const zoneAuto = document.getElementById(pfx + 'ZoneAuto');
+    const nudgeWest = document.getElementById(pfx + 'NudgeWest');
+    const nudgeEast = document.getElementById(pfx + 'NudgeEast');
+
     if (!zoneAutoCont || !zoneManualCont) return;
     const isDark = document.body.classList.contains('dark-mode');
     zoneAuto.style.pointerEvents = "none";
@@ -202,10 +198,13 @@ function validateAirport(el) {
             zoneAuto.value = shortZone;
             zoneAutoCont.classList.remove('hidden');
             zoneManualCont.classList.add('hidden');
+            if (nudgeWest) nudgeWest.classList.add('invisible');
+            if (nudgeEast) nudgeEast.classList.add('invisible');
+
             if (shortZone.includes('DT') || shortZone.includes('BST') || shortZone.includes('CEST') || shortZone.includes('EEST')) {
-                zoneAuto.className = isDark ? "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-green-900/30 border border-green-800 text-green-200" : "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-green-100 border border-green-300 text-green-800";
+                zoneAuto.className = isDark ? "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-emerald-900/50 border border-emerald-700 text-emerald-200" : "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-emerald-100 border border-emerald-300 text-emerald-800";
             } else {
-                zoneAuto.className = isDark ? "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-blue-900/30 border border-blue-800 text-blue-200" : "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-blue-100 border border-blue-300 text-blue-800";
+                zoneAuto.className = isDark ? "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-sky-900/50 border border-sky-700 text-sky-200" : "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-sky-100 border border-sky-300 text-sky-800";
             }
         } else {
             el.classList.remove('valid-airport');
@@ -217,6 +216,8 @@ function validateAirport(el) {
             }
             zoneAutoCont.classList.add('hidden');
             zoneManualCont.classList.remove('hidden');
+            if (nudgeWest) nudgeWest.classList.remove('invisible');
+            if (nudgeEast) nudgeEast.classList.remove('invisible');
         }
     } else {
         el.classList.remove('valid-airport', 'invalid-airport');
@@ -228,6 +229,8 @@ function validateAirport(el) {
         zoneAuto.value = "--";
         zoneAutoCont.classList.remove('hidden');
         zoneManualCont.classList.add('hidden');
+        if (nudgeWest) nudgeWest.classList.add('invisible');
+        if (nudgeEast) nudgeEast.classList.add('invisible');
         zoneAuto.className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300";
     }
 }
@@ -244,11 +247,32 @@ function showInfo(k) {
 
     if (title && text && modal && INFO_CONTENT[k]) {
         title.textContent = INFO_CONTENT[k].title;
-        text.innerText = INFO_CONTENT[k].text;
+        text.innerHTML = INFO_CONTENT[k].text;
         modal.classList.remove('hidden');
     }
 }
 function closeInfo() { document.getElementById('infoModal').classList.add('hidden'); }
+
+// --- NEW: Flight Time Warning Logic ---
+let flightWarningDismissed = false;
+
+function warnFlightTime() {
+    const val = document.getElementById('flightTimeInput').value;
+    const popup = document.getElementById('flightTimeWarning');
+    if (!popup) return;
+
+    if (val.length > 0 && !flightWarningDismissed) {
+        popup.classList.remove('hidden');
+    } else {
+        popup.classList.add('hidden');
+    }
+}
+
+function dismissFlightWarning() {
+    const popup = document.getElementById('flightTimeWarning');
+    if (popup) popup.classList.add('hidden');
+    flightWarningDismissed = true;
+}
 
 // --- CORE CALCULATION LOGIC ---
 
@@ -282,125 +306,7 @@ function getDynamicZoneName(utcTime, ianaZone) {
     } catch (e) { return "Loc"; }
 }
 
-function updateLiveCalc() {
-    const hb = document.getElementById('homeBase').value;
-    const rTimeStr = document.getElementById('reportTime').value;
-    let rAir = document.getElementById('reportAirport').value.toUpperCase();
-    const dateStr = document.getElementById('dutyDate').value;
-    const isDom = document.getElementById('modeDom').checked;
-    const strip = document.getElementById('liveCalcText');
-    const stripDiv = document.getElementById('hdtInfoStrip');
-    const footer = document.getElementById('hdtInfoStrip');
-    const hdtConvertedInput = document.getElementById('reportTimeHDT');
 
-    // --- NEW: Update Strip Colors Logic ---
-    if (isDom) {
-        stripDiv.className = "calc-strip p-2 text-center transition-all mt-1 rounded strip-dom";
-    } else {
-        stripDiv.className = "calc-strip p-2 text-center transition-all mt-1 rounded strip-int";
-    }
-
-    if (!rTimeStr || rTimeStr.length < 4 || !rAir || !dateStr || !hb) {
-        const prefix = isDom ? "<b class='uppercase'>DOMESTIC</b> Actual Max Duty" : "<b class='uppercase'>INTERNATIONAL</b> Actual Max Duty";
-        strip.innerHTML = `${prefix} = <b class="font-bold">--:--</b>. This is based on your report time of <b class="font-bold">--:--</b> (HDT).`;
-        hdtConvertedInput.value = "--:--";
-        return;
-    }
-
-    const rZone = ALL_CODES[rAir] ? getZone(rAir) : document.getElementById('repManualZone').value;
-    if (!rZone) {
-        const prefix = isDom ? "<b class='uppercase'>DOMESTIC</b> Actual Max Duty" : "<b class='uppercase'>INTERNATIONAL</b> Actual Max Duty";
-        strip.innerHTML = `${prefix} = <b class="font-bold">--:--</b>. This is based on your report time of <b class="font-bold">--:--</b> (HDT).`;
-        hdtConvertedInput.value = "--:--";
-        return;
-    }
-    const hZone = getZone(hb);
-    const reportUTC = getDateInZone(dateStr, rTimeStr, rZone);
-    const hdtParts = new Intl.DateTimeFormat('en-US', { timeZone: hZone, hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(reportUTC);
-    const hHStr = hdtParts.find(p => p.type === 'hour').value;
-    const hHNum = parseInt(hHStr);
-    const hMStr = hdtParts.find(p => p.type === 'minute').value;
-    const hdtMins = hHNum * 60 + parseInt(hMStr);
-    const hdtDisplay = `${hHStr.padStart(2, '0')}:${hMStr.padStart(2, '0')}`;
-    hdtConvertedInput.value = hdtDisplay;
-
-    // --- NEW: HVT Disable Logic (1900-0459) ---
-    const hvtCheck = document.getElementById('isHVT');
-    const hvtPill = hvtCheck.nextElementSibling;
-    const hvtCont = document.getElementById('hvtContainer');
-
-    // 19:00 = 1140 mins, 04:59 = 299 mins (actually check < 300)
-    const isNight = hdtMins < 300 || hdtMins >= 1140;
-
-    if (isDom) {
-        if (isNight) {
-            hvtCheck.disabled = true;
-            if (hvtCheck.checked) {
-                hvtCheck.checked = false;
-                hvtPill.classList.remove('active');
-            }
-            hvtCont.style.opacity = "0.4";
-            hvtPill.classList.add('disabled');
-        } else {
-            // Only re-enable if we are in DOM mode (which we are inside this block)
-            hvtCheck.disabled = false;
-            hvtCont.style.opacity = "1";
-            hvtPill.classList.remove('disabled');
-        }
-    }
-    // International mode logic handles disabling in toggleMode
-
-    let maxDutyText = "--:--";
-    let schedDisplay = "--:--";
-    let prefix = "";
-    let matrixKey = "";
-
-    if (isDom) {
-        prefix = "<b class='uppercase'>DOMESTIC</b> Actual Max Duty";
-        matrixKey = "domMatrix";
-        const isHVT = document.getElementById('isHVT').checked;
-        const isDay = hdtMins >= 300 && hdtMins <= 1139; // 0500-1859 HDT
-        let limit = 13;
-        if (isHVT) {
-            limit = 16;
-        } else {
-            if (isDay) limit = 15;
-        }
-        maxDutyText = `${limit}:00`;
-        let suffix = "";
-        if (isHVT) { suffix = " and that this is a High Value Trip."; }
-        strip.innerHTML = `${prefix} = <b>${maxDutyText}</b>. This is based on your report time of <b>${hdtDisplay}</b> (HDT)${suffix} <button onclick="showInfo('${matrixKey}')" class="ml-1 text-blue-300 hover:text-white hover:underline font-bold transition-colors">(?)</button>`;
-    } else {
-        prefix = "<b class='uppercase'>INTERNATIONAL</b> Actual Max Duty";
-        matrixKey = "intMatrix";
-        const fStr = document.getElementById('flightTimeInput').value.replace(':', '').padStart(4, '0');
-        const fVal = document.getElementById('flightTimeInput').value;
-        if (fVal && fStr.length >= 3) {
-            const fH = parseInt(fStr.slice(0, 2)) || 0;
-            const fM = parseInt(fStr.slice(2, 4)) || 0;
-            schedDisplay = `${fH.toString().padStart(2, '0')}:${fM.toString().padStart(2, '0')}`;
-            const schedMins = fH * 60 + fM;
-            if (schedMins <= 480) maxDutyText = "16:00";
-            else if (schedMins <= 720) maxDutyText = "16:30";
-            else {
-                const checkIn = 75; const buffer = 210;
-                let total = checkIn + schedMins + buffer;
-                const debrief = document.getElementById('isDHD').checked ? 0 : 15;
-                let cust = 0;
-                if (document.getElementById('customsStart').checked) cust += 15;
-                if (document.getElementById('customsEnd').checked) cust += 15;
-                total += (debrief + cust);
-                const tH = Math.floor(total / 60);
-                const tM = total % 60;
-                maxDutyText = `${tH}:${tM.toString().padStart(2, '0')}`;
-            }
-        } else {
-            maxDutyText = "--:--";
-        }
-        strip.innerHTML = `${prefix} = <b>${maxDutyText}</b>. This is based on your Scheduled Flight Time of <b>${schedDisplay}</b> <button onclick="showInfo('${matrixKey}')" class="ml-1 text-blue-300 hover:text-white hover:underline font-bold transition-colors">(?)</button>`;
-    }
-    footer.classList.remove('hidden');
-}
 
 let lastCalc = {};
 
@@ -589,12 +495,18 @@ function init() {
                 pillDiv.classList.remove('active');
             }
             resetResult();
-            updateLiveCalc();
+            resetResult();
         });
     });
 
     checkCoTerminal();
     document.getElementById('reportAirport').addEventListener('input', checkTestTrigger);
+    // Add flight warning listener
+    const fltInput = document.getElementById('flightTimeInput');
+    if (fltInput) {
+        fltInput.addEventListener('input', warnFlightTime);
+    }
+
     const copyBtn = document.getElementById('btnCopyReceipt');
     if (copyBtn) { copyBtn.addEventListener('click', copyReceipt); }
     const calcBtn = document.getElementById('btnCalculate');
@@ -615,7 +527,7 @@ function init() {
     });
 
     window.nudgeZone = nudgeZone;
-    window.updateLiveCalc = updateLiveCalc;
+    window.nudgeZone = nudgeZone;
     window.calculateDuty = calculateDuty;
     window.resetForm = resetForm;
     window.toggleMode = toggleMode;
@@ -629,6 +541,7 @@ function init() {
     window.showInfo = showInfo;
     window.closeInfo = closeInfo;
     window.updateAllLabels = updateAllLabels;
+    window.dismissFlightWarning = dismissFlightWarning;
 }
 
 window.addEventListener('DOMContentLoaded', init);
