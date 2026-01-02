@@ -39,7 +39,7 @@
                     <img src="logo.png" alt="C9 Info" class="h-9 w-auto rounded-sm bg-white/10">
                 </a>
                 <div class="flex flex-col justify-center">
-                    <h1 class="text-sm font-bold leading-none mb-0.5">Duty Max Calculator</h1>
+                    <h1 class="text-sm font-bold leading-none mb-1">Duty Max Calculator</h1>
                     <button onclick="showInfo('firstTime')"
                         class="text-xs italic text-[#4ade80] hover:text-white transition-colors text-left leading-none">
                         Quick Start Guide
@@ -64,13 +64,16 @@
         <div class="p-2 space-y-2">
 
             <!-- MODE TOGGLE -->
-            <div class="seg-bg bg-gray-100 p-0.5 rounded-md flex seg-control w-full transition-colors duration-300">
+            <div
+                class="seg-bg bg-gray-100 p-0.5 rounded-md flex items-center seg-control w-full transition-colors duration-300">
                 <input type="radio" name="mode" id="modeDom" value="dom" class="sr-only" checked
                     onchange="toggleMode()">
                 <label for="modeDom"
                     class="seg-text flex-1 text-center py-1 text-[10px] font-bold rounded cursor-pointer flex items-center justify-center gap-4">
                     DOMESTIC
                 </label>
+
+                <span class="text-[9px] font-bold text-gray-400 px-1 select-none pointer-events-none">OR</span>
 
                 <input type="radio" name="mode" id="modeInt" value="int" class="sr-only" onchange="toggleMode()">
                 <label for="modeInt"
