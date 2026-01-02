@@ -35,7 +35,11 @@
             class="header-bg bg-[#002244] text-white px-3 py-2 relative shrink-0 flex justify-between items-center transition-colors duration-300">
             <div class="flex flex-col">
                 <h1 class="text-sm font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-plane-departure text-xs"></i> C9 Duty Max Calculator
+                    <a href="https://sites.google.com/unitedafa.org/c9-infolinks/calculators/c9-duty-max-calculator?authuser=0"
+                        target="_blank" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                        <img src="logo.png" alt="C9 Info" class="h-6 w-auto rounded-sm bg-white/10">
+                    </a>
+                    <span>Duty Max Calculator</span>
                 </h1>
                 <button onclick="showInfo('firstTime')"
                     class="text-[10px] italic text-[#4ade80] hover:text-white transition-colors text-left mt-0.5">
@@ -247,12 +251,14 @@
                     <!-- Scheduled Flight Time -->
                     <div class="relative">
                         <!-- Warning Popup -->
+                        <!-- Warning Popup -->
                         <div id="flightTimeWarning"
-                            class="hidden absolute -top-8 left-1/2 -translate-x-1/2 w-[180px] bg-red-50 border border-red-200 shadow-lg rounded px-2 py-1 z-20 flex items-center justify-between gap-2">
-                            <span class="text-[9px] font-bold text-red-600 leading-none">Make sure to use the
+                            class="hidden absolute bottom-full mb-1 right-0 w-48 bg-purple-100 border border-purple-300 shadow-xl rounded px-3 py-2 z-50 flex items-start justify-between gap-3">
+                            <span class="text-[10px] font-bold text-purple-900 leading-tight">Make sure to use the
                                 <i>scheduled</i> pairing info and NOT the "updated" version.</span>
-                            <button onclick="dismissFlightWarning()" class="text-red-400 hover:text-red-700"><i
-                                    class="fa-solid fa-xmark text-xs"></i></button>
+                            <button onclick="dismissFlightWarning()"
+                                class="text-purple-400 hover:text-purple-700 shrink-0"><i
+                                    class="fa-solid fa-xmark text-sm"></i></button>
                         </div>
 
                         <label

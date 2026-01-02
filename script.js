@@ -505,6 +505,13 @@ function init() {
     const fltInput = document.getElementById('flightTimeInput');
     if (fltInput) {
         fltInput.addEventListener('input', warnFlightTime);
+        // Click-away listener for popup
+        document.addEventListener('click', function (e) {
+            const p = document.getElementById('flightTimeWarning');
+            if (p && !p.classList.contains('hidden') && !p.contains(e.target) && e.target !== fltInput) {
+                dismissFlightWarning();
+            }
+        });
     }
 
     const copyBtn = document.getElementById('btnCopyReceipt');
