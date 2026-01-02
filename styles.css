@@ -142,7 +142,7 @@ body:not(.dark-mode) .opt-pill {
 .info-field {
     background-color: #52525b;
     color: white;
-    border: none;
+    border: 1px solid transparent;
     font-family: 'JetBrains Mono', monospace;
 }
 

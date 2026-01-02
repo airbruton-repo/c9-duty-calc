@@ -508,6 +508,8 @@ function init() {
         // Click-away listener for popup
         document.addEventListener('click', function (e) {
             const p = document.getElementById('flightTimeWarning');
+            const fltInput = document.getElementById('flightTimeInput');
+            // Check if popup is visible and click is OUTSIDE the popup and OUTSIDE the input
             if (p && !p.classList.contains('hidden') && !p.contains(e.target) && e.target !== fltInput) {
                 dismissFlightWarning();
             }
