@@ -27,6 +27,16 @@
 </head>
 
 <body class="flex items-start justify-center min-h-screen p-1">
+    <div id="visualConsole"
+        class="fixed top-0 left-0 w-full bg-red-500 text-white text-xs z-[9999] hidden p-2 break-all"
+        onclick="this.classList.add('hidden')"></div>
+    <script>
+        window.onerror = function (msg, url, line) {
+            const div = document.getElementById('visualConsole');
+            div.textContent += `ERR: ${msg} (L${line})\n`;
+            div.classList.remove('hidden');
+        };
+    </script>
 
     <div
         class="card-bg w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100 flex flex-col relative transition-colors duration-300">

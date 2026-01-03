@@ -539,6 +539,35 @@ async function runOCR(file) {
     }
 }
 
+// --- AUTO-MODE LOGIC ---
+const DOMESTIC_ZONES = ['E', 'C', 'M', 'P', 'H', 'AK', 'AZ', 'ATL', 'YHZ', 'NFLD', 'MXC', 'MXE', 'MXM', 'MXS', 'PVR'];
+
+function autoSelectMode(dep, arr) {
+    if (dep === "???" || arr === "???") return; // Can't determine
+
+    const getZ = (a) => ALL_CODES[a] ? (ZONES[ALL_CODES[a]] || ALL_CODES[a]) : null;
+
+    // Helper to check if a zone key (like 'E' or 'LHR') is Domestic
+    const isDom = (airport) => {
+        const zKey = ALL_CODES[airport];
+        if (!zKey) return true; // Default to Dom if unknown? Or keep current.
+        // If zKey is in DOMESTIC_ZONES, it's Dom.
+        return DOMESTIC_ZONES.includes(zKey);
+    };
+
+    const depDom = isDom(dep);
+    const arrDom = isDom(arr);
+
+    // If ANY flight in the duty is International, the matching mode applies.
+    // Definition: "International Flying includes flying to and from..."
+    // So if Dep OR Arr is Int'l -> Mode International.
+    if (!depDom || !arrDom) {
+        document.getElementById('modeInt').click();
+    } else {
+        document.getElementById('modeDom').click();
+    }
+}
+
 // --- PARSING & VETTING ---
 function processOCRText(text) {
     // 1. VETTING: Check for "Updated" signals
@@ -754,10 +783,9 @@ function selectFlight(idx) {
     // Airports
     document.getElementById('reportAirport').value = f.depAir !== "???" ? f.depAir : "";
     document.getElementById('depAirport').value = f.depAir !== "???" ? f.depAir : "";
-    // Logic: Report City is usually where the duty started.
-    // If we have a sequence of flights, obtaining the true Report City is hard without full day logic.
-    // Determining if this is the first flight of the day?
-    // For now, default Report City to Dep City of the leg, User can edit.
+
+    // --- NEW: Auto-Select Mode (Dom/Int) ---
+    autoSelectMode(f.depAir, f.arrAir);
 
     // Report Time (From DP Header)
     if (f.reportTime) {
