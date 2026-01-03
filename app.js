@@ -885,15 +885,22 @@ function renderFlightSelection(flights, pairingId) {
         }
 
         const item = document.createElement('div');
-        const isToday = false; // "Green highlight not needed" per user
-        const bgClass = "bg-white border-gray-200";
+
+        // Restore "Green Spam" (Today Highlight)
+        const d = new Date();
+        const todayStr = d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' });
+        const isToday = f.date === todayStr;
+        const bgClass = isToday ? "bg-blue-50 border-blue-200" : "bg-white border-gray-200";
 
         item.className = `p-3 rounded border ${bgClass} hover:border-[#005DAA] cursor-pointer transition-colors flex justify-between items-center group mb-2`;
 
         // Simplified Layout: Flight # | City -> City
         item.innerHTML = `
             <div class="flex items-center gap-3">
-                <span class="font-bold text-[#002244] text-sm w-16">UA ${f.flt}</span>
+                <div class="flex flex-col">
+                    <span class="font-bold text-[#002244] text-sm w-16">UA ${f.flt}</span>
+                    ${isToday ? '<span class="text-[9px] bg-green-100 text-green-700 px-1 rounded font-bold text-center mt-1">TODAY</span>' : ''}
+                </div>
                 <div class="h-4 w-px bg-gray-300"></div>
                 <div class="flex items-center gap-2 text-sm">
                     <span class="font-bold text-gray-700 w-8">${f.depAir}</span>
