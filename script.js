@@ -675,8 +675,9 @@ function processOCRText(text) {
         return;
     }
 
+    // Success -> Show Selection Modal
     closeScanModal();
-    parsedFlights = flights;
+    window.parsedFlights = flights; // Explicit global assignment
     window.lastOcrText = text;
     renderFlightSelection(flights, pairingId);
 }
