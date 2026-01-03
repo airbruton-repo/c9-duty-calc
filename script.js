@@ -746,6 +746,10 @@ function renderFlightSelection(flights, pairingId) {
 }
 
 function selectFlight(idx) {
+    if (!window.parsedFlights || !window.parsedFlights[idx]) {
+        console.error("Flight data missing");
+        return;
+    }
     const f = window.parsedFlights[idx];
     console.log("Selected flight: ", f);
 
