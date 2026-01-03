@@ -730,31 +730,29 @@ function selectFlight(idx) {
 
     // Populate Fields
     document.getElementById('homeBase').value = f.homeBase;
-    document.getElementById('reportAirport').value = f.depAir;
-    document.getElementById('depAirport').value = f.depAir; // Report city often same as Dep city for leg
-    // Note: Report Time in pairing is usually for the DUTY PERIOD.
-    // The flight Dep Time is NOT Report Time.
-    // However, the parsing of the pairing usually lists Report Time in the DP Header.
-    // If we only extracted flight info, we don't know the exact Duty Report Time unless we mapped it.
-    // FOR NOW: We will assume User needs to enter Report Time or we use Flight Time as placeholder?
-    // Wait. The requirement: "All appropriate fields should be able to be completed by using the info from the flight the user selects and the info from the pairing."
-    // In the image: "Report: 09:00" is listed under DP 01.
-    // If I can link the flight to the DP, I can get Report.
-    // My parsing logic extracted currentDutyDate. I didn't extract Report Time per DP.
 
-    // RETROACTIVE FIX in selectFlight: 
-    // I can put report time on the flight object if I parse it.
-    // Let's rely on user manual entry for Report Time if I can't find it? 
-    // OR, better, update processOCRText to capture Report Time from headers.
+    // Airports
+    document.getElementById('reportAirport').value = f.depAir !== "???" ? f.depAir : "";
+    document.getElementById('depAirport').value = f.depAir !== "???" ? f.depAir : "";
+    // Logic: Report City is usually where the duty started.
+    // If we have a sequence of flights, obtaining the true Report City is hard without full day logic.
+    // Determining if this is the first flight of the day?
+    // For now, default Report City to Dep City of the leg, User can edit.
 
-    // Assuming I missed report time in first pass, I will set fields I know:
-    document.getElementById('flightTimeInput').value = ""; // Don't know duration unless calculated
-    // Wait, pairing has duration "Flight 01:45".
-    // I should extract that too.
+    // Report Time (From DP Header)
+    if (f.reportTime) {
+        document.getElementById('reportTime').value = f.reportTime.replace(':', '');
+    }
 
-    // Re-Running Parsing Logic specific to selected:
-    // It's already done.
+    // Flight Time (Duration)
+    // We have DepTime and ArrTime (local). Calculating duration is hard without timezones.
+    // Better strategy: Did parsed line have duration? 
+    // Or just let user enter it.
+    // Let's try to calculate simple difference if dates assumed same? No, unsafe.
+    // Just clear it or use a placeholder if we didn't parse it.
+    document.getElementById('flightTimeInput').value = ""; // Clear or set placeholder
 
+    // IMPORTANT: Reset valid flags
     validateAirport(document.getElementById('reportAirport'));
     validateAirport(document.getElementById('depAirport'));
 
