@@ -465,19 +465,89 @@ const ORIGIN_MAP = {
 
 // --- DOM ACTIONS ---
 function openScanModal() {
-    document.getElementById('scanModal').classList.remove('hidden');
+    const modal = document.getElementById('scanModal');
+    modal.classList.remove('hidden');
+
+    // Check for previous scan data
+    const hasData = window.parsedFlights && window.parsedFlights.length > 0;
+    const prevContainer = document.getElementById('scanPrevContainer');
+    const newContainer = document.getElementById('scanPlaceholder');
+
+    // If we haven't created the prevContainer yet (lazy init), do it or expect it in HTML? 
+    // Better to generate it dynamically or toggle visibility if I inject it now. 
+    // Let's inject pure JS for now to avoid HTML file edits if possible, 
+    // but adding structure to HTML is cleaner. I'll inject into scanModal content.
+
+    // Actually, let's keep it simple. If data exists, hide placeholder, show buttons.
+    // I need to modify the HTML via JS to inject these buttons if they don't exist.
+
+    let retentionUI = document.getElementById('scanRetentionUI');
+    if (!retentionUI) {
+        retentionUI = document.createElement('div');
+        retentionUI.id = 'scanRetentionUI';
+        retentionUI.className = "hidden flex flex-col items-center justify-center h-48 gap-4";
+        retentionUI.innerHTML = `
+            <div class="text-center">
+                <p class="text-[#002244] font-bold mb-2">Previous Scan Available</p>
+                <div class="text-xs text-gray-500 mb-4">Pairing ${window.pairingId || '---'}</div>
+                <div class="flex gap-3">
+                    <button onclick="reuseLastScan()" class="px-4 py-2 bg-[#005DAA] text-white rounded font-bold text-sm shadow hover:bg-[#002244] transition-colors">
+                        Show Flights
+                    </button>
+                    <button onclick="resetScan()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded font-bold text-sm hover:bg-gray-300 transition-colors">
+                        New Scan
+                    </button>
+                </div>
+            </div>
+        `;
+        // Insert after closure button, before placeholder
+        const content = modal.querySelector('.bg-white'); // rough target
+        // better target: insert before scanPlaceholder
+        document.getElementById('scanPlaceholder').parentNode.insertBefore(retentionUI, document.getElementById('scanPlaceholder'));
+    }
+
+    if (hasData) {
+        document.getElementById('scanPlaceholder').classList.add('hidden');
+        document.getElementById('scanRetentionUI').classList.remove('hidden');
+        // Update styling/text if needed
+        document.querySelector('#scanRetentionUI .text-xs').textContent = `Pairing ${window.pairingId || '---'}`;
+    } else {
+        resetScanUI();
+    }
+
     // Check if Protocol is file:
     if (window.location.protocol === 'file:') {
         showScanError("Note: OCR requires a local server or HTTPS. It may fail if opened directly from a file.");
     }
 }
-function closeScanModal() {
+
+function reuseLastScan() {
     document.getElementById('scanModal').classList.add('hidden');
+    if (window.parsedFlights) {
+        renderFlightSelection(window.parsedFlights, window.pairingId);
+    }
+}
+
+function resetScan() {
+    window.parsedFlights = null;
+    window.pairingId = null;
+    resetScanUI();
+}
+
+function resetScanUI() {
+    const retUI = document.getElementById('scanRetentionUI');
+    if (retUI) retUI.classList.add('hidden');
+
+    document.getElementById('scanPlaceholder').classList.remove('hidden');
     document.getElementById('pairingFile').value = '';
     document.getElementById('scanPreview').classList.add('hidden');
-    document.getElementById('scanPlaceholder').classList.remove('hidden');
     document.getElementById('scanStatus').classList.add('hidden');
     document.getElementById('scanErrorMsg').classList.add('hidden');
+}
+
+function closeScanModal() {
+    document.getElementById('scanModal').classList.add('hidden');
+    // We do NOT clear data here anymore, to allow re-opening.
 }
 
 function showScanError(msg) {
@@ -787,49 +857,61 @@ function showRawOcr() {
 function renderFlightSelection(flights, pairingId) {
     const modal = document.getElementById('flightModal');
     const list = document.getElementById('flightList');
+
+    // Store globally for reuse
+    window.pairingId = pairingId;
+
     document.getElementById('foundPairingId').textContent = pairingId;
-    document.getElementById('flightCount').innerHTML = `${flights.length} <button onclick="showRawOcr()" class="ml-2 text-[10px] text-blue-500 underline">(View Raw Text)</button>`; // Add debug link
+    document.getElementById('flightCount').innerHTML = `${flights.length} <button onclick="showRawOcr()" class="ml-2 text-[10px] text-blue-500 underline">(View Raw Text)</button>`;
 
-    // Sort flights: Today's date first?
-    const d = new Date();
-    // Create US formatted date string MM/DD/YY to match typical parsing
-    // Actually, converting to comparable is safer.
-    // Let's just create a score.
-    const todayStr = d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }); // MM/DD/YY
-
-    // Sort: Matches today moves to top
-    flights.sort((a, b) => {
-        if (a.date === todayStr && b.date !== todayStr) return -1;
-        if (a.date !== todayStr && b.date === todayStr) return 1;
-        return 0;
-    });
+    // Sort: Natural Order (Chronological)
+    // We assume the OCR reads top-down, so preserving index order is usually safest for natural order
+    // unless the user wants strictly by time? 
+    // Let's assume the array order from OCR is correct (Top to Bottom of page).
+    // flights is already in scan order.
 
     list.innerHTML = '';
 
-    flights.forEach((f, idx) => {
-        const item = document.createElement('div');
-        // Highlighting for "Today"
-        const isToday = f.date === todayStr;
-        const bgClass = isToday ? "bg-blue-50 border-blue-200" : "bg-white border-gray-200";
+    let lastDate = "";
 
-        item.className = `p-3 rounded border ${bgClass} hover:border-[#005DAA] cursor-pointer transition-colors flex justify-between items-center group`;
+    flights.forEach((f, idx) => {
+        // Day Divider Logic
+        if (f.date !== lastDate) {
+            const dateHeader = document.createElement('div');
+            dateHeader.className = "text-xs font-bold text-gray-400 mt-3 mb-1 uppercase tracking-wider pl-1";
+            dateHeader.textContent = `Duty Day: ${f.date}`;
+            list.appendChild(dateHeader);
+            lastDate = f.date;
+        }
+
+        const item = document.createElement('div');
+        const isToday = false; // "Green highlight not needed" per user
+        const bgClass = "bg-white border-gray-200";
+
+        item.className = `p-3 rounded border ${bgClass} hover:border-[#005DAA] cursor-pointer transition-colors flex justify-between items-center group mb-2`;
+
+        // Simplified Layout: Flight # | City -> City
         item.innerHTML = `
-            <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="font-bold text-[#002244] text-xs">UA ${f.flt}</span>
-                    <span class="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded text-gray-600 font-mono">${f.date}</span>
-                    ${isToday ? '<span class="text-[9px] bg-green-100 text-green-700 px-1 rounded font-bold">TODAY</span>' : ''}
-                </div>
-                <div class="flex items-center gap-1 text-xs">
-                    <span class="font-bold w-8">${f.depAir}</span>
+            <div class="flex items-center gap-3">
+                <span class="font-bold text-[#002244] text-sm w-16">UA ${f.flt}</span>
+                <div class="h-4 w-px bg-gray-300"></div>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="font-bold text-gray-700 w-8">${f.depAir}</span>
                     <i class="fa-solid fa-arrow-right text-gray-300 text-[10px]"></i>
-                    <span class="font-bold w-8 text-right">${f.arrAir}</span>
-                    <span class="ml-2 font-mono text-gray-500">Dep: ${f.depTime}</span>
+                    <span class="font-bold text-gray-700 w-8 text-right">${f.arrAir}</span>
                 </div>
             </div>
             <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-[#005DAA]"></i>
         `;
-        item.onclick = () => selectFlight(idx);
+        item.onclick = () => {
+            // Reset Form and Output BEFORE filling new data
+            resetForm();
+            // Since resetForm clears everything, we need to ensure selectFlight repopulates it correctly.
+            // Wait a tick or just call it? selectFlight sets values directly, so it matches "fill" behavior.
+            // But resetForm resets mode to Dom... selectFlight sets mode.
+            // It should be fine.
+            selectFlight(idx);
+        };
         list.appendChild(item);
     });
 
