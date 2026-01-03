@@ -750,7 +750,15 @@ function selectFlight(idx) {
     console.log("Selected flight: ", f);
 
     // Populate Fields
-    document.getElementById('homeBase').value = f.homeBase;
+    // Force Home Base setting (ensure it overrides resetForm default)
+    const hbSelect = document.getElementById('homeBase');
+    if (f.homeBase && hbSelect.querySelector(`option[value="${f.homeBase}"]`)) {
+        hbSelect.value = f.homeBase;
+    } else {
+        // Fallback if not in list, maybe add it dynamically? 
+        // For now, default to DEN if invalid
+        console.warn("HomeBase not found in list:", f.homeBase);
+    }
 
     // Airports
     document.getElementById('reportAirport').value = f.depAir !== "???" ? f.depAir : "";
@@ -764,8 +772,8 @@ function selectFlight(idx) {
         document.getElementById('reportTime').value = f.reportTime.replace(':', '');
     }
 
-    // Flight Time (Duration) - Calculation
-    // f.depTime and f.arrTime are "HH:MM" strings
+    // Flight Time (Duration)
+    let calculatedDuration = "";
     if (f.depTime && f.arrTime && f.arrTime !== "??:??") {
         const parseMins = (t) => {
             const p = t.split(':');
@@ -774,23 +782,16 @@ function selectFlight(idx) {
         let d = parseMins(f.depTime);
         let a = parseMins(f.arrTime);
 
-        // Handle overnight (Arr < Dep) -> Add 24h (1440m)
-        if (a < d) a += 1440;
-
-        // Handle +X days? (Not easy from single line, but usually max +1 or +2)
-        // For now assume simple next day if a < d. 
-        // If block is huge (>18h?) effectively impossible for single crew?
+        if (a < d) a += 1440; // Overnight
 
         let diff = a - d;
         const h = Math.floor(diff / 60);
         const m = diff % 60;
-
-        // Populate as HHMM for the input field which expects that or HH:MM
-        // formatting to HH:MM is safer for readability helper
-        document.getElementById('flightTimeInput').value = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-    } else {
-        document.getElementById('flightTimeInput').value = "";
+        calculatedDuration = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
     }
+
+    const ftInput = document.getElementById('flightTimeInput');
+    ftInput.value = calculatedDuration;
 
     // IMPORTANT: Reset valid flags
     validateAirport(document.getElementById('reportAirport'));
@@ -798,8 +799,7 @@ function selectFlight(idx) {
 
     // Set Date
     if (f.date && f.date.includes('/')) {
-        const parts = f.date.split('/'); // MM, DD, YY
-        // Robustness: ensure parts exist
+        const parts = f.date.split('/');
         if (parts.length >= 3) {
             const m = parts[0].padStart(2, '0');
             const d = parts[1].padStart(2, '0');
@@ -812,6 +812,12 @@ function selectFlight(idx) {
 
     // Force triggering validation
     updateAllLabels();
+
+    // Recalculate if possible (only if flight time exists)
+    if (calculatedDuration) {
+        // We need to trigger the format/pad logic just in case? 
+        // No, value is already formatted "HH:MM".
+    }
 }
 
 
