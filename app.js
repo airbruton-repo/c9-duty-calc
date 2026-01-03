@@ -661,7 +661,7 @@ async function runOCR(fileBlob) {
         });
 
         statusText.textContent = "Processing Text...";
-        const ret = await worker.recognize(file);
+        const ret = await worker.recognize(fileBlob);
         await worker.terminate();
 
         processOCRText(ret.data.text);
