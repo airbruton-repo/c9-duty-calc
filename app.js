@@ -801,8 +801,23 @@ function selectFlight(idx) {
         hbSelect.value = "DEN";
     }
 
-    // Airports
-    document.getElementById('reportAirport').value = f.depAir !== "???" ? f.depAir : "";
+    // Airports Logic
+    // Requirement: "First segment of the day is always the report city."
+    let reportCity = f.depAir; // Default to current flight
+    if (window.parsedFlights) {
+        // Find all flights on this duty day
+        const dayFlights = window.parsedFlights.filter(pf => pf.date === f.date);
+        if (dayFlights.length > 0) {
+            // Sort by Dep Time (HH:MM string comparison works for 24h)
+            dayFlights.sort((a, b) => a.depTime.localeCompare(b.depTime));
+            // First flight logic
+            if (dayFlights[0].depAir !== "???") {
+                reportCity = dayFlights[0].depAir;
+            }
+        }
+    }
+
+    document.getElementById('reportAirport').value = reportCity !== "???" ? reportCity : "";
     document.getElementById('depAirport').value = f.depAir !== "???" ? f.depAir : "";
 
     // --- NEW: Auto-Select Mode (Dom/Int) ---
