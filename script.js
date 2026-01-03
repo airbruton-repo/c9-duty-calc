@@ -605,25 +605,26 @@ function processOCRText(text) {
                 let arrAir = "???";
 
                 if (potentialAirports) {
-                    // Filter for valid airports (optional, but robust)
-                    const valid = potentialAirports.filter(c => ALL_CODES[c]);
+                    // Filter out common noise words that look like airport codes
+                    const NOISE_WORDS = ['ARR', 'DEP', 'FLT', 'SKD', 'ACT', 'BLK', 'GRD', 'EQP', 'DHD', 'LAY', 'OUT', 'OFF', 'ON', 'IN'];
+                    let candidates = potentialAirports.filter(c => !NOISE_WORDS.includes(c));
+
+                    // 1. Try Strict Validation First (Best Quality)
+                    const valid = candidates.filter(c => ALL_CODES[c]);
                     if (valid.length >= 2) {
-                        depAir = valid[valid.length - 2]; // Usually Dep is 2nd to last if Sit/Block included?
-                        arrAir = valid[valid.length - 1]; // or logic based on position relative to times
+                        depAir = valid[0];
+                        arrAir = valid[1];
+                    } else {
+                        // 2. Fallback: Heuristic extraction
+                        // If we didn't find 2 known airports, let's look for "DEN" or similar manually if needed, 
+                        // or just take the best guesses from the line if they look reasonable.
+                        // Often the pattern is: Time Gate Airport
+                        // Tesseract might read "DEN" as "0EN". 
 
-                        // Refined Logic based on typical format: UA # Time Ap Time Ap
-                        // Often: UA 2159 10:00 B47 DEN - 12:45 B45 MCI
-                        // Airports are usually AFTER the times? Or mixed.
-
-                        // Let's use position in string if possible, or just sequence found.
-                        if (valid.length >= 2) {
-                            // Assume sequence is DepAirport, ArrAirport found in that order? 
-                            // WAIT: In image: "10:00 B47 DEN" -> Time, Gate, Airport.
-                            // So Dep Airport is associated with First Time.
-                            // Let's trust the sequence of VALID airports.
-                            // Usually pairing line is DepCity -> ArrCity.
-                            depAir = valid[0];
-                            arrAir = valid[1];
+                        // Let's take the candidates we have if they are not just 1 char common words.
+                        if (candidates.length >= 2) {
+                            depAir = candidates[0];
+                            arrAir = candidates[1];
                         }
                     }
                 }
