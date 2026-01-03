@@ -571,7 +571,6 @@ function autoSelectMode(dep, arr) {
 // --- PARSING & VETTING ---
 function processOCRText(text) {
     // 1. VETTING: Check for "Updated" signals
-    // Regex for time with "A" suffix: \d{2}:\d{2}A
     const updatedMatches = (text.match(/\d{2}:\d{2}A/g) || []).length;
     if (updatedMatches > 2) {
         showScanError("UPDATED PAIRING DETECTED. Please stick to the SCHEDULED view (without 'A' flags) for accuracy.");
@@ -579,22 +578,16 @@ function processOCRText(text) {
     }
 
     // 2. EXTRACTION
-    // Pairing ID (First char -> Origin)
     const pairingMatch = text.match(/Pairing\s*[#:]*\s*([A-Z0-9]+)/i) || text.match(/([D|F|S|L|E|I|H|O][A-Z0-9]{3,4})/);
-    // Fallback if label missing, look for typical pairing number format at start?
-
     let pairingId = "---";
     let homeBase = "DEN";
     if (pairingMatch) {
         pairingId = pairingMatch[1];
         const firstChar = pairingId.charAt(0).toUpperCase();
         if (ORIGIN_MAP[firstChar]) homeBase = ORIGIN_MAP[firstChar];
-    } else {
-        // Try fallback based on "Position: FM01P" context if needed, but pairing # is best
     }
 
     // 3. FLIGHT PARSING
-    // Strategy: Line-by-Line with look-ahead state
     const lines = text.split('\n');
     let flights = [];
     let currentDutyDate = "";
@@ -604,26 +597,19 @@ function processOCRText(text) {
     for (let i = 0; i < lines.length; i++) {
         let line = lines[i].trim();
 
-        // A. DATE Parsing (DP Header)
-        // Matches: DP 01 01/05/26
-        // Regex: DP \s* \d+ \s* (\d{1,2}/\d{1,2}/\d{2})
+        // A. DATE Parsing
         const dateMatch = line.match(/DP\s*\d+\s*(\d{1,2}\/\d{1,2}\/\d{2})/);
         if (dateMatch) {
             currentDutyDate = dateMatch[1];
-            // Reset Report Time for new DP
             currentReportTime = "";
         }
 
         // B. REPORT TIME Parsing
-        // The raw text shows "Report ... Debrief" header, then values on NEXT line.
-        // OR sometimes standard "Report: 09:00" on same line.
         if (line.match(/Report/i) || line.match(/Check-In/i)) {
-            // Check if time is on THIS line
             let rTime = line.match(/(\d{2}[:.]\d{2})/);
             if (rTime) {
                 currentReportTime = rTime[1].replace('.', ':');
             } else {
-                // Look at NEXT line for a time
                 if (i + 1 < lines.length) {
                     const nextLine = lines[i + 1];
                     const nextTime = nextLine.match(/(\d{2}[:.]\d{2})/);
@@ -634,39 +620,28 @@ function processOCRText(text) {
             }
         }
 
-        // C. FLIGHT Parsing (Multi-line)
-        // Line A: UA 888 11:10 17:25 (Flight #, Times)
-        // Line B: ... SFO - PEK ... (Airports)
-        // Check for UA/United + Flight# (3-4 digits usually)
+        // C. FLIGHT Parsing
         if ((line.includes("UA") || line.includes("United")) && (line.match(/\s\d{3,4}\s/) || line.match(/Flight/i))) {
             try {
-                // Extract Flight Num
                 const fltMatch = line.match(/(?:UA|United)\s*(\d{3,4})/i);
-                if (!fltMatch) continue; // Not a flight line
+                if (!fltMatch) continue;
                 const fltNum = fltMatch[1];
 
-                // Extract Times (expecting 2: Dep and Arr)
-                // 11:10 17:25
                 const times = line.match(/(\d{2}[:.]\d{2})/g);
                 let depTime = times && times.length > 0 ? times[0].replace('.', ':') : "";
                 let arrTime = times && times.length > 1 ? times[1].replace('.', ':') : "";
 
-                // Look for airports on THIS line or NEXT line
                 let depAir = "???";
                 let arrAir = "???";
 
-                // Helper to find airports in a string
                 const findAirports = (str) => {
-                    // Look for SFO - PEK or SFO PEK. 3 caps.
                     const caps = str.match(/[A-Z]{3}/g);
                     if (!caps) return null;
                     const NOISE = ['ARR', 'DEP', 'FLT', 'SKD', 'ACT', 'BLK', 'GRD', 'EQP', 'DHD', 'LAY', 'OUT', 'OFF', 'ON', 'IN', 'SAT', 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'POS'];
-                    return caps.filter(c => !NOISE.includes(c) && !c.includes('DP')); // Filter DP if it appears
+                    return caps.filter(c => !NOISE.includes(c) && !c.includes('DP'));
                 };
 
                 let airCands = findAirports(line);
-
-                // If not enough airports on Flight line, check NEXT line
                 if ((!airCands || airCands.length < 2) && (i + 1 < lines.length)) {
                     const nextLine = lines[i + 1];
                     const nextCands = findAirports(nextLine);
@@ -700,10 +675,9 @@ function processOCRText(text) {
         return;
     }
 
-    // Success -> Show Selection Modal
-    closeScanModal(); // Close scan, open flight list
+    closeScanModal();
     parsedFlights = flights;
-    window.lastOcrText = text; // Store for debugging
+    window.lastOcrText = text;
     renderFlightSelection(flights, pairingId);
 }
 
