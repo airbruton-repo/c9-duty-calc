@@ -482,15 +482,72 @@ function closeScanModal() {
 
 function showScanError(msg) {
     const el = document.getElementById('scanErrorMsg');
+    const el = document.getElementById('scanErrorMsg');
     el.textContent = msg;
     el.classList.remove('hidden');
     document.getElementById('scanStatus').classList.add('hidden');
 }
 
+// --- IMAGE PRE-PROCESSING ---
+function preprocessImage(file, callback) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+        const img = new Image();
+        img.onload = function () {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imgData.data;
+
+            // Contrast Factor (e.g. 20% boost)
+            const contrast = 20;
+            const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+
+            for (let i = 0; i < data.length; i += 4) {
+                // Grayscale (Luma coding)
+                let r = data[i];
+                let g = data[i + 1];
+                let b = data[i + 2];
+                // Standard NTSC conversion
+                let gray = 0.299 * r + 0.587 * g + 0.114 * b;
+
+                // Apply Contrast
+                gray = factor * (gray - 128) + 128;
+
+                // Clamping
+                if (gray > 255) gray = 255;
+                if (gray < 0) gray = 0;
+
+                // Thresholding (Optional - gentle push to B/W)
+                // if (gray > 160) gray = 255; 
+                // else gray = 0; // Too aggressive usually
+
+                data[i] = gray;
+                data[i + 1] = gray;
+                data[i + 2] = gray;
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+
+            // Return processed blob
+            canvas.toBlob((blob) => {
+                callback(blob);
+            }, 'image/png');
+        }
+        img.src = event.target.result;
+    }
+    reader.readAsDataURL(file);
+}
+
 function handleFileSelect(input) {
     if (input.files && input.files[0]) {
         const file = input.files[0];
-        // Show Preview
+
+        // Show Original for User (Preview)
         const reader = new FileReader();
         reader.onload = function (e) {
             const preview = document.getElementById('scanPreview');
@@ -498,15 +555,22 @@ function handleFileSelect(input) {
             preview.classList.remove('hidden');
             document.getElementById('scanPlaceholder').classList.add('hidden');
 
-            // Start OCR
-            runOCR(file);
+            // Process Image for OCR
+            const statusText = document.getElementById('scanStatusText');
+            document.getElementById('scanStatus').classList.remove('hidden');
+            statusText.textContent = "Optimizing Image...";
+
+            preprocessImage(file, (processedBlob) => {
+                // Start OCR on the PROCESSED image
+                runOCR(processedBlob);
+            });
         };
         reader.readAsDataURL(file);
     }
 }
 
 // --- OCR ENGINE ---
-async function runOCR(file) {
+async function runOCR(fileBlob) {
     const statusDiv = document.getElementById('scanStatus');
     const statusText = document.getElementById('scanStatusText');
     statusDiv.classList.remove('hidden');
