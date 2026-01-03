@@ -746,10 +746,8 @@ function renderFlightSelection(flights, pairingId) {
 }
 
 function selectFlight(idx) {
-    const f = parsedFlights[idx];
-    if (!f) return;
-
-    resetForm();
+    const f = window.parsedFlights[idx];
+    console.log("Selected flight: ", f);
 
     // Populate Fields
     document.getElementById('homeBase').value = f.homeBase;
@@ -766,23 +764,40 @@ function selectFlight(idx) {
         document.getElementById('reportTime').value = f.reportTime.replace(':', '');
     }
 
-    // Flight Time (Duration)
-    // We have DepTime and ArrTime (local). Calculating duration is hard without timezones.
-    // Better strategy: Did parsed line have duration? 
-    // Or just let user enter it.
-    // Let's try to calculate simple difference if dates assumed same? No, unsafe.
-    // Just clear it or use a placeholder if we didn't parse it.
-    document.getElementById('flightTimeInput').value = ""; // Clear or set placeholder
+    // Flight Time (Duration) - Calculation
+    // f.depTime and f.arrTime are "HH:MM" strings
+    if (f.depTime && f.arrTime && f.arrTime !== "??:??") {
+        const parseMins = (t) => {
+            const p = t.split(':');
+            return parseInt(p[0]) * 60 + parseInt(p[1]);
+        };
+        let d = parseMins(f.depTime);
+        let a = parseMins(f.arrTime);
+
+        // Handle overnight (Arr < Dep) -> Add 24h (1440m)
+        if (a < d) a += 1440;
+
+        // Handle +X days? (Not easy from single line, but usually max +1 or +2)
+        // For now assume simple next day if a < d. 
+        // If block is huge (>18h?) effectively impossible for single crew?
+
+        let diff = a - d;
+        const h = Math.floor(diff / 60);
+        const m = diff % 60;
+
+        // Populate as HHMM for the input field which expects that or HH:MM
+        // formatting to HH:MM is safer for readability helper
+        document.getElementById('flightTimeInput').value = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    } else {
+        document.getElementById('flightTimeInput').value = "";
+    }
 
     // IMPORTANT: Reset valid flags
     validateAirport(document.getElementById('reportAirport'));
     validateAirport(document.getElementById('depAirport'));
 
     // Set Date
-    // Date format MM/DD/YY -> YYYY-MM-DD
     if (f.date && f.date.includes('/')) {
-        const parts = f.date.split('/'); // MM, DD, YY
-        const y = "20" + parts[2];
         const m = parts[0];
         const d = parts[1];
         document.getElementById('dutyDate').value = `${y}-${m}-${d}`;
