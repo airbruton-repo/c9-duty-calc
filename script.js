@@ -762,31 +762,21 @@ function selectFlight(idx) {
     // Force Home Base setting
     const hbSelect = document.getElementById('homeBase');
 
-    // HOME BASE LOGIC:
-    // 1. Try f.homeBase (from pairing)
-    // 2. If DEN (default) or invalid, try f.depAir (first flight origin) if it exists in list?
-    // Actually, usually the crew starts at their home base on the first flight.
+    // HOME BASE LOGIC: 
+    // 1. Try f.homeBase (from explicit Pairing ID mapping)
+    // 2. If valid, set it. Otherwise, default to "DEN" (or whatever is selected) and warn.
+    // DO NOT assume Departure Airport is the Base.
 
     let baseToSet = f.homeBase;
-
-    // If baseToSet is "DEN" (default) but the Departure Airport is in the base list, use that instead?
-    // (Assuming simple pairings where first leg is from base)
-    // Only verify if we are sure "DEN" wasn't explicitly parsed.
-    // The parser defaults to DEN if no pairing match.
-    // Let's rely on pairing FIRST.
 
     // Check if baseToSet is valid in dropdown
     if (baseToSet && hbSelect.querySelector(`option[value="${baseToSet}"]`)) {
         hbSelect.value = baseToSet;
     } else {
-        // Fallback: If pairing parsing failed, maybe user is based in the Departure city?
-        // E.g. Dep "SFO". Is SFO in BASES?
-        if (f.depAir && hbSelect.querySelector(`option[value="${f.depAir}"]`)) {
-            hbSelect.value = f.depAir;
-        } else {
-            // Fallback default
-            hbSelect.value = "DEN";
-        }
+        console.warn("HomeBase not found or not parsed:", baseToSet);
+        // Do NOT change the existing value, or reset to default? 
+        // Resetting to default DEN is safer than leaving a stale value from previous scan.
+        hbSelect.value = "DEN";
     }
 
     // Airports
