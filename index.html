@@ -17,7 +17,7 @@
 
     <!-- EXTERNAL LIBRARIES -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
@@ -69,18 +69,11 @@
                 <button onclick="resetForm()"
                     class="text-[10px] text-blue-200 hover:text-white underline">Reset</button>
                 <span
-                    class="text-[9px] text-[#4ade80] font-mono border border-[#4ade80]/30 px-1.5 py-0.5 rounded ml-1">v1.32</span>
+                    class="text-[9px] text-[#4ade80] font-mono border border-[#4ade80]/30 px-1.5 py-0.5 rounded ml-1">v1.33</span>
             </div>
         </div>
 
-        <!-- NEW: SCAN BANNER -->
-        <div class="bg-blue-50 border-b border-blue-100 p-2 flex items-center justify-between">
-            <span class="text-[10px] text-[#002244] font-bold">Have a pairing screenshot?</span>
-            <button onclick="openScanModal()"
-                class="bg-[#005DAA] hover:bg-[#004c8c] text-white text-[10px] font-bold py-1 px-3 rounded flex items-center gap-1 transition-colors">
-                <i class="fa-solid fa-camera"></i> SCAN PAIRING
-            </button>
-        </div>
+
 
         <!-- MAIN CONTENT AREA -->
         <div class="p-2 space-y-2">
@@ -468,67 +461,16 @@
         <textarea id="copyArea" class="absolute -left-96 opacity-0"></textarea>
     </div>
 
-    <!-- SCAN MODAL -->
-    <div id="scanModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-        <div class="modal-bg bg-white rounded-lg shadow-2xl w-full max-w-sm p-4 relative">
-            <button onclick="closeScanModal()" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600"><i
-                    class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-sm font-bold text-[#002244] mb-3"><i class="fa-solid fa-camera text-[#005DAA] mr-1"></i>
-                Scan Pairing</h3>
 
-            <div id="scanDropZone"
-                class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition-colors mb-3 relative overflow-hidden">
-                <input type="file" id="pairingFile" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer"
-                    onchange="handleFileSelect(this)">
-                <div id="scanPlaceholder">
-                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-300 mb-2"></i>
-                    <p class="text-xs text-gray-500 font-medium">Tap to Upload or Paste Image</p>
-                </div>
-                <img id="scanPreview" class="hidden max-h-48 mx-auto rounded shadow-sm object-contain">
-            </div>
 
-            <div id="scanStatus" class="hidden text-center mb-3">
-                <div
-                    class="animate-spin inline-block w-4 h-4 border-2 border-[#005DAA] border-t-transparent rounded-full mb-1">
-                </div>
-                <p class="text-[10px] text-gray-500 font-mono" id="scanStatusText">Initializing OCR...</p>
-            </div>
 
-            <div class="text-[10px] text-gray-400 italic leading-snug">
-                Supports screenshots of Scheduled pairings. <br>
-                <span class="text-red-400 font-bold hidden" id="scanErrorMsg"></span>
-            </div>
-        </div>
-    </div>
-
-    <!-- FLIGHT SELECTION MODAL -->
-    <div id="flightModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center p-2 bg-black/70 backdrop-blur-sm">
-        <div class="modal-bg bg-white rounded-lg shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
-            <div class="p-3 border-b border-gray-100 flex justify-between items-center shrink-0">
-                <div>
-                    <h3 class="text-sm font-bold text-[#002244]">Select Your Leg</h3>
-                    <p class="text-[10px] text-gray-500">Found <span id="flightCount">0</span> flights from pairing
-                        <span id="foundPairingId" class="font-mono font-bold">---</span>
-                    </p>
-                </div>
-                <button onclick="document.getElementById('flightModal').classList.add('hidden')"
-                    class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-
-            <div id="flightList" class="overflow-y-auto p-2 space-y-2 bg-gray-50 flex-1">
-                <!-- Dynamic Items -->
-            </div>
-        </div>
-    </div>
 
     <!-- DATA LIST FOR AIRPORTS -->
     <datalist id="airportList"></datalist>
 
     <!-- CORE APP LOGIC -->
     <script src="data.js"></script>
-    <script src="app-v1-30.js?v=1.30"></script>
+    <script src="script.js?v=1.33"></script>
 </body>
 
 </html>
