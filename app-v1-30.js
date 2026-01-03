@@ -778,10 +778,36 @@ function processOCRText(text) {
                 let arrAir = "???";
 
                 const findAirports = (str) => {
-                    const caps = str.match(/[A-Z]{3}/g);
+                    // 1. Capture potentially malformed codes (e.g. 5FO, LAX, NRT)
+                    // Allow 3 chars, mix of letters and numbers
+                    const caps = str.match(/[A-Z0-9]{3}/g);
                     if (!caps) return null;
-                    const NOISE = ['ARR', 'DEP', 'FLT', 'SKD', 'ACT', 'BLK', 'GRD', 'EQP', 'DHD', 'LAY', 'OUT', 'OFF', 'ON', 'IN', 'SAT', 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'POS'];
-                    return caps.filter(c => !NOISE.includes(c) && !c.includes('DP'));
+
+                    const NOISE = ['ARR', 'DEP', 'FLT', 'SKD', 'ACT', 'BLK', 'GRD', 'EQP', 'DHD', 'LAY', 'OUT', 'OFF', 'ON', 'IN', 'SAT', 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'POS', 'LOD', 'PRT'];
+
+                    // Fuzzy Correction Map
+                    const FIX_MAP = { '0': 'O', '1': 'I', '5': 'S', '8': 'B', '2': 'Z' };
+
+                    const clean = (c) => {
+                        return c.split('').map(char => FIX_MAP[char] || char).join('');
+                    };
+
+                    const candidates = caps.map(c => {
+                        // Skip if it looks like a time (e.g. 104)
+                        if (/^\d+$/.test(c)) return null;
+
+                        let fixed = clean(c);
+
+                        // Noise Filter
+                        if (NOISE.includes(fixed) || fixed.includes('DP')) return null;
+
+                        // Heuristic: Must be all letters now
+                        if (!/^[A-Z]{3}$/.test(fixed)) return null;
+
+                        return fixed;
+                    }).filter(x => x !== null);
+
+                    return candidates;
                 };
 
                 let airCands = findAirports(line);
