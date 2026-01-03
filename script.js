@@ -571,91 +571,81 @@ function processOCRText(text) {
     const lines = text.split('\n');
     let flights = [];
     let currentDutyDate = "";
+    let currentReportTime = "";
 
-    // Regex to find Duty Period Headers: DP 01 11/24/25
-    // or just Date pattern: \d{2}/\d{2}/\d{2}
+    // Iterate lines with look-ahead/context
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
 
-    lines.forEach(line => {
-        // Check for Date Header
-        const dateMatch = line.match(/(\d{1,2}\/\d{1,2}\/\d{2})/);
-        if (line.includes("DP") && dateMatch) {
+        // 1. DATE Parsing (DP Header)
+        // Matches: DP 01 01/05/26
+        const dateMatch = line.match(/DP\s*\d+\s*(\d{1,2}\/\d{1,2}\/\d{2})/);
+        if (dateMatch) {
             currentDutyDate = dateMatch[1];
+            // Reset Report Time for new DP
+            currentReportTime = "";
         }
 
-        // Check for Flight Data
-        // UA 1234 ... 10:00 ... DEN ... 12:45 ... MCI
-        // Simple heuristic: Line has "UA" + time + airport code
-        if ((line.includes("UA") || line.includes("United")) && line.match(/\d{2}:\d{2}/)) {
-            // It's likely a flight line
+        // 2. REPORT TIME Parsing
+        // The raw text shows "Report ... Debrief" header, then values on NEXT line.
+        // OR sometimes standard "Report: 09:00" on same line.
+        if (line.match(/Report/i)) {
+            // Check if time is on THIS line
+            let rTime = line.match(/(\d{2}[:.]\d{2})/);
+            if (rTime) {
+                currentReportTime = rTime[1].replace('.', ':');
+            } else {
+                // Look at NEXT line for a time
+                if (i + 1 < lines.length) {
+                    const nextLine = lines[i + 1];
+                    const nextTime = nextLine.match(/(\d{2}[:.]\d{2})/);
+                    if (nextTime) {
+                        currentReportTime = nextTime[1].replace('.', ':');
+                    }
+                }
+            }
+        }
+
+        // 3. FLIGHT Parsing (Multi-line)
+        // Line A: UA 888 11:10 17:25 (Flight #, Times)
+        // Line B: ... SFO - PEK ... (Airports)
+        if ((line.includes("UA") || line.includes("United")) && (line.match(/\s\d{3,4}\s/) || line.match(/Flight/i))) {
             try {
-                // Extract Flight #
-                const fltNumMatch = line.match(/UA\s*(\d+)/i);
-                const fltNum = fltNumMatch ? fltNumMatch[1] : "???";
+                // Extract Flight Num
+                const fltMatch = line.match(/(?:UA|United)\s*(\d{3,4})/i);
+                if (!fltMatch) continue; // Not a flight line
+                const fltNum = fltMatch[1];
 
-                // Extract all Times \d{2}:\d{2}
-                const times = line.match(/\d{2}:\d{2}/g); // [Dep, Arr]
+                // Extract Times (expecting 2: Dep and Arr)
+                // 11:10 17:25
+                const times = line.match(/(\d{2}[:.]\d{2})/g);
+                let depTime = times && times.length > 0 ? times[0].replace('.', ':') : "";
+                let arrTime = times && times.length > 1 ? times[1].replace('.', ':') : "";
 
-                // Extract all Airports [A-Z]{3}
-                // Filter out common specific words if they look like airports? 
-                // Better: Look for capital 3-letters that are in our ALL_CODES list?
-                // Just extracting all 3-letter caps that valid airports
-                const potentialAirports = line.match(/[A-Z]{3}/g);
-
+                // Look for airports on THIS line or NEXT line
                 let depAir = "???";
                 let arrAir = "???";
 
-                if (potentialAirports) {
-                    // Filter out common noise words that look like airport codes
-                    const NOISE_WORDS = ['ARR', 'DEP', 'FLT', 'SKD', 'ACT', 'BLK', 'GRD', 'EQP', 'DHD', 'LAY', 'OUT', 'OFF', 'ON', 'IN'];
-                    let candidates = potentialAirports.filter(c => !NOISE_WORDS.includes(c));
-
-                    // 1. Try Strict Validation First (Best Quality)
-                    const valid = candidates.filter(c => ALL_CODES[c]);
-                    if (valid.length >= 2) {
-                        depAir = valid[0];
-                        arrAir = valid[1];
-                    } else {
-                        // 2. Fallback: Heuristic extraction
-                        // If we didn't find 2 known airports, let's look for "DEN" or similar manually if needed, 
-                        // or just take the best guesses from the line if they look reasonable.
-                        // Often the pattern is: Time Gate Airport
-                        // Tesseract might read "DEN" as "0EN". 
-
-                        // Let's take the candidates we have if they are not just 1 char common words.
-                        if (candidates.length >= 2) {
-                            depAir = candidates[0];
-                            arrAir = candidates[1];
-                        }
-                    }
-                }
-
-                if (times && times.length >= 1) {
-                    flights.push({
-                        date: currentDutyDate || "Unknown",
-                        flt: fltNum,
-                        depTime: times[0],
-                        arrTime: times.length > 1 ? times[1] : "??:??",
-                        depAir: depAir,
-                        arrAir: arrAir,
-                        homeBase: homeBase
-                    });
-                }
-            } catch (ex) {
-                console.warn("Failed to parse line: " + line);
-            }
+                arrAir: arrAir,
+                    homeBase: homeBase
+            });
         }
+    } catch (ex) {
+        console.warn("Failed to parse line: " + line);
+    }
+}
     });
 
-    if (flights.length === 0) {
-        showScanError("No flights found. Ensure image is clear and contains 'UA' flight numbers.");
-        return;
-    }
+if (flights.length === 0) {
+    showScanError("No flights found. Ensure image is clear and contains 'UA' flight numbers.");
+    return;
+}
 
-    // Success -> Show Selection Modal
-    closeScanModal(); // Close scan, open flight list
-    parsedFlights = flights;
-    window.lastOcrText = text; // Store for debugging
-    renderFlightSelection(flights, pairingId);
+// Success -> Show Selection Modal
+closeScanModal(); // Close scan, open flight list
+parsedFlights = flights;
+window.lastOcrText = text; // Store for debugging
+renderFlightSelection(flights, pairingId);
 }
 
 function showRawOcr() {
