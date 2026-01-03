@@ -552,7 +552,6 @@ function closeScanModal() {
 
 function showScanError(msg) {
     const el = document.getElementById('scanErrorMsg');
-    const el = document.getElementById('scanErrorMsg');
     el.textContent = msg;
     el.classList.remove('hidden');
     document.getElementById('scanStatus').classList.add('hidden');
