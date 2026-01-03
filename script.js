@@ -654,15 +654,27 @@ function processOCRText(text) {
     // Success -> Show Selection Modal
     closeScanModal(); // Close scan, open flight list
     parsedFlights = flights;
+    window.lastOcrText = text; // Store for debugging
     renderFlightSelection(flights, pairingId);
+}
 
+function showRawOcr() {
+    const t = window.lastOcrText || "No OCR text found.";
+    const ta = document.getElementById('copyArea');
+    ta.value = t;
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) { }
+
+    showInfo('ocrDebug');
+    document.getElementById('modalTitle').textContent = "Raw OCR Output";
+    document.getElementById('modalText').textContent = t; // Display raw text
 }
 
 function renderFlightSelection(flights, pairingId) {
     const modal = document.getElementById('flightModal');
     const list = document.getElementById('flightList');
     document.getElementById('foundPairingId').textContent = pairingId;
-    document.getElementById('flightCount').textContent = flights.length;
+    document.getElementById('flightCount').innerHTML = `${flights.length} <button onclick="showRawOcr()" class="ml-2 text-[10px] text-blue-500 underline">(View Raw Text)</button>`; // Add debug link
 
     // Sort flights: Today's date first?
     const d = new Date();
