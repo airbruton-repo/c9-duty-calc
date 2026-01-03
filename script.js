@@ -843,12 +843,6 @@ function selectFlight(idx) {
 
     // Force triggering validation
     updateAllLabels();
-
-    // Recalculate if possible (only if flight time exists)
-    if (calculatedDuration) {
-        // We need to trigger the format/pad logic just in case?
-        // No, value is already formatted "HH:MM".
-    }
 }
 
 
