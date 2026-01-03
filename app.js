@@ -841,8 +841,28 @@ function selectFlight(idx) {
 
     document.getElementById('flightModal').classList.add('hidden');
 
-    // Force triggering validation
-    updateAllLabels();
+    // Recalculate if possible (only if flight time exists)
+    if (calculatedDuration) {
+        // We need to trigger the format/pad logic just in case? 
+        // No, value is already formatted "HH:MM".
+    }
+}
+
+// --- NEW: Live Calc Wrapper ---
+function updateLiveCalc() {
+    // Check if sufficient fields are filled to attempt calculation without error
+    const req = ['homeBase', 'reportAirport', 'reportTime', 'depAirport', 'flightTimeInput'];
+    const allFilled = req.every(id => document.getElementById(id).value.length > 1);
+
+    if (allFilled) {
+        // Attempt calculation, but suppress error popup if possible?
+        // Actually calculateDuty handles errors by showing container. 
+        // For live calc, maybe we only run if no missing fields?
+        calculateDuty();
+    } else {
+        // Do nothing, just wait for user
+        resetResult();
+    }
 }
 
 
