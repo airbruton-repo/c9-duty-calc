@@ -89,6 +89,9 @@
                 </label>
             </div>
 
+            <!-- LIVE CALC TEXT -->
+            <div id="liveCalcText" class="text-[10px] text-gray-500 text-center px-1 leading-tight"></div>
+
             <!-- MIXED PAIRING HELPER -->
             <div class="flex justify-center mb-1 px-1">
                 <button onclick="showInfo('mixed')"
@@ -495,7 +498,8 @@
                 <div>
                     <h3 class="text-sm font-bold text-[#002244]">Select Your Leg</h3>
                     <p class="text-[10px] text-gray-500">Found <span id="flightCount">0</span> flights from pairing
-                        <span id="foundPairingId" class="font-mono font-bold">---</span></p>
+                        <span id="foundPairingId" class="font-mono font-bold">---</span>
+                    </p>
                 </div>
                 <button onclick="document.getElementById('flightModal').classList.add('hidden')"
                     class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
