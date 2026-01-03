@@ -798,9 +798,14 @@ function selectFlight(idx) {
 
     // Set Date
     if (f.date && f.date.includes('/')) {
-        const m = parts[0];
-        const d = parts[1];
-        document.getElementById('dutyDate').value = `${y}-${m}-${d}`;
+        const parts = f.date.split('/'); // MM, DD, YY
+        // Robustness: ensure parts exist
+        if (parts.length >= 3) {
+            const m = parts[0].padStart(2, '0');
+            const d = parts[1].padStart(2, '0');
+            const y = "20" + parts[2];
+            document.getElementById('dutyDate').value = `${y}-${m}-${d}`;
+        }
     }
 
     document.getElementById('flightModal').classList.add('hidden');
