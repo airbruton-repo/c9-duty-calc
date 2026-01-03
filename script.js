@@ -578,7 +578,11 @@ function processOCRText(text) {
     }
 
     // 2. EXTRACTION
-    const pairingMatch = text.match(/Pairing\s*[#:]*\s*([A-Z0-9]+)/i) || text.match(/([D|F|S|L|E|I|H|O][A-Z0-9]{3,4})/);
+    // Relaxed Regex: Look for Letter followed by 4 digits (e.g. F5005, D1234)
+    // Common bases: D, F, S, L, E, I, H, O
+    const pairingMatch = text.match(/([DFSLEIHO]\d{4,5}[A-Z]?)/);
+    // This captures "F5005" even if it's "¥ F5005"
+
     let pairingId = "---";
     let homeBase = "DEN";
     if (pairingMatch) {
@@ -631,7 +635,10 @@ function processOCRText(text) {
                 const times = line.match(/(\d{2}[:.]\d{2})/g);
                 let depTime = times && times.length > 0 ? times[0].replace('.', ':') : "";
                 let arrTime = times && times.length > 1 ? times[1].replace('.', ':') : "";
-                // Capture Block Time (usually 3rd time in the row: Dep, Arr, Block)
+
+                // Block Time Strategy:
+                // 1. Check current line (times[2])
+                // 2. If not there, check NEXT line
                 let blockTime = times && times.length > 2 ? times[2].replace('.', ':') : "";
 
                 let depAir = "???";
@@ -645,11 +652,26 @@ function processOCRText(text) {
                 };
 
                 let airCands = findAirports(line);
-                if ((!airCands || airCands.length < 2) && (i + 1 < lines.length)) {
+                let nextLineUsed = false;
+
+                // Check next line content
+                if (i + 1 < lines.length) {
                     const nextLine = lines[i + 1];
-                    const nextCands = findAirports(nextLine);
-                    if (nextCands && nextCands.length >= 2) {
-                        airCands = nextCands;
+                    // Check for Airports on next line
+                    if (!airCands || airCands.length < 2) {
+                        const nextCands = findAirports(nextLine);
+                        if (nextCands && nextCands.length >= 2) {
+                            airCands = nextCands;
+                        }
+                    }
+
+                    // Check for Block Time on next line if missing
+                    if (!blockTime) {
+                        const nextTimes = nextLine.match(/(\d{2}[:.]\d{2})/g);
+                        // Usually the block time is the FIRST time on the second line (e.g. "SFO - PEK 14:15")
+                        if (nextTimes && nextTimes.length > 0) {
+                            blockTime = nextTimes[0].replace('.', ':');
+                        }
                     }
                 }
 
