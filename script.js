@@ -627,9 +627,12 @@ function processOCRText(text) {
                 if (!fltMatch) continue;
                 const fltNum = fltMatch[1];
 
+                // Regex to find HH:MM or HH.MM style times
                 const times = line.match(/(\d{2}[:.]\d{2})/g);
                 let depTime = times && times.length > 0 ? times[0].replace('.', ':') : "";
                 let arrTime = times && times.length > 1 ? times[1].replace('.', ':') : "";
+                // Capture Block Time (usually 3rd time in the row: Dep, Arr, Block)
+                let blockTime = times && times.length > 2 ? times[2].replace('.', ':') : "";
 
                 let depAir = "???";
                 let arrAir = "???";
@@ -663,6 +666,7 @@ function processOCRText(text) {
                     arrTime: arrTime,
                     depAir: depAir,
                     arrAir: arrAir,
+                    blockTime: blockTime, // Store captured block time
                     homeBase: homeBase
                 });
 
@@ -755,14 +759,34 @@ function selectFlight(idx) {
     console.log("Selected flight: ", f);
 
     // Populate Fields
-    // Force Home Base setting (ensure it overrides resetForm default)
+    // Force Home Base setting
     const hbSelect = document.getElementById('homeBase');
-    if (f.homeBase && hbSelect.querySelector(`option[value="${f.homeBase}"]`)) {
-        hbSelect.value = f.homeBase;
+
+    // HOME BASE LOGIC:
+    // 1. Try f.homeBase (from pairing)
+    // 2. If DEN (default) or invalid, try f.depAir (first flight origin) if it exists in list?
+    // Actually, usually the crew starts at their home base on the first flight.
+
+    let baseToSet = f.homeBase;
+
+    // If baseToSet is "DEN" (default) but the Departure Airport is in the base list, use that instead?
+    // (Assuming simple pairings where first leg is from base)
+    // Only verify if we are sure "DEN" wasn't explicitly parsed.
+    // The parser defaults to DEN if no pairing match.
+    // Let's rely on pairing FIRST.
+
+    // Check if baseToSet is valid in dropdown
+    if (baseToSet && hbSelect.querySelector(`option[value="${baseToSet}"]`)) {
+        hbSelect.value = baseToSet;
     } else {
-        // Fallback if not in list, maybe add it dynamically? 
-        // For now, default to DEN if invalid
-        console.warn("HomeBase not found in list:", f.homeBase);
+        // Fallback: If pairing parsing failed, maybe user is based in the Departure city?
+        // E.g. Dep "SFO". Is SFO in BASES?
+        if (f.depAir && hbSelect.querySelector(`option[value="${f.depAir}"]`)) {
+            hbSelect.value = f.depAir;
+        } else {
+            // Fallback default
+            hbSelect.value = "DEN";
+        }
     }
 
     // Airports
@@ -778,25 +802,15 @@ function selectFlight(idx) {
     }
 
     // Flight Time (Duration)
-    let calculatedDuration = "";
-    if (f.depTime && f.arrTime && f.arrTime !== "??:??") {
-        const parseMins = (t) => {
-            const p = t.split(':');
-            return parseInt(p[0]) * 60 + parseInt(p[1]);
-        };
-        let d = parseMins(f.depTime);
-        let a = parseMins(f.arrTime);
-
-        if (a < d) a += 1440; // Overnight
-
-        let diff = a - d;
-        const h = Math.floor(diff / 60);
-        const m = diff % 60;
-        calculatedDuration = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    // Use PASSED block time if available, otherwise blank.
+    if (f.blockTime && f.blockTime.length >= 4) {
+        document.getElementById('flightTimeInput').value = f.blockTime;
+    } else {
+        document.getElementById('flightTimeInput').value = "";
     }
 
     const ftInput = document.getElementById('flightTimeInput');
-    ftInput.value = calculatedDuration;
+    // ftInput.value already set above.
 
     // IMPORTANT: Reset valid flags
     validateAirport(document.getElementById('reportAirport'));
@@ -820,7 +834,7 @@ function selectFlight(idx) {
 
     // Recalculate if possible (only if flight time exists)
     if (calculatedDuration) {
-        // We need to trigger the format/pad logic just in case? 
+        // We need to trigger the format/pad logic just in case?
         // No, value is already formatted "HH:MM".
     }
 }
