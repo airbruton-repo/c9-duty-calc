@@ -88,7 +88,7 @@ function resetResult() {
     document.getElementById('errorContainer').classList.add('hidden');
     const isDom = document.getElementById('modeDom').checked;
     const prefix = isDom ? "<b class='uppercase'>DOMESTIC</b>" : "<b class='uppercase'>INTERNATIONAL</b>";
-    document.getElementById('liveCalcText').innerHTML = `${prefix} Actual Max Duty = <b class="font-bold">--:--</b>. This is based on your report time of <b class="font-bold">--:--</b> (HDT).`;
+    document.getElementById('liveCalcText').innerHTML = ""; // Clear initial text to avoid "ghost message" until calc is ready
 
 }
 
@@ -565,9 +565,7 @@ function processOCRText(text) {
     }
 
     // 3. FLIGHT PARSING
-    // We need to look for patterns like: UA 2159 10:00 B47 DEN
-    // But OCR lines can be messy.
-    // Strategy: Split by lines. Look for "UA" or "United".
+    // Strategy: Line-by-Line with look-ahead state
     const lines = text.split('\n');
     let flights = [];
     let currentDutyDate = "";
@@ -577,8 +575,9 @@ function processOCRText(text) {
     for (let i = 0; i < lines.length; i++) {
         let line = lines[i].trim();
 
-        // 1. DATE Parsing (DP Header)
+        // A. DATE Parsing (DP Header)
         // Matches: DP 01 01/05/26
+        // Regex: DP \s* \d+ \s* (\d{1,2}/\d{1,2}/\d{2})
         const dateMatch = line.match(/DP\s*\d+\s*(\d{1,2}\/\d{1,2}\/\d{2})/);
         if (dateMatch) {
             currentDutyDate = dateMatch[1];
@@ -586,10 +585,10 @@ function processOCRText(text) {
             currentReportTime = "";
         }
 
-        // 2. REPORT TIME Parsing
+        // B. REPORT TIME Parsing
         // The raw text shows "Report ... Debrief" header, then values on NEXT line.
         // OR sometimes standard "Report: 09:00" on same line.
-        if (line.match(/Report/i)) {
+        if (line.match(/Report/i) || line.match(/Check-In/i)) {
             // Check if time is on THIS line
             let rTime = line.match(/(\d{2}[:.]\d{2})/);
             if (rTime) {
@@ -606,9 +605,10 @@ function processOCRText(text) {
             }
         }
 
-        // 3. FLIGHT Parsing (Multi-line)
+        // C. FLIGHT Parsing (Multi-line)
         // Line A: UA 888 11:10 17:25 (Flight #, Times)
         // Line B: ... SFO - PEK ... (Airports)
+        // Check for UA/United + Flight# (3-4 digits usually)
         if ((line.includes("UA") || line.includes("United")) && (line.match(/\s\d{3,4}\s/) || line.match(/Flight/i))) {
             try {
                 // Extract Flight Num
@@ -626,26 +626,56 @@ function processOCRText(text) {
                 let depAir = "???";
                 let arrAir = "???";
 
-                arrAir: arrAir,
+                // Helper to find airports in a string
+                const findAirports = (str) => {
+                    // Look for SFO - PEK or SFO PEK. 3 caps.
+                    const caps = str.match(/[A-Z]{3}/g);
+                    if (!caps) return null;
+                    const NOISE = ['ARR', 'DEP', 'FLT', 'SKD', 'ACT', 'BLK', 'GRD', 'EQP', 'DHD', 'LAY', 'OUT', 'OFF', 'ON', 'IN', 'SAT', 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'POS'];
+                    return caps.filter(c => !NOISE.includes(c) && !c.includes('DP')); // Filter DP if it appears
+                };
+
+                let airCands = findAirports(line);
+
+                // If not enough airports on Flight line, check NEXT line
+                if ((!airCands || airCands.length < 2) && (i + 1 < lines.length)) {
+                    const nextLine = lines[i + 1];
+                    const nextCands = findAirports(nextLine);
+                    if (nextCands && nextCands.length >= 2) {
+                        airCands = nextCands;
+                    }
+                }
+
+                if (airCands && airCands.length >= 2) {
+                    depAir = airCands[0];
+                    arrAir = airCands[1];
+                }
+
+                flights.push({
+                    date: currentDutyDate || "Unknown",
+                    reportTime: currentReportTime,
+                    flt: fltNum,
+                    depTime: depTime,
+                    arrTime: arrTime,
+                    depAir: depAir,
+                    arrAir: arrAir,
                     homeBase: homeBase
-            });
+                });
+
+            } catch (e) { console.warn("Parse error", e); }
         }
-    } catch (ex) {
-        console.warn("Failed to parse line: " + line);
     }
-}
-    });
 
-if (flights.length === 0) {
-    showScanError("No flights found. Ensure image is clear and contains 'UA' flight numbers.");
-    return;
-}
+    if (flights.length === 0) {
+        showScanError("No flights found. Ensure image is clear and contains 'UA' flight numbers.");
+        return;
+    }
 
-// Success -> Show Selection Modal
-closeScanModal(); // Close scan, open flight list
-parsedFlights = flights;
-window.lastOcrText = text; // Store for debugging
-renderFlightSelection(flights, pairingId);
+    // Success -> Show Selection Modal
+    closeScanModal(); // Close scan, open flight list
+    parsedFlights = flights;
+    window.lastOcrText = text; // Store for debugging
+    renderFlightSelection(flights, pairingId);
 }
 
 function showRawOcr() {
