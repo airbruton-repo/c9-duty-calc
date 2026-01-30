@@ -801,12 +801,6 @@ function init() {
     window.applyCalcTotal = applyCalcTotal;
     window.answerMultiSeg = answerMultiSeg;
     window.resetMultiSegButtons = resetMultiSegButtons;
-
-    // OCR Exports
-    window.openScanModal = openScanModal;
-    window.closeScanModal = closeScanModal;
-    window.handleFileSelect = handleFileSelect;
-    window.selectFlight = selectFlight;
 }
 
 window.addEventListener('DOMContentLoaded', init);
