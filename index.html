@@ -69,8 +69,12 @@
                 <div class="w-px h-3 bg-white/20"></div>
                 <button onclick="resetForm()"
                     class="text-[10px] text-blue-200 hover:text-white underline">Reset</button>
-                <span
-                    class="text-[9px] text-[#4ade80] font-mono border border-[#4ade80]/30 px-1.5 py-0.5 rounded ml-1">v1.38</span>
+                <div class="w-px h-3 bg-white/20"></div>
+                <select id="guidedModeSelect" onchange="setGuidedMode(this.value)"
+                    class="text-[9px] text-[#4ade80] font-semibold bg-transparent border border-[#4ade80]/30 px-1.5 py-0.5 rounded cursor-pointer">
+                    <option value="pro" class="text-gray-900">🎯 Pro</option>
+                    <option value="guided" class="text-gray-900">📖 Guided</option>
+                </select>
             </div>
         </div>
 
@@ -82,9 +86,9 @@
                 <div class="text-center mb-4">
                     <i class="fa-solid fa-plane-departure text-3xl text-[#005DAA] mb-2"></i>
                     <h2 class="text-lg font-bold text-[#002244]">Welcome to the Duty Max Calculator</h2>
-                    <p class="text-sm text-gray-600 mt-2">Select your flying type to get started:</p>
+                    <p class="text-sm text-gray-600 mt-2">Select your pairing type:</p>
                 </div>
-                <div class="flex gap-3">
+                <div class="flex gap-3 mb-3">
                     <button onclick="selectModeFromSplash('dom')"
                         class="welcome-btn flex-1 bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold py-3 px-4 rounded-lg transition-all flex flex-col items-center gap-1">
                         <i class="fa-solid fa-flag-usa text-xl"></i>
@@ -95,6 +99,18 @@
                         <i class="fa-solid fa-globe text-xl"></i>
                         <span>INTERNATIONAL</span>
                     </button>
+                </div>
+                <div class="text-center">
+                    <button onclick="showInfo('mixed')"
+                        class="text-[#4ade80] text-[12px] font-semibold hover:underline">
+                        Not sure? <i class="fa-solid fa-circle-question"></i>
+                    </button>
+                </div>
+                <div class="mt-4 pt-3 border-t border-gray-200 text-center">
+                    <p class="text-[10px] text-gray-500">
+                        <i class="fa-solid fa-lightbulb text-[#4ade80]"></i>
+                        First time? Enable <b>Guided Mode</b> in the header for step-by-step help!
+                    </p>
                 </div>
             </div>
         </div>

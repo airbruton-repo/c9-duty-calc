@@ -501,6 +501,11 @@ body.dark-mode {
     box-shadow: 0 4px 12px rgba(0, 93, 170, 0.4);
 }
 
+.welcome-btn:active {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 93, 170, 0.5);
+}
+
 .dark-mode .welcome-card {
     background: #1f2937;
 }
