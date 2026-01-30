@@ -99,6 +99,49 @@
             </div>
         </div>
 
+        <!-- CO-TERMINAL SPLASH -->
+        <div id="coTermSplash" class="welcome-overlay hidden">
+            <div class="welcome-card">
+                <div class="text-center mb-3">
+                    <i class="fa-solid fa-shuffle text-3xl text-[#005DAA] mb-2"></i>
+                    <h2 class="text-lg font-bold text-[#002244]">Co-Terminal Pairing?</h2>
+                </div>
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-4 text-left">
+                    <p class="text-xs text-gray-700 leading-relaxed">
+                        Your home base (<span id="coTermHomeBase" class="font-bold"></span>) has co-terminals.
+                    </p>
+                    <p class="text-xs text-gray-700 leading-relaxed mt-2">
+                        Is this the <b>final duty period</b> of your pairing <b>AND</b> does it terminate at a
+                        <b>different co-terminal</b> than where your pairing began?
+                    </p>
+                    <p class="text-xs text-gray-500 mt-2 italic">
+                        (Example: Pairing started at <b>EWR</b> but ends at <b>LGA</b>)
+                    </p>
+                </div>
+                <div id="coTermStep1" class="flex gap-3">
+                    <button onclick="answerCoTermSplash(false)"
+                        class="welcome-btn flex-1 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition-all">
+                        NO
+                    </button>
+                    <button onclick="answerCoTermSplash(true)"
+                        class="welcome-btn flex-1 bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold py-3 px-4 rounded-lg transition-all">
+                        YES
+                    </button>
+                </div>
+                <div id="coTermStep2" class="hidden">
+                    <p class="text-sm text-gray-700 mb-3 font-semibold">Which co-terminal does your pairing end at?</p>
+                    <select id="coTermSplashSelect"
+                        class="w-full p-3 text-sm bg-white border-2 border-blue-200 rounded-lg text-gray-700 mb-3">
+                        <option value="0">Select Terminal...</option>
+                    </select>
+                    <button onclick="confirmCoTermSelection()"
+                        class="w-full bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold py-3 px-4 rounded-lg transition-all">
+                        CONFIRM
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- MAIN CONTENT AREA -->
         <div class="p-2 space-y-2">
 

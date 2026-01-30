@@ -164,11 +164,89 @@ function checkCoTerminal() {
     const check = document.getElementById('isCoTerm');
     check.checked = false;
     toggleCoTermDropdown();
+
+    // Show co-terminal splash if home base has co-terminals
     if (CO_TERMS[hb]) {
         container.classList.remove('hidden');
+        showCoTermSplash(hb);
     } else {
         container.classList.add('hidden');
     }
+}
+
+// Show the co-terminal splash overlay
+function showCoTermSplash(homeBase) {
+    const splash = document.getElementById('coTermSplash');
+    const hbSpan = document.getElementById('coTermHomeBase');
+    const step1 = document.getElementById('coTermStep1');
+    const step2 = document.getElementById('coTermStep2');
+    const splashSelect = document.getElementById('coTermSplashSelect');
+
+    // Set home base name
+    hbSpan.textContent = homeBase;
+
+    // Reset to step 1
+    step1.classList.remove('hidden');
+    step2.classList.add('hidden');
+
+    // Populate the dropdown with co-terminal options
+    splashSelect.innerHTML = '<option value="0">Select Terminal...</option>';
+    if (CO_TERMS[homeBase]) {
+        Object.entries(CO_TERMS[homeBase]).forEach(([code, mins]) => {
+            const opt = document.createElement('option');
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            const dur = `${h}:${m.toString().padStart(2, '0')}`;
+            opt.value = mins;
+            opt.text = `${code} (Surface: ${dur})`;
+            splashSelect.appendChild(opt);
+        });
+    }
+
+    // Show the splash
+    splash.classList.remove('hidden');
+}
+
+// Handle Yes/No answer on co-terminal splash
+function answerCoTermSplash(isYes) {
+    const step1 = document.getElementById('coTermStep1');
+    const step2 = document.getElementById('coTermStep2');
+    const splash = document.getElementById('coTermSplash');
+    const check = document.getElementById('isCoTerm');
+
+    if (isYes) {
+        // Show step 2 (terminal selection)
+        step1.classList.add('hidden');
+        step2.classList.remove('hidden');
+    } else {
+        // User said No - hide splash and uncheck the box
+        splash.classList.add('hidden');
+        check.checked = false;
+        toggleCoTermDropdown();
+    }
+}
+
+// Confirm co-terminal selection from splash
+function confirmCoTermSelection() {
+    const splash = document.getElementById('coTermSplash');
+    const splashSelect = document.getElementById('coTermSplashSelect');
+    const mainSelect = document.getElementById('coTermSelect');
+    const check = document.getElementById('isCoTerm');
+
+    if (splashSelect.value === "0") {
+        alert("Please select a terminal");
+        return;
+    }
+
+    // Check the box and set the main dropdown
+    check.checked = true;
+    toggleCoTermDropdown();
+
+    // Sync the selection to the main dropdown
+    mainSelect.value = splashSelect.value;
+
+    // Hide splash
+    splash.classList.add('hidden');
 }
 
 function toggleCoTermDropdown() {
@@ -927,6 +1005,8 @@ function init() {
     window.resetMultiSegButtons = resetMultiSegButtons;
     window.setFormDisabledState = setFormDisabledState;
     window.selectModeFromSplash = selectModeFromSplash;
+    window.answerCoTermSplash = answerCoTermSplash;
+    window.confirmCoTermSelection = confirmCoTermSelection;
 }
 
 // Handle mode selection from welcome splash
