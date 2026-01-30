@@ -75,10 +75,11 @@ function toggleMode() {
 
 // Disable/enable form fields based on mode selection
 function setFormDisabledState(disabled) {
-    // Get all input fields, selects, and buttons in the form area (not the mode buttons)
+    // Get all input fields, selects, and buttons in the form area (not the mode buttons or Calculate)
+    // Note: btnCalculate is NOT disabled - it stays clickable so users can see validation errors
     const fieldsToDisable = [
         'reportAirport', 'reportTime', 'depAirport', 'flightTimeInput',
-        'isHVT', 'isDHD', 'customsEnd', 'isCoTerm', 'btnCalculate'
+        'isHVT', 'isDHD', 'customsEnd', 'isCoTerm'
     ];
 
     fieldsToDisable.forEach(id => {
