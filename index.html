@@ -158,6 +158,83 @@
             </div>
         </div>
 
+        <!-- GUIDED: REPORT INFO SPLASH -->
+        <div id="guidedReportSplash" class="welcome-overlay hidden">
+            <div class="welcome-card">
+                <div class="text-center mb-3">
+                    <i class="fa-solid fa-clock text-3xl text-[#005DAA] mb-2"></i>
+                    <h2 class="text-lg font-bold text-[#002244]">Step 1: Report Info</h2>
+                </div>
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-4 text-left">
+                    <p class="text-xs text-gray-700 leading-relaxed">
+                        <b>Report City:</b> Where does your duty day begin? Enter the 3-letter airport code.
+                    </p>
+                    <p class="text-xs text-gray-700 leading-relaxed mt-2">
+                        <b>Report Time:</b> What time do you report for duty? Use local time (HHMM format).
+                    </p>
+                    <p class="text-xs text-gray-500 mt-2 italic">
+                        💡 The time zone will auto-detect based on your airport code!
+                    </p>
+                </div>
+                <button onclick="closeGuidedSplash('report')"
+                    class="welcome-btn w-full bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold py-3 px-4 rounded-lg transition-all">
+                    GOT IT
+                </button>
+            </div>
+        </div>
+
+        <!-- GUIDED: DOOR CLOSE SPLASH -->
+        <div id="guidedDoorCloseSplash" class="welcome-overlay hidden">
+            <div class="welcome-card">
+                <div class="text-center mb-3">
+                    <i class="fa-solid fa-plane-arrival text-3xl text-[#005DAA] mb-2"></i>
+                    <h2 class="text-lg font-bold text-[#002244]">Step 2: Door Close Info</h2>
+                </div>
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-4 text-left">
+                    <p class="text-xs text-gray-700 leading-relaxed">
+                        <b>Door Close City:</b> What airport is your <b>final flight</b> departing from?
+                    </p>
+                    <p class="text-xs text-gray-700 leading-relaxed mt-2">
+                        <b>Scheduled Flight Time:</b> How long is that flight? (H:MM or HH:MM format)
+                    </p>
+                    <p class="text-xs text-gray-500 mt-2 italic">
+                        💡 We use this to calculate your latest legal door close time!
+                    </p>
+                </div>
+                <button onclick="closeGuidedSplash('doorclose')"
+                    class="welcome-btn w-full bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold py-3 px-4 rounded-lg transition-all">
+                    GOT IT
+                </button>
+            </div>
+        </div>
+
+        <!-- GUIDED: MODIFIERS SPLASH -->
+        <div id="guidedModifiersSplash" class="welcome-overlay hidden">
+            <div class="welcome-card">
+                <div class="text-center mb-3">
+                    <i class="fa-solid fa-sliders text-3xl text-[#005DAA] mb-2"></i>
+                    <h2 class="text-lg font-bold text-[#002244]">Step 3: Modifiers</h2>
+                </div>
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-4 text-left">
+                    <p class="text-xs text-gray-700 leading-relaxed">
+                        Check any that apply to your pairing:
+                    </p>
+                    <ul class="text-xs text-gray-700 mt-2 space-y-1.5 ml-3">
+                        <li><b>• HVT:</b> High Value Trip (9+ hrs, ≤3 segments)</li>
+                        <li><b>• Deadhead:</b> Your door close segment is a DH</li>
+                        <li><b>• Customs:</b> Clearing customs after final arrival</li>
+                    </ul>
+                    <p class="text-xs text-gray-500 mt-2 italic">
+                        💡 These affect your debrief time and max duty!
+                    </p>
+                </div>
+                <button onclick="closeGuidedSplash('modifiers')"
+                    class="welcome-btn w-full bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold py-3 px-4 rounded-lg transition-all">
+                    GOT IT
+                </button>
+            </div>
+        </div>
+
         <!-- MAIN CONTENT AREA -->
         <div class="p-2 space-y-2">
 
@@ -259,6 +336,7 @@
                             class="text-sub block text-[10px] font-bold text-gray-500 uppercase mb-0.5 w-[50px] leading-tight">Report<br>City</label>
                         <input type="text" id="reportAirport" placeholder="CODE" maxlength="3"
                             class="input-bg w-full px-2 bg-white border border-gray-200 rounded text-xs font-black text-gray-900 uppercase h-8 placeholder-gray-400 transition-colors duration-300"
+                            onfocus="showGuidedSplash('report')"
                             oninput="validateAirport(this); resetResult(); updateLiveCalc();">
                     </div>
 
@@ -325,6 +403,7 @@
                             Close<br>City</label>
                         <input type="text" id="depAirport" placeholder="CODE" maxlength="3"
                             class="input-bg w-full px-2 bg-white border border-gray-200 rounded text-xs font-black text-gray-900 uppercase h-8 placeholder-gray-400 transition-colors duration-300"
+                            onfocus="showGuidedSplash('doorclose')"
                             oninput="validateAirport(this); resetResult(); updateLiveCalc();">
                     </div>
 
@@ -408,7 +487,7 @@
                     <div class="flex items-center gap-2" id="hvtContainer">
                         <label class="flex items-center gap-2 cursor-pointer flex-1">
                             <input type="checkbox" id="isHVT" class="w-4 h-4 text-[#005DAA] rounded"
-                                onchange="resetResult()">
+                                onfocus="showGuidedSplash('modifiers')" onchange="resetResult()">
                             <span class="text-[11px] text-gray-700">Is this a <b>High Value Trip</b> (HVT)?</span>
                         </label>
                         <button onclick="showInfo('hvt')" class="icon-blue text-[#005DAA] text-[12px] hover:underline">

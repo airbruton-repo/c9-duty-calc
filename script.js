@@ -7,16 +7,45 @@ let multiSegAnswered = false;
 
 // Guided mode state
 let isGuidedMode = false;
+let guidedSplashesShown = { report: false, doorclose: false, modifiers: false };
 
 function setGuidedMode(mode) {
     isGuidedMode = (mode === 'guided');
     localStorage.setItem('guidedMode', mode);
     document.getElementById('guidedModeSelect').value = mode;
+    // Reset splash tracking when switching to guided mode
+    if (isGuidedMode) {
+        guidedSplashesShown = { report: false, doorclose: false, modifiers: false };
+    }
 }
 
 function loadGuidedMode() {
     const saved = localStorage.getItem('guidedMode') || 'pro';
     setGuidedMode(saved);
+}
+
+function showGuidedSplash(section) {
+    if (!isGuidedMode || guidedSplashesShown[section]) return;
+    const splashId = {
+        report: 'guidedReportSplash',
+        doorclose: 'guidedDoorCloseSplash',
+        modifiers: 'guidedModifiersSplash'
+    }[section];
+    if (splashId) {
+        document.getElementById(splashId).classList.remove('hidden');
+        guidedSplashesShown[section] = true;
+    }
+}
+
+function closeGuidedSplash(section) {
+    const splashId = {
+        report: 'guidedReportSplash',
+        doorclose: 'guidedDoorCloseSplash',
+        modifiers: 'guidedModifiersSplash'
+    }[section];
+    if (splashId) {
+        document.getElementById(splashId).classList.add('hidden');
+    }
 }
 
 function copyReceipt() {
@@ -1025,6 +1054,8 @@ function init() {
     window.answerCoTermSplash = answerCoTermSplash;
     window.confirmCoTermSelection = confirmCoTermSelection;
     window.setGuidedMode = setGuidedMode;
+    window.showGuidedSplash = showGuidedSplash;
+    window.closeGuidedSplash = closeGuidedSplash;
 }
 
 // Handle mode selection from welcome splash
