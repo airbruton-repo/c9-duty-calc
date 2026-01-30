@@ -428,3 +428,45 @@ body.dark-mode {
     background-color: #005DAA;
     border-color: #005DAA;
 }
+
+/* Validation error states */
+.mode-missing {
+    border: 2px solid #ef4444 !important;
+    animation: pulse-red 1s ease-in-out infinite;
+}
+
+.seg-missing {
+    border: 2px solid #ef4444 !important;
+    animation: pulse-red 1s ease-in-out infinite;
+}
+
+@keyframes pulse-red {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+    }
+}
+
+/* Disabled state for form sections until mode is selected */
+.section-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.field-disabled {
+    background-color: #f3f4f6 !important;
+    cursor: not-allowed;
+}
+
+.dark-mode .section-disabled {
+    opacity: 0.4;
+}
+
+.dark-mode .field-disabled {
+    background-color: #374151 !important;
+}

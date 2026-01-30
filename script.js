@@ -19,19 +19,14 @@ function copyReceipt() {
 function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     const icon = document.getElementById('darkModeIcon');
-    const text = document.getElementById('darkModeText');
     const themeMeta = document.getElementById('themeColor');
 
     if (document.body.classList.contains('dark-mode')) {
         icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
-        text.textContent = "Light Mode";
         themeMeta.content = "#1f2937";
-
     } else {
         icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
-        text.textContent = "Dark Mode";
         themeMeta.content = "#002244";
-
     }
     validateAirport(document.getElementById('reportAirport'));
     validateAirport(document.getElementById('depAirport'));
@@ -39,9 +34,24 @@ function toggleDarkMode() {
 
 function toggleMode() {
     const isDom = document.getElementById('modeDom').checked;
+    const isInt = document.getElementById('modeInt').checked;
     const hvtCheck = document.getElementById('isHVT');
     const hvtCont = document.getElementById('hvtContainer');
     const multiSegCont = document.getElementById('multiSegContainer');
+    const domCheck = document.getElementById('domCheck');
+    const intCheck = document.getElementById('intCheck');
+
+    // Enable form when mode is selected
+    if (isDom || isInt) {
+        setFormDisabledState(false);
+        // Clear mode error styling
+        document.getElementById('modeDomLabel')?.classList.remove('mode-missing');
+        document.getElementById('modeIntLabel')?.classList.remove('mode-missing');
+    }
+
+    // Toggle checkmarks
+    if (domCheck) domCheck.classList.toggle('hidden', !isDom);
+    if (intCheck) intCheck.classList.toggle('hidden', !isInt);
 
     if (isDom) {
         hvtCheck.disabled = false;
@@ -63,11 +73,57 @@ function toggleMode() {
     resetResult();
 }
 
+// Disable/enable form fields based on mode selection
+function setFormDisabledState(disabled) {
+    // Get all input fields, selects, and buttons in the form area (not the mode buttons)
+    const fieldsToDisable = [
+        'reportAirport', 'reportTime', 'depAirport', 'flightTimeInput',
+        'isHVT', 'isDHD', 'customsEnd', 'isCoTerm', 'btnCalculate'
+    ];
+
+    fieldsToDisable.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.disabled = disabled;
+            if (disabled) {
+                el.classList.add('field-disabled');
+            } else {
+                el.classList.remove('field-disabled');
+            }
+        }
+    });
+
+    // Also handle the select elements
+    ['homeBase', 'repManualZone', 'depManualZone'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.disabled = disabled;
+        }
+    });
+
+    // Apply overlay to form sections
+    const sections = document.querySelectorAll('.group-bg');
+    sections.forEach(section => {
+        if (disabled) {
+            section.classList.add('section-disabled');
+        } else {
+            section.classList.remove('section-disabled');
+        }
+    });
+}
+
+
 function resetMultiSegButtons() {
     const noBtn = document.getElementById('multiSegNo');
     const yesBtn = document.getElementById('multiSegYes');
-    if (noBtn) noBtn.classList.remove('active');
-    if (yesBtn) yesBtn.classList.remove('active');
+    if (noBtn) {
+        noBtn.classList.remove('active');
+        noBtn.textContent = 'Single';
+    }
+    if (yesBtn) {
+        yesBtn.classList.remove('active');
+        yesBtn.textContent = 'Multi';
+    }
 }
 
 function answerMultiSeg(isYes) {
@@ -76,15 +132,23 @@ function answerMultiSeg(isYes) {
 
     multiSegAnswered = true;
 
-    // Update button states
+    // Remove error classes
+    if (noBtn) noBtn.classList.remove('seg-missing');
+    if (yesBtn) yesBtn.classList.remove('seg-missing');
+
+    // Update button states with checkmarks
     if (isYes) {
         yesBtn.classList.add('active');
+        yesBtn.textContent = 'Multi ✓';
         noBtn.classList.remove('active');
+        noBtn.textContent = 'Single';
         // Open the multi-segment modal (will pre-fill from existing flight time)
         openMultiSegModal();
     } else {
         noBtn.classList.add('active');
+        noBtn.textContent = 'Single ✓';
         yesBtn.classList.remove('active');
+        yesBtn.textContent = 'Multi';
         // Reset multi-segment values - use single flight time
         multiSegTotalMins = 0;
         multiSegSelectedMins = 0;
@@ -358,29 +422,68 @@ let lastCalc = {};
 function calculateDuty() {
     const errCont = document.getElementById('errorContainer'), errMsg = document.getElementById('errorMsg'); errCont.classList.add('hidden');
 
-    // --- NEW: Reset Error Classes Before Checking ---
+    // --- Reset ALL Error Classes First ---
+    const modeDom = document.getElementById('modeDom');
+    const modeInt = document.getElementById('modeInt');
+    const modeDomLabel = document.getElementById('modeDomLabel');
+    const modeIntLabel = document.getElementById('modeIntLabel');
+    const multiSegContainer = document.getElementById('multiSegContainer');
+    const multiSegNo = document.getElementById('multiSegNo');
+    const multiSegYes = document.getElementById('multiSegYes');
+
+    // Clear mode error styling
+    if (modeDomLabel) modeDomLabel.classList.remove('mode-missing');
+    if (modeIntLabel) modeIntLabel.classList.remove('mode-missing');
+
+    // Clear segment button error classes
+    if (multiSegNo) multiSegNo.classList.remove('seg-missing');
+    if (multiSegYes) multiSegYes.classList.remove('seg-missing');
+
+    // Clear field error classes
     ['dutyDate', 'homeBase', 'reportAirport', 'reportTime', 'depAirport', 'flightTimeInput'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.remove('input-missing');
     });
 
+    // --- Check ALL Conditions and Collect Errors ---
+    let hasError = false;
+    let missingItems = [];
+
+    // Check Mode Selection
+    if (!modeDom.checked && !modeInt.checked) {
+        if (modeDomLabel) modeDomLabel.classList.add('mode-missing');
+        if (modeIntLabel) modeIntLabel.classList.add('mode-missing');
+        missingItems.push('Mode');
+        hasError = true;
+    }
+
+    // Check Segment Selection (International only)
+    if (modeInt.checked && multiSegContainer && !multiSegContainer.classList.contains('hidden')) {
+        const singleSelected = multiSegNo?.classList.contains('active');
+        const multiSelected = multiSegYes?.classList.contains('active');
+
+        if (!singleSelected && !multiSelected) {
+            if (multiSegNo) multiSegNo.classList.add('seg-missing');
+            if (multiSegYes) multiSegYes.classList.add('seg-missing');
+            missingItems.push('Segment');
+            hasError = true;
+        }
+    }
+
+    // Check Required Fields
     const req = [{ id: 'dutyDate', n: 'Duty Date' }, { id: 'homeBase', n: 'Home Base' }, { id: 'reportAirport', n: 'Report City' }, { id: 'reportTime', n: 'Report Time' }, { id: 'depAirport', n: 'Dep City' }, { id: 'flightTimeInput', n: 'Flight Time' }];
 
-    let hasError = false;
-    let firstMissing = null;
-
-    // --- NEW: Loop to highlight ALL missing fields ---
     for (let r of req) {
         const el = document.getElementById(r.id);
         if (!el.value) {
             el.classList.add('input-missing');
-            if (!firstMissing) firstMissing = r.n;
+            missingItems.push(r.n);
             hasError = true;
         }
     }
 
     if (hasError) {
-        errMsg.textContent = `Missing: ${firstMissing}`;
+        errMsg.textContent = `Missing: ${missingItems[0]}${missingItems.length > 1 ? ` (+${missingItems.length - 1} more)` : ''}`;
         errCont.classList.remove('hidden');
         return;
     }
@@ -735,6 +838,10 @@ function init() {
     });
 
     checkCoTerminal();
+
+    // Initially disable form until mode is selected
+    setFormDisabledState(true);
+
     document.getElementById('reportAirport').addEventListener('input', checkTestTrigger);
     // Add flight warning listener
     const fltInput = document.getElementById('flightTimeInput');
@@ -801,6 +908,7 @@ function init() {
     window.applyCalcTotal = applyCalcTotal;
     window.answerMultiSeg = answerMultiSeg;
     window.resetMultiSegButtons = resetMultiSegButtons;
+    window.setFormDisabledState = setFormDisabledState;
 }
 
 window.addEventListener('DOMContentLoaded', init);
