@@ -518,6 +518,6 @@ body.dark-mode {
     color: #e5e7eb !important;
 }
 
-.dark-mode button.text-\[#005DAA\] {
-    color: #60a5fa !important;
+.dark-mode .definitions-link {
+    color: #e5e7eb !important;
 }
