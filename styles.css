@@ -512,3 +512,12 @@ body.dark-mode {
 .dark-mode .welcome-card p {
     color: #9ca3af;
 }
+
+/* Dark mode text readability fixes */
+.dark-mode .text-gray-700 {
+    color: #e5e7eb !important;
+}
+
+.dark-mode button.text-\[#005DAA\] {
+    color: #60a5fa !important;
+}
