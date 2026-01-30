@@ -76,6 +76,29 @@
 
 
 
+        <!-- WELCOME SPLASH -->
+        <div id="welcomeSplash" class="welcome-overlay">
+            <div class="welcome-card">
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-plane-departure text-3xl text-[#005DAA] mb-2"></i>
+                    <h2 class="text-lg font-bold text-[#002244]">Welcome to the Duty Max Calculator</h2>
+                    <p class="text-sm text-gray-600 mt-2">Select your flying type to get started:</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="selectModeFromSplash('dom')"
+                        class="welcome-btn flex-1 bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold py-3 px-4 rounded-lg transition-all flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-flag-usa text-xl"></i>
+                        <span>DOMESTIC</span>
+                    </button>
+                    <button onclick="selectModeFromSplash('int')"
+                        class="welcome-btn flex-1 bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold py-3 px-4 rounded-lg transition-all flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-globe text-xl"></i>
+                        <span>INTERNATIONAL</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- MAIN CONTENT AREA -->
         <div class="p-2 space-y-2">
 

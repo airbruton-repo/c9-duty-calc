@@ -470,3 +470,45 @@ body.dark-mode {
 .dark-mode .field-disabled {
     background-color: #374151 !important;
 }
+
+/* Welcome Splash Overlay */
+.welcome-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 34, 68, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+}
+
+.welcome-overlay.hidden {
+    display: none;
+}
+
+.welcome-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    max-width: 360px;
+    width: 100%;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.welcome-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 93, 170, 0.4);
+}
+
+.dark-mode .welcome-card {
+    background: #1f2937;
+}
+
+.dark-mode .welcome-card h2 {
+    color: white;
+}
+
+.dark-mode .welcome-card p {
+    color: #9ca3af;
+}

@@ -232,8 +232,24 @@ function resetForm() {
     const lblRep = document.getElementById('rtLabelCity');
     if (lblRep) { lblRep.textContent = "Local"; lblRep.className = ""; }
 
+    // Clear mode selection (no default)
+    document.getElementById('modeDom').checked = false;
+    document.getElementById('modeInt').checked = false;
+    document.getElementById('domCheck')?.classList.add('hidden');
+    document.getElementById('intCheck')?.classList.add('hidden');
 
-    document.getElementById('modeDom').click();
+    // Re-disable form until mode is selected
+    setFormDisabledState(true);
+
+    // Show welcome splash again
+    const splash = document.getElementById('welcomeSplash');
+    if (splash) splash.classList.remove('hidden');
+
+    // Hide multi-segment question
+    const multiSegCont = document.getElementById('multiSegContainer');
+    if (multiSegCont) multiSegCont.classList.add('hidden');
+    resetMultiSegButtons();
+
     checkCoTerminal();
     resetResult();
 }
@@ -910,6 +926,20 @@ function init() {
     window.answerMultiSeg = answerMultiSeg;
     window.resetMultiSegButtons = resetMultiSegButtons;
     window.setFormDisabledState = setFormDisabledState;
+    window.selectModeFromSplash = selectModeFromSplash;
+}
+
+// Handle mode selection from welcome splash
+function selectModeFromSplash(mode) {
+    const splash = document.getElementById('welcomeSplash');
+    if (splash) splash.classList.add('hidden');
+
+    if (mode === 'dom') {
+        document.getElementById('modeDom').click();
+    } else {
+        document.getElementById('modeInt').click();
+    }
 }
 
 window.addEventListener('DOMContentLoaded', init);
+
