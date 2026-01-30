@@ -348,3 +348,83 @@ body.dark-mode {
 .dark-mode .icon-blue {
     color: #60a5fa;
 }
+
+/* Multi-segment modal dark mode */
+.dark-mode #multiSegModal .bg-gray-100 {
+    background-color: #374151;
+}
+
+.dark-mode #multiSegModal .text-gray-600 {
+    color: #9ca3af;
+}
+
+.dark-mode #multiSegModal .text-\[10px\].text-gray-500 {
+    color: #9ca3af;
+}
+
+.dark-mode #multiSegModal #multiSegTotalDisplay {
+    color: #f3f4f6;
+}
+
+/* Multi-segment gated question buttons */
+.multiseg-btn {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #6b7280;
+}
+
+.multiseg-btn:hover {
+    background-color: #e5e7eb;
+}
+
+.multiseg-btn.active {
+    background-color: #005DAA;
+    border-color: #005DAA;
+    color: white;
+}
+
+#multiSegNo.active {
+    background-color: #059669;
+    border-color: #059669;
+}
+
+#multiSegYes.active {
+    background-color: #005DAA;
+    border-color: #005DAA;
+}
+
+/* Dark mode for gated question */
+.dark-mode #multiSegContainer {
+    background-color: #1e3a8a;
+    border-color: #1e40af;
+}
+
+.dark-mode #multiSegContainer p {
+    color: #e5e7eb;
+}
+
+.dark-mode .multiseg-btn {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+}
+
+.dark-mode .multiseg-btn:hover {
+    background-color: #4b5563;
+}
+
+.dark-mode .multiseg-btn.active {
+    background-color: #005DAA;
+    border-color: #005DAA;
+    color: white;
+}
+
+.dark-mode #multiSegNo.active {
+    background-color: #059669;
+    border-color: #059669;
+}
+
+.dark-mode #multiSegYes.active {
+    background-color: #005DAA;
+    border-color: #005DAA;
+}

@@ -32,6 +32,8 @@
         onclick="this.classList.add('hidden')"></div>
     <script>
         window.onerror = function (msg, url, line) {
+            // Ignore cross-origin script errors (from CDN scripts running on file:// protocol)
+            if (msg === 'Script error.' && line === 0) return true;
             const div = document.getElementById('visualConsole');
             div.textContent += `ERR: ${msg} (L${line})\n`;
             div.classList.remove('hidden');
@@ -69,7 +71,7 @@
                 <button onclick="resetForm()"
                     class="text-[10px] text-blue-200 hover:text-white underline">Reset</button>
                 <span
-                    class="text-[9px] text-[#4ade80] font-mono border border-[#4ade80]/30 px-1.5 py-0.5 rounded ml-1">v1.33</span>
+                    class="text-[9px] text-[#4ade80] font-mono border border-[#4ade80]/30 px-1.5 py-0.5 rounded ml-1">v1.36</span>
             </div>
         </div>
 
@@ -289,6 +291,22 @@
                             onblur="padTimeInput(this)">
                     </div>
                 </div>
+
+                <!-- Multi-Segment Gated Question (International Only) -->
+                <div id="multiSegContainer" class="hidden mt-3 p-2 bg-blue-50 border border-blue-200 rounded">
+                    <p class="text-[11px] font-medium text-[#002244] mb-2">
+                        Is this duty period scheduled for more than one segment?
+                        <button onclick="showInfo('multiSegment')"
+                            class="icon-blue text-[#005DAA] hover:underline ml-1"><i
+                                class="fa-solid fa-circle-question"></i></button>
+                    </p>
+                    <div class="flex gap-2">
+                        <button id="multiSegNo" onclick="answerMultiSeg(false)"
+                            class="flex-1 py-1.5 rounded text-[11px] font-bold border transition-all multiseg-btn">No</button>
+                        <button id="multiSegYes" onclick="answerMultiSeg(true)"
+                            class="flex-1 py-1.5 rounded text-[11px] font-bold border transition-all multiseg-btn">Yes</button>
+                    </div>
+                </div>
             </div>
 
             <!-- MODIFIERS GROUP -->
@@ -300,7 +318,7 @@
                 </div>
                 <div class="text-[11px] text-gray-600 font-medium italic mb-1.5 ml-0.5">Select all that apply:</div>
 
-                <div class="grid grid-cols-4 gap-2">
+                <div class="grid grid-cols-3 gap-2">
                     <!-- HVT (Moved Back) -->
                     <div class="flex flex-col items-center gap-1" id="hvtContainer">
                         <label class="cursor-pointer w-full"><input type="checkbox" id="isHVT"
@@ -326,17 +344,7 @@
                                 class="fa-solid fa-circle-question"></i></button>
                     </div>
 
-                    <div class="flex flex-col items-center gap-1">
-                        <label class="cursor-pointer w-full"><input type="checkbox" id="customsStart"
-                                class="toggle-checkbox sr-only" onchange="resetResult()">
-                            <div
-                                class="opt-pill h-7 rounded border font-bold flex items-center justify-center transition-colors select-none text-center leading-none text-[10px]">
-                                Customs<br>at Start</div>
-                        </label>
-                        <button onclick="showInfo('custStart')"
-                            class="icon-blue text-[#005DAA] text-[12px] hover:underline pt-0.5"><i
-                                class="fa-solid fa-circle-question"></i></button>
-                    </div>
+
 
                     <div class="flex flex-col items-center gap-1">
                         <label class="cursor-pointer w-full"><input type="checkbox" id="customsEnd"
@@ -454,6 +462,107 @@
                     class="modal-text text-xs text-gray-600 leading-relaxed mb-3 whitespace-pre-wrap text-left"></div>
                 <button onclick="closeInfo()"
                     class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-1.5 rounded text-xs transition-colors text-black">Close</button>
+            </div>
+        </div>
+
+        <!-- MULTI-SEGMENT TOTAL CALCULATOR MODAL -->
+        <div id="multiSegModal" onclick="if(event.target === this) closeMultiSegModal()"
+            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div class="modal-bg bg-white rounded-lg shadow-2xl w-full max-w-xs overflow-hidden">
+                <!-- Header -->
+                <div class="bg-[#005DAA] text-white px-4 py-2 flex items-center justify-between">
+                    <h3 class="text-sm font-bold">Total Flight Time</h3>
+                    <button onclick="closeMultiSegModal()" class="text-white/70 hover:text-white">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="p-4 space-y-3">
+                    <!-- Option 1: Direct Total Entry -->
+                    <div class="bg-blue-50 border border-blue-200 rounded p-3">
+                        <p class="text-[10px] font-bold text-gray-700 mb-2">Already know your total?</p>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold text-gray-600 whitespace-nowrap">TOTAL:</span>
+                            <input type="text" id="directTotalInput" inputmode="numeric" placeholder="HHMM"
+                                maxlength="5"
+                                class="input-bg flex-1 px-2 bg-white border border-gray-200 rounded text-xs font-mono h-8 text-center"
+                                oninput="formatTimeInput(this); updateDirectTotal()" onblur="padTimeInput(this)">
+                            <button onclick="applyDirectTotal()"
+                                class="bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold px-3 py-1.5 rounded text-[10px] transition-colors">Apply</button>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1 h-px bg-gray-300"></div>
+                        <span class="text-[10px] text-gray-400 font-medium">OR</span>
+                        <div class="flex-1 h-px bg-gray-300"></div>
+                    </div>
+
+                    <!-- Option 2: Helper Calculator -->
+                    <div class="bg-gray-50 border border-gray-200 rounded p-3">
+                        <p class="text-[10px] font-bold text-gray-700 mb-2">Let us add it up for you:</p>
+
+                        <!-- This Segment (locked display) -->
+                        <div class="flex items-center gap-2 mb-2 pb-2 border-b border-gray-200">
+                            <span class="text-[10px] font-medium text-gray-500 flex-1">This Segment (from main
+                                screen):</span>
+                            <span id="thisSegmentDisplay"
+                                class="text-xs font-bold font-mono text-[#002244] bg-gray-200 px-2 py-1 rounded">--:--</span>
+                        </div>
+
+                        <!-- Additional Segments -->
+                        <div id="additionalSegments" class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] text-gray-500 w-28">+ Additional Seg A:</span>
+                                <input type="text" id="addSegA" inputmode="numeric" placeholder="HHMM" maxlength="5"
+                                    class="input-bg flex-1 px-2 bg-white border border-gray-200 rounded text-xs font-mono h-7 text-center"
+                                    oninput="formatTimeInput(this); updateCalcTotal()" onblur="padTimeInput(this)">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] text-gray-500 w-28">+ Additional Seg B:</span>
+                                <input type="text" id="addSegB" inputmode="numeric" placeholder="HHMM" maxlength="5"
+                                    class="input-bg flex-1 px-2 bg-white border border-gray-200 rounded text-xs font-mono h-7 text-center"
+                                    oninput="formatTimeInput(this); updateCalcTotal()" onblur="padTimeInput(this)">
+                            </div>
+                            <div id="addSegCRow" class="hidden flex items-center gap-2">
+                                <span class="text-[10px] text-gray-500 w-28">+ Additional Seg C:</span>
+                                <input type="text" id="addSegC" inputmode="numeric" placeholder="HHMM" maxlength="5"
+                                    class="input-bg flex-1 px-2 bg-white border border-gray-200 rounded text-xs font-mono h-7 text-center"
+                                    oninput="formatTimeInput(this); updateCalcTotal()" onblur="padTimeInput(this)">
+                            </div>
+                            <div id="addSegDRow" class="hidden flex items-center gap-2">
+                                <span class="text-[10px] text-gray-500 w-28">+ Additional Seg D:</span>
+                                <input type="text" id="addSegD" inputmode="numeric" placeholder="HHMM" maxlength="5"
+                                    class="input-bg flex-1 px-2 bg-white border border-gray-200 rounded text-xs font-mono h-7 text-center"
+                                    oninput="formatTimeInput(this); updateCalcTotal()" onblur="padTimeInput(this)">
+                            </div>
+                        </div>
+
+                        <!-- Add More Button -->
+                        <button id="addMoreSegBtn" onclick="addMoreSegment()"
+                            class="text-[10px] text-[#005DAA] hover:underline flex items-center gap-1 mt-2">
+                            <i class="fa-solid fa-plus"></i> Add More
+                        </button>
+
+                        <!-- Total Display -->
+                        <div class="bg-white border border-gray-300 rounded p-2 mt-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] font-bold text-gray-600 uppercase">Calculated Total:</span>
+                                <span id="calcTotalDisplay" class="text-sm font-bold text-[#002244]">0:00</span>
+                            </div>
+                            <div id="calcLimitMsg" class="text-[10px] text-gray-500 mt-1 text-center italic">Enter
+                                additional segment times</div>
+                        </div>
+
+                        <!-- Apply Calculated Button -->
+                        <button onclick="applyCalcTotal()"
+                            class="w-full mt-3 bg-[#059669] hover:bg-[#047857] text-white font-bold py-2 rounded text-xs transition-colors">
+                            Apply Calculated Total
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
