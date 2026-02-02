@@ -23,7 +23,7 @@ function verifyField(fieldId) {
         // Update button styling - green confirmed state
         btn.classList.remove('bg-amber-100', 'text-amber-700', 'border-amber-400');
         btn.classList.add('bg-green-100', 'text-green-700', 'border-green-500');
-        btn.innerHTML = '✓';
+        btn.innerHTML = '✓ Verified';
         btn.disabled = true;
         btn.classList.add('cursor-default');
     }
