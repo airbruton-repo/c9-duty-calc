@@ -928,7 +928,7 @@ function calculateDuty() {
     let maxDutyMins = 0; let expl = ""; const fmt = (m) => { let h = Math.floor(m / 60), mn = m % 60; return `${h.toString().padStart(2, '0')}:${mn.toString().padStart(2, '0')}`; }
 
     if (isDom) {
-        const isHVT = document.getElementById('isHVT').checked; const isDay = hdtMins >= 300 && hdtMins <= 1139; let limit = 13;
+        const isHVT = document.getElementById('isHVT').value === 'true'; const isDay = hdtMins >= 300 && hdtMins <= 1139; let limit = 13;
         expl = `13hrs (Report ${fmt(hdtMins)} HDT, 1900-0459)`;
         if (isHVT) {
             limit = 16;
@@ -953,8 +953,8 @@ function calculateDuty() {
             const checkIn = isLayover ? 60 : 75; // Layover: 1:00, Home Base: 1:15
             const buffer = 210; // 3:30
             maxDutyMins = checkIn + effectiveFlightMins + buffer;
-            const debrief = document.getElementById('isDHD').checked ? 0 : 15;
-            let cust = document.getElementById('customsEnd').checked ? 15 : 0;
+            const debrief = document.getElementById('isDHD').value === 'true' ? 0 : 15;
+            let cust = document.getElementById('customsEnd').value === 'true' ? 15 : 0;
             maxDutyMins += (debrief + cust);
             const checkInLabel = isLayover ? '1:00 Layover' : '1:15 Home';
             expl = `Variable (${checkInLabel} + Flt + Cust + Debr + 3:30)`;
