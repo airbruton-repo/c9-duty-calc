@@ -771,9 +771,29 @@ function calculateDuty() {
         if (el) el.classList.remove('input-missing');
     });
 
+    // Clear verify button error classes
+    ['dutyDateOkBtn', 'homeBaseOkBtn'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('verify-missing');
+    });
+
     // --- Check ALL Conditions and Collect Errors ---
     let hasError = false;
     let missingItems = [];
+
+    // Check Field Verification (Date and Origin must be verified)
+    if (!verifiedFields.dutyDate) {
+        const dateBtn = document.getElementById('dutyDateOkBtn');
+        if (dateBtn) dateBtn.classList.add('verify-missing');
+        missingItems.push('Date Verify');
+        hasError = true;
+    }
+    if (!verifiedFields.homeBase) {
+        const baseBtn = document.getElementById('homeBaseOkBtn');
+        if (baseBtn) baseBtn.classList.add('verify-missing');
+        missingItems.push('Origin Verify');
+        hasError = true;
+    }
 
     // Check Mode Selection
     if (!modeDom.checked && !modeInt.checked) {
