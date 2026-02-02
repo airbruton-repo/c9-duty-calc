@@ -68,6 +68,18 @@ label {
     color: #92400E;
 }
 
+/* Input field that needs data entry - amber border to indicate attention needed */
+.amber-pending {
+    border-color: #F59E0B !important;
+    background-color: #fef9c3;
+}
+
+/* Valid time/data field - green to indicate verified */
+.valid-field {
+    border-color: #10B981 !important;
+    background-color: #d1fae5;
+}
+
 /* City code field when manual timezone has been selected - purple to indicate manual entry */
 .manual-city-selected {
     border-color: #8b5cf6 !important;
@@ -303,6 +315,18 @@ body.dark-mode {
     border-color: #8b5cf6 !important;
     color: #c4b5fd;
     background-color: #4c1d95;
+}
+
+/* Dark mode amber for input field pending entry */
+.dark-mode .amber-pending {
+    border-color: #b45309 !important;
+    background-color: #78350f;
+}
+
+/* Dark mode green for valid field */
+.dark-mode .valid-field {
+    border-color: #10B981 !important;
+    background-color: #064e3b;
 }
 
 .dark-mode .section-title {

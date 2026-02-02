@@ -539,6 +539,15 @@ function formatTimeInput(el) {
     if (v.length > 4) v = v.slice(0, 4);
     if (v.length > 2) { const i = v.length === 3 ? 1 : 2; v = v.slice(0, i) + ':' + v.slice(i); }
     el.value = v;
+
+    // Toggle amber-pending based on whether a valid time is entered
+    if (v.replace(':', '').length >= 4) {
+        el.classList.remove('amber-pending');
+        el.classList.add('valid-field');
+    } else if (v.replace(':', '').length === 0) {
+        el.classList.add('amber-pending');
+        el.classList.remove('valid-field');
+    }
 }
 
 function nudgeZone(pfx, dir) {
@@ -602,7 +611,7 @@ function validateAirport(el) {
     if (code.length === 3) {
         if (ALL_CODES[code]) {
             el.classList.add('valid-airport');
-            el.classList.remove('invalid-airport', 'manual-city-selected');
+            el.classList.remove('invalid-airport', 'manual-city-selected', 'amber-pending');
 
             // Dynamic Label Logic
             if (el.id === 'reportAirport') {
