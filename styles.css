@@ -27,6 +27,25 @@ select:focus {
     outline: none;
 }
 
+/* Fix sticky hover states on mobile - remove hover effects on touch devices */
+@media (hover: none) {
+    button:hover {
+        background-color: initial !important;
+        border-color: initial !important;
+    }
+
+    /* Keep selected button states but remove hover effects */
+    button.bg-blue-500:hover {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+    }
+
+    button.bg-gray-200:hover {
+        background-color: #e5e7eb !important;
+        border-color: #9ca3af !important;
+    }
+}
+
 /* Preserve amber/green verification borders on focus for date and base fields */
 #dutyDate:focus,
 #homeBase:focus {
