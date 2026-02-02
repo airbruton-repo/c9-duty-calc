@@ -68,6 +68,13 @@ label {
     color: #92400E;
 }
 
+/* City code field when manual timezone has been selected - blue to match TZ dropdown */
+.manual-city-selected {
+    border-color: #3b82f6 !important;
+    color: #1e40af;
+    background-color: #dbeafe;
+}
+
 /* Dynamic Labels */
 .dynamic-city-label {
     color: #005DAA;
@@ -289,6 +296,13 @@ body.dark-mode {
     border-color: #b45309 !important;
     color: #fbbf24;
     background-color: #451a03;
+}
+
+/* Dark mode blue for manually completed city code */
+.dark-mode .manual-city-selected {
+    border-color: #3b82f6 !important;
+    color: #93c5fd;
+    background-color: #1e3a8a;
 }
 
 .dark-mode .section-title {

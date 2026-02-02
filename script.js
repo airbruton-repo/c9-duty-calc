@@ -557,15 +557,31 @@ function nudgeZone(pfx, dir) {
 }
 
 // Update manual timezone dropdown styling when a zone is selected
+// Also updates the corresponding city field to blue when TZ is selected
 function updateManualZoneStyle(el) {
+    // Determine which city field corresponds to this TZ dropdown
+    const cityField = el.id === 'repManualZone'
+        ? document.getElementById('reportAirport')
+        : document.getElementById('depAirport');
+
     if (el.value && el.value !== '') {
         // Selected - add class for blue 'manually completed' styling
         el.classList.remove('manual-zone-select');
         el.classList.add('manual-zone-selected');
+        // Also turn the city field blue
+        if (cityField) {
+            cityField.classList.remove('invalid-airport');
+            cityField.classList.add('manual-city-selected');
+        }
     } else {
         // Not selected - use amber styling
         el.classList.remove('manual-zone-selected');
         el.classList.add('manual-zone-select');
+        // City field back to amber
+        if (cityField) {
+            cityField.classList.remove('manual-city-selected');
+            cityField.classList.add('invalid-airport');
+        }
     }
 }
 
