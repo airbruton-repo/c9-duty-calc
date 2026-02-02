@@ -491,6 +491,12 @@ function resetForm() {
             const nEast = document.getElementById(pfx + 'NudgeEast');
             if (nWest) nWest.classList.add('invisible');
             if (nEast) nEast.classList.add('invisible');
+            // Reset TZ mode label back to AUTO
+            const tzLabel = document.getElementById(pfx + 'TzModeLabel');
+            if (tzLabel) {
+                tzLabel.textContent = '(AUTO)';
+                tzLabel.className = 'text-[8px] text-gray-400';
+            }
         }
     });
 
@@ -586,9 +592,9 @@ function updateManualZoneStyle(el) {
         // Selected - add class for blue 'manually completed' styling
         el.classList.remove('manual-zone-select');
         el.classList.add('manual-zone-selected');
-        // Also turn the city field blue
+        // Also turn the city field purple
         if (cityField) {
-            cityField.classList.remove('invalid-airport');
+            cityField.classList.remove('invalid-airport', 'amber-pending');
             cityField.classList.add('manual-city-selected');
         }
     } else {
