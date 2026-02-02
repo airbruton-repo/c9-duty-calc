@@ -327,10 +327,8 @@ function resetResult() {
 }
 
 function resetForm() {
-    const d = new Date();
-    const denverDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Denver', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
-    document.getElementById('dutyDate').value = denverDate;
-    document.getElementById('homeBase').value = 'DEN';
+    // Keep dutyDate and homeBase values for successive calculations
+    // Only reset the flight-specific inputs
     ['reportAirport', 'reportTime', 'depAirport', 'flightTimeInput'].forEach(id => { const el = document.getElementById(id); el.value = ''; el.classList.remove('valid-airport', 'invalid-airport'); });
     document.querySelectorAll('.toggle-checkbox').forEach(el => { el.checked = false; el.nextElementSibling.classList.remove('active'); });
     ['repManualZone', 'depManualZone'].forEach(id => { const el = document.getElementById(id); el.classList.add('hidden'); el.value = ''; });
