@@ -175,27 +175,7 @@
                 </div>
             </div>
 
-            <!-- CO-TERMINAL (Dynamic) -->
-            <div id="coTermContainer"
-                class="hidden coterm-bg bg-blue-50 border border-blue-100 rounded p-1.5 transition-all">
-                <div class="flex items-center gap-1">
-                    <input type="checkbox" id="isCoTerm" class="w-3.5 h-3.5 text-[#005DAA] rounded"
-                        onchange="toggleCoTermDropdown(); resetResult();">
-                    <label for="isCoTerm"
-                        class="text-[10px] font-bold text-[#002244] select-none text-current cursor-pointer">Ending at
-                        different airport (co-terminal)?</label>
-                    <button onclick="showInfo('coterm')"
-                        class="icon-blue text-[#005DAA] text-[10px] hover:underline p-1"><i
-                            class="fa-solid fa-circle-question"></i></button>
-                </div>
-                <div id="coTermDropdownContainer" class="hidden mt-1 pl-5">
-                    <select id="coTermSelect"
-                        class="coterm-select w-full p-1 text-[10px] bg-white border border-blue-200 rounded text-gray-700 h-7 transition-colors duration-300"
-                        onchange="resetResult();">
-                        <option value="0">Select Terminal...</option>
-                    </select>
-                </div>
-            </div>
+
 
             <!-- REPORT INFO GROUP -->
             <div class="group-bg rounded p-2 pt-1.5 transition-colors duration-300">
