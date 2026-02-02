@@ -369,7 +369,10 @@ function nudgeZone(pfx, dir) {
     if (idx < 1) idx = count - 1;
     if (idx >= count) idx = 1;
     sel.selectedIndex = idx;
-    sel.onchange();
+    // Dispatch change event instead of calling onchange directly
+    sel.dispatchEvent(new Event('change'));
+    resetResult();
+    updateLiveCalc();
 }
 
 function validateAirport(el) {
