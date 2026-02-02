@@ -170,6 +170,13 @@ body:not(.dark-mode) .opt-pill {
     color: #1f2937;
 }
 
+/* Manually completed timezone - blue to indicate user made the choice */
+.manual-zone-selected {
+    background-color: #dbeafe;
+    border-color: #3b82f6;
+    color: #1e40af;
+}
+
 /* ERROR PULSE ANIMATION */
 @keyframes errorPulse {
     0% {
@@ -329,6 +336,13 @@ body.dark-mode {
     background-color: #422006;
     border-color: #a16207;
     color: #fde047;
+}
+
+/* Dark mode blue for manually completed timezone */
+.dark-mode .manual-zone-selected {
+    background-color: #1e3a8a;
+    border-color: #3b82f6;
+    color: #93c5fd;
 }
 
 .dark-mode .nudge-btn {

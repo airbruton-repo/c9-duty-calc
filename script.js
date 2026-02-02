@@ -558,17 +558,14 @@ function nudgeZone(pfx, dir) {
 
 // Update manual timezone dropdown styling when a zone is selected
 function updateManualZoneStyle(el) {
-    const isDark = document.body.classList.contains('dark-mode');
     if (el.value && el.value !== '') {
-        // Selected - use green verified styling
-        if (isDark) {
-            el.className = 'w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold bg-emerald-900/60 border-emerald-600 text-emerald-200';
-        } else {
-            el.className = 'w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold bg-green-100 border-green-500 text-green-800';
-        }
+        // Selected - add class for blue 'manually completed' styling
+        el.classList.remove('manual-zone-select');
+        el.classList.add('manual-zone-selected');
     } else {
         // Not selected - use amber styling
-        el.className = 'manual-zone-select w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold';
+        el.classList.remove('manual-zone-selected');
+        el.classList.add('manual-zone-select');
     }
 }
 
