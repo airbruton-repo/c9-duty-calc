@@ -544,3 +544,105 @@ body.dark-mode {
 .dark-mode .definitions-link {
     color: #e5e7eb !important;
 }
+
+/* Dark mode verification field colors */
+.dark-mode #dutyDate,
+.dark-mode #homeBase {
+    background-color: #374151;
+    color: #e5e7eb;
+}
+
+.dark-mode #dutyDate.bg-green-50,
+.dark-mode #homeBase.bg-green-50 {
+    background-color: #064e3b !important;
+}
+
+.dark-mode #dutyDateOkBtn,
+.dark-mode #homeBaseOkBtn {
+    background-color: #78350f;
+    color: #fcd34d;
+    border-color: #b45309;
+}
+
+.dark-mode #dutyDateOkBtn.bg-green-500,
+.dark-mode #homeBaseOkBtn.bg-green-500 {
+    background-color: #059669 !important;
+    color: white !important;
+    border-color: #059669 !important;
+}
+
+/* Dark mode focus glow for verification fields */
+.dark-mode #dutyDate:focus,
+.dark-mode #homeBase:focus {
+    box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.4);
+}
+
+.dark-mode #dutyDate.border-green-500:focus,
+.dark-mode #homeBase.border-green-500:focus {
+    box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.4);
+}
+
+/* Dark mode modifier question text contrast */
+.dark-mode .modifier-question {
+    background-color: #1e3a8a !important;
+    border-color: #1e40af !important;
+}
+
+.dark-mode .modifier-question p,
+.dark-mode .modifier-question span {
+    color: #e5e7eb !important;
+}
+
+.dark-mode .modifier-question .text-amber-800 {
+    color: #fcd34d !important;
+}
+
+/* Dark mode co-terminal question */
+.dark-mode .coterm-question {
+    background-color: #1e3a8a !important;
+    border-color: #1e40af !important;
+}
+
+.dark-mode .coterm-question p {
+    color: #e5e7eb !important;
+}
+
+/* Dark mode Yes/No modifier buttons */
+.dark-mode .modifier-question button {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+}
+
+.dark-mode .modifier-question button.bg-green-500 {
+    background-color: #059669 !important;
+    border-color: #059669 !important;
+    color: white !important;
+}
+
+.dark-mode .modifier-question button.bg-blue-600 {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: white !important;
+}
+
+/* Dark mode Tailwind color overrides for amber/green system */
+.dark-mode .border-amber-400 {
+    border-color: #b45309 !important;
+}
+
+.dark-mode .border-green-500 {
+    border-color: #059669 !important;
+}
+
+.dark-mode .bg-amber-50 {
+    background-color: #78350f !important;
+}
+
+.dark-mode .bg-amber-100 {
+    background-color: #78350f !important;
+}
+
+.dark-mode .text-amber-700 {
+    color: #fcd34d !important;
+}
