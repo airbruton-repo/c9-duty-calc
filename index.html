@@ -186,22 +186,35 @@
                         <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase">Duty Period
                             Date</label>
                     </div>
-                    <input type="date" id="dutyDate"
-                        class="input-bg w-full px-2 bg-gray-50 border border-gray-200 rounded text-xs font-medium text-gray-900 h-8 transition-colors duration-300"
-                        onchange="updateAllLabels(); resetResult();">
+                    <div class="flex gap-1">
+                        <input type="date" id="dutyDate"
+                            class="input-bg flex-1 px-2 bg-gray-50 border-2 border-amber-400 rounded text-xs font-medium text-gray-900 h-8 transition-colors duration-300"
+                            onchange="updateAllLabels(); resetResult();">
+                        <button type="button" onclick="verifyField('dutyDate')" id="dutyDateOkBtn"
+                            class="px-2 h-8 text-[10px] font-bold rounded bg-amber-100 text-amber-700 border border-amber-400 hover:bg-green-100 hover:text-green-700 hover:border-green-500 transition-all"
+                            title="Confirm date is correct">✓ OK</button>
+                        <button type="button" onclick="document.getElementById('dutyDate').showPicker()"
+                            class="px-2 h-8 text-[10px] font-bold rounded bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200 transition-all"
+                            title="Change date">✎</button>
+                    </div>
                 </div>
                 <div>
                     <div class="flex justify-between items-baseline mb-0.5 min-h-[14px]">
                         <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase">Pairing
                             Origination</label>
                     </div>
-                    <div class="relative">
-                        <select id="homeBase"
-                            class="input-bg w-full px-2 bg-gray-50 border border-gray-200 rounded text-xs font-bold text-[#002244] appearance-none h-8 transition-colors duration-300"
-                            onchange="checkCoTerminal(); resetResult();">
-                        </select>
-                        <i
-                            class="fa-solid fa-chevron-down absolute right-2 top-2.5 text-[8px] text-gray-400 pointer-events-none"></i>
+                    <div class="flex gap-1">
+                        <div class="relative flex-1">
+                            <select id="homeBase"
+                                class="input-bg w-full px-2 bg-gray-50 border-2 border-amber-400 rounded text-xs font-bold text-[#002244] appearance-none h-8 transition-colors duration-300"
+                                onchange="checkCoTerminal(); resetResult();">
+                            </select>
+                            <i
+                                class="fa-solid fa-chevron-down absolute right-2 top-2.5 text-[8px] text-gray-400 pointer-events-none"></i>
+                        </div>
+                        <button type="button" onclick="verifyField('homeBase')" id="homeBaseOkBtn"
+                            class="px-2 h-8 text-[10px] font-bold rounded bg-amber-100 text-amber-700 border border-amber-400 hover:bg-green-100 hover:text-green-700 hover:border-green-500 transition-all"
+                            title="Confirm pairing origin is correct">✓ OK</button>
                     </div>
                 </div>
             </div>
