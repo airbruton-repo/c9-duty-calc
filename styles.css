@@ -136,6 +136,12 @@ label {
     /* violet-600 for light mode */
 }
 
+/* Override Tailwind blue to brand dark blue */
+.bg-blue-500 {
+    background-color: #005DAA !important;
+    border-color: #005DAA !important;
+}
+
 /* Verify button missing - needs to be clicked */
 .verify-missing {
     animation: pulse-amber 1s ease-in-out 3;
@@ -383,6 +389,8 @@ body.dark-mode {
 .dark-mode .amber-pending {
     border-color: #fbbf24 !important;
     /* amber-400 */
+    background-color: #374151 !important;
+    /* gray-700 - matches date/origin fields */
     color: #fcd34d !important;
     /* amber-300 */
 }
@@ -390,6 +398,8 @@ body.dark-mode {
 /* Dark mode green for valid field - dark bg with bright border/text */
 .dark-mode .valid-field {
     border-color: #10B981 !important;
+    background-color: #374151 !important;
+    /* gray-700 */
     color: #6ee7b7 !important;
     /* green-300 */
 }
@@ -408,6 +418,23 @@ body.dark-mode {
 .dark-mode .tz-label-manual {
     color: #c4b5fd;
     /* violet-300 */
+}
+
+/* Dark mode button selected states - preserve colors */
+.dark-mode .bg-blue-500 {
+    background-color: #005DAA !important;
+    /* Match CALCULATE button */
+    color: white !important;
+    border-color: #005DAA !important;
+}
+
+.dark-mode .bg-gray-200 {
+    background-color: #4b5563 !important;
+    /* gray-600 */
+    color: #e5e7eb !important;
+    /* gray-200 */
+    border-color: #6b7280 !important;
+    /* gray-500 */
 }
 
 .dark-mode .section-icon {
