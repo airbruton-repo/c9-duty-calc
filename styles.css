@@ -149,6 +149,12 @@ label {
     border-color: #f59e0b !important;
 }
 
+/* Modifier question missing - needs to be answered */
+.modifier-missing {
+    animation: pulse-amber 1s ease-in-out 3;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.5) !important;
+}
+
 @keyframes pulse-amber {
 
     0%,
@@ -743,65 +749,107 @@ body.dark-mode {
     box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.4);
 }
 
-/* Dark mode modifier question text contrast */
+/* Dark mode modifier question - dark gray bg with colored borders to match field styling */
 .dark-mode .modifier-question {
-    background-color: #1e3a8a !important;
-    border-color: #1e40af !important;
+    background-color: #1f2937 !important;
+    /* gray-800 */
+    border-color: #fbbf24 !important;
+    /* amber-400 border for unanswered */
+}
+
+/* Dark mode modifier question when answered (green border applied via JS) */
+.dark-mode .modifier-question.border-green-500 {
+    background-color: #1f2937 !important;
+    /* gray-800 */
+    border-color: #10B981 !important;
+    /* green-500 */
 }
 
 .dark-mode .modifier-question p,
 .dark-mode .modifier-question span {
     color: #e5e7eb !important;
+    /* gray-200 */
 }
 
 .dark-mode .modifier-question .text-amber-800 {
     color: #fcd34d !important;
+    /* amber-300 */
 }
 
 /* Dark mode co-terminal question */
 .dark-mode .coterm-question {
-    background-color: #1e3a8a !important;
-    border-color: #1e40af !important;
+    background-color: #1f2937 !important;
+    /* gray-800 */
+    border-color: #fbbf24 !important;
+    /* amber-400 */
+}
+
+.dark-mode .coterm-question.border-green-500 {
+    background-color: #1f2937 !important;
+    border-color: #10B981 !important;
 }
 
 .dark-mode .coterm-question p {
     color: #e5e7eb !important;
 }
 
-/* Dark mode Yes/No modifier buttons */
+/* Dark mode Yes/No modifier buttons - default unselected state */
 .dark-mode .modifier-question button {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #d1d5db;
+    background-color: #374151 !important;
+    /* gray-700 */
+    border-color: #6b7280 !important;
+    /* gray-500 */
+    color: #e5e7eb !important;
+    /* gray-200 */
 }
 
-.dark-mode .modifier-question button.bg-green-500 {
-    background-color: #059669 !important;
-    border-color: #059669 !important;
+.dark-mode .modifier-question button:hover {
+    background-color: #4b5563 !important;
+    /* gray-600 */
+    border-color: #9ca3af !important;
+    /* gray-400 */
+}
+
+/* Yes button selected - dark blue to match brand/calculate button */
+.dark-mode .modifier-question button.bg-blue-500 {
+    background-color: #005DAA !important;
+    border-color: #005DAA !important;
     color: white !important;
 }
 
-.dark-mode .modifier-question button.bg-blue-600 {
-    background-color: #2563eb !important;
-    border-color: #2563eb !important;
-    color: white !important;
+/* No button selected - darker gray with visible border */
+.dark-mode .modifier-question button.bg-gray-200 {
+    background-color: #1f2937 !important;
+    /* gray-800 */
+    border-color: #9ca3af !important;
+    /* gray-400 */
+    color: #e5e7eb !important;
 }
 
-/* Dark mode Tailwind color overrides for amber/green system */
+/* Dark mode Tailwind color overrides for amber/green answered state */
 .dark-mode .border-amber-400 {
-    border-color: #b45309 !important;
+    border-color: #fbbf24 !important;
+    /* Keep amber bright */
 }
 
 .dark-mode .border-green-500 {
-    border-color: #059669 !important;
+    border-color: #10B981 !important;
+    /* Keep green bright */
 }
 
 .dark-mode .bg-amber-50 {
-    background-color: #78350f !important;
+    background-color: #1f2937 !important;
+    /* gray-800 instead of amber tint */
 }
 
 .dark-mode .bg-amber-100 {
-    background-color: #78350f !important;
+    background-color: #1f2937 !important;
+    /* gray-800 */
+}
+
+.dark-mode .bg-green-50 {
+    background-color: #1f2937 !important;
+    /* gray-800 instead of green tint */
 }
 
 .dark-mode .text-amber-700 {

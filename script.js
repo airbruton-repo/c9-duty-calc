@@ -61,8 +61,8 @@ function answerModifier(fieldId, isYes) {
     // Set the value
     hiddenInput.value = isYes ? 'true' : 'false';
 
-    // Update question styling - green border when answered
-    questionDiv.classList.remove('border-amber-400', 'bg-amber-50');
+    // Update question styling - green border when answered, clear any missing state
+    questionDiv.classList.remove('border-amber-400', 'bg-amber-50', 'modifier-missing');
     questionDiv.classList.add('border-green-500', 'bg-green-50');
 
     // Update button styling
@@ -111,8 +111,8 @@ function answerCoTermModifier(isYes) {
         noBtn.classList.add('bg-gray-200', 'border-gray-400');
         yesBtn.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
         yesBtn.classList.add('bg-white', 'border-gray-300');
-        // Mark green
-        questionDiv.classList.remove('border-amber-400', 'bg-amber-50');
+        // Mark green, clear any missing state
+        questionDiv.classList.remove('border-amber-400', 'bg-amber-50', 'modifier-missing');
         questionDiv.classList.add('border-green-500', 'bg-green-50');
     }
 
@@ -127,7 +127,7 @@ function selectCoTerminal() {
 
     if (selectEl.value) {
         hiddenInput.value = selectEl.value;
-        questionDiv.classList.remove('border-amber-400', 'bg-amber-50');
+        questionDiv.classList.remove('border-amber-400', 'bg-amber-50', 'modifier-missing');
         questionDiv.classList.add('border-green-500', 'bg-green-50');
     }
 
@@ -848,6 +848,36 @@ function calculateDuty() {
         if (!el.value) {
             el.classList.add('input-missing');
             missingItems.push(r.n);
+            hasError = true;
+        }
+    }
+
+    // Check Modifier Questions - all visible modifiers must be answered
+    const modifiers = [
+        { id: 'isHVT', name: 'HVT Question', questionId: 'hvtQuestion' },
+        { id: 'isDHD', name: 'DHD Question', questionId: 'dhdQuestion' },
+        { id: 'customsEnd', name: 'Customs Question', questionId: 'customsQuestion' }
+    ];
+
+    for (let mod of modifiers) {
+        const question = document.getElementById(mod.questionId);
+        const hidden = document.getElementById(mod.id);
+        // Check if question is visible and not answered
+        if (question && !question.classList.contains('hidden') && hidden && hidden.value === '') {
+            question.classList.add('modifier-missing');
+            missingItems.push(mod.name);
+            hasError = true;
+        }
+    }
+
+    // Check Co-Terminal question if visible
+    const coTermContainer = document.getElementById('coTermContainer');
+    const coTermQuestion = document.getElementById('coTermQuestion');
+    const isCoTermInput = document.getElementById('isCoTerm');
+    if (coTermContainer && !coTermContainer.classList.contains('hidden')) {
+        if (coTermQuestion && isCoTermInput && isCoTermInput.value === '') {
+            coTermQuestion.classList.add('modifier-missing');
+            missingItems.push('Co-Terminal Question');
             hasError = true;
         }
     }
