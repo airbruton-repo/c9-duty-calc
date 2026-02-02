@@ -16,14 +16,14 @@ function verifyField(fieldId) {
         // Mark as verified
         verifiedFields[fieldId] = true;
 
-        // Update field styling - green border
-        field.classList.remove('border-amber-400', 'border-2');
-        field.classList.add('border-green-500', 'border-2');
+        // Update field styling - green border (keep border-r-0 for connected look)
+        field.classList.remove('border-amber-400');
+        field.classList.add('border-green-500');
 
-        // Update button styling - green confirmed state
+        // Update button styling - green confirmed state (keep border-l-0 for connected look)
         btn.classList.remove('bg-amber-100', 'text-amber-700', 'border-amber-400');
-        btn.classList.add('bg-green-100', 'text-green-700', 'border-green-500');
-        btn.innerHTML = '✓ Verified';
+        btn.classList.add('bg-green-500', 'text-white', 'border-green-500');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
         btn.disabled = true;
         btn.classList.add('cursor-default');
     }
@@ -40,10 +40,10 @@ function resetVerifyFields() {
 
             // Reset field styling to amber
             field.classList.remove('border-green-500');
-            field.classList.add('border-amber-400', 'border-2');
+            field.classList.add('border-amber-400');
 
             // Reset button styling
-            btn.classList.remove('bg-green-100', 'text-green-700', 'border-green-500', 'cursor-default');
+            btn.classList.remove('bg-green-500', 'text-white', 'border-green-500', 'cursor-default');
             btn.classList.add('bg-amber-100', 'text-amber-700', 'border-amber-400');
             btn.innerHTML = 'Verify';
             btn.disabled = false;
