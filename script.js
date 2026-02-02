@@ -475,7 +475,14 @@ function resetForm() {
         el.classList.add('amber-pending');
     });
     document.querySelectorAll('.toggle-checkbox').forEach(el => { el.checked = false; el.nextElementSibling.classList.remove('active'); });
-    ['repManualZone', 'depManualZone'].forEach(id => { const el = document.getElementById(id); el.classList.add('hidden'); el.value = ''; });
+    // Reset manual zone selects - clear value and reset styling, but don't hide the select itself
+    ['repManualZone', 'depManualZone'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = '';
+        el.selectedIndex = 0;  // Reset to first option (SELECT)
+        el.classList.remove('manual-zone-selected');
+        el.classList.add('manual-zone-select');
+    });
 
     ['rep', 'dep'].forEach(pfx => {
         const autoCont = document.getElementById(pfx + 'ZoneAutoContainer');
@@ -871,13 +878,15 @@ function calculateDuty() {
     }
 
     // Check Co-Terminal question if visible
-    const coTermContainer = document.getElementById('coTermContainer');
     const coTermQuestion = document.getElementById('coTermQuestion');
     const isCoTermInput = document.getElementById('isCoTerm');
-    if (coTermContainer && !coTermContainer.classList.contains('hidden')) {
-        if (coTermQuestion && isCoTermInput && isCoTermInput.value === '') {
+    const coTermSelect = document.getElementById('coTermSelect');
+    if (coTermQuestion && !coTermQuestion.classList.contains('hidden')) {
+        // Check if question not answered, or Yes was clicked but no city selected
+        const yesClickedButNoSelection = coTermSelect && !coTermSelect.classList.contains('hidden') && !coTermSelect.value;
+        if (isCoTermInput && (isCoTermInput.value === '' || yesClickedButNoSelection)) {
             coTermQuestion.classList.add('modifier-missing');
-            missingItems.push('Co-Terminal Question');
+            missingItems.push(yesClickedButNoSelection ? 'Co-Terminal Selection' : 'Co-Terminal Question');
             hasError = true;
         }
     }
