@@ -188,8 +188,7 @@ function toggleDarkMode() {
 function toggleMode() {
     const isDom = document.getElementById('modeDom').checked;
     const isInt = document.getElementById('modeInt').checked;
-    const hvtCheck = document.getElementById('isHVT');
-    const hvtCont = document.getElementById('hvtContainer');
+    const hvtQuestion = document.getElementById('isHVT')?.closest('.modifier-question');
     const multiSegCont = document.getElementById('multiSegContainer');
     const domCheck = document.getElementById('domCheck');
     const intCheck = document.getElementById('intCheck');
@@ -207,8 +206,8 @@ function toggleMode() {
     if (intCheck) intCheck.classList.toggle('hidden', !isInt);
 
     if (isDom) {
-        hvtCheck.disabled = false;
-        hvtCont.style.opacity = "1";
+        // Enable HVT question for domestic
+        if (hvtQuestion) hvtQuestion.style.opacity = "1";
         // Hide multi-segment for domestic
         if (multiSegCont) multiSegCont.classList.add('hidden');
         multiSegTotalMins = 0;
@@ -216,9 +215,8 @@ function toggleMode() {
         multiSegAnswered = false;
         resetMultiSegButtons();
     } else {
-        hvtCheck.disabled = true;
-        hvtCheck.checked = false;
-        hvtCont.style.opacity = "0.5";
+        // Disable/dim HVT question for international (HVT doesn't apply)
+        if (hvtQuestion) hvtQuestion.style.opacity = "0.5";
         // Show multi-segment question for international (no gating)
         if (multiSegCont) multiSegCont.classList.remove('hidden');
         resetMultiSegButtons();
