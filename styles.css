@@ -115,8 +115,13 @@ label {
 .manual-city-selected {
     border-width: 2px !important;
     border-color: #8b5cf6 !important;
-    color: #6b21a8;
-    background-color: #ede9fe;
+    color: #6b21a8 !important;
+    background-color: #ede9fe !important;
+}
+
+/* Higher specificity for inputs */
+input.manual-city-selected {
+    background-color: #ede9fe !important;
 }
 
 /* Dynamic Labels */
@@ -395,6 +400,12 @@ body.dark-mode {
     background-color: #374151 !important;
     /* gray-700 */
     color: #c4b5fd !important;
+}
+
+/* Higher specificity for dark mode inputs */
+.dark-mode input.manual-city-selected {
+    background-color: #374151 !important;
+    /* gray-700 */
 }
 
 /* Dark mode amber for input field pending entry - dark bg with bright border/text */
