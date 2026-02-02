@@ -464,7 +464,12 @@ function resetResult() {
 function resetForm() {
     // Keep dutyDate and homeBase values for successive calculations
     // Only reset the flight-specific inputs
-    ['reportAirport', 'reportTime', 'depAirport', 'flightTimeInput'].forEach(id => { const el = document.getElementById(id); el.value = ''; el.classList.remove('valid-airport', 'invalid-airport'); });
+    ['reportAirport', 'reportTime', 'depAirport', 'flightTimeInput'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = '';
+        el.classList.remove('valid-airport', 'invalid-airport', 'valid-field', 'manual-city-selected');
+        el.classList.add('amber-pending');
+    });
     document.querySelectorAll('.toggle-checkbox').forEach(el => { el.checked = false; el.nextElementSibling.classList.remove('active'); });
     ['repManualZone', 'depManualZone'].forEach(id => { const el = document.getElementById(id); el.classList.add('hidden'); el.value = ''; });
 
