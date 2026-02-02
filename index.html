@@ -175,6 +175,31 @@
                 </div>
             </div>
 
+            <!-- CO-TERMINAL QUESTION (appears for bases with co-terminals) -->
+            <div class="coterm-question p-2 rounded border-2 border-amber-400 bg-amber-50 transition-all hidden mt-1"
+                id="coTermQuestion">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] text-gray-700 flex-1">Ending at a <b>different co-terminal</b> than where
+                        your pairing began?
+                        <button onclick="showInfo('coterm')"
+                            class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1">
+                            <i class="fa-solid fa-circle-question"></i>
+                        </button>
+                    </span>
+                    <div class="flex gap-1">
+                        <button type="button" onclick="answerCoTermModifier(false)" id="coTerm_no"
+                            class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 transition-all">No</button>
+                        <button type="button" onclick="answerCoTermModifier(true)" id="coTerm_yes"
+                            class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-blue-100 hover:border-blue-400 transition-all">Yes</button>
+                    </div>
+                </div>
+                <select id="coTermSelect" class="hidden mt-2 w-full p-2 text-xs bg-white border border-gray-300 rounded"
+                    onchange="selectCoTerminal()">
+                    <option value="">Select co-terminal...</option>
+                </select>
+                <input type="hidden" id="isCoTerm" value="">
+            </div>
+
 
 
             <!-- REPORT INFO GROUP -->
@@ -403,30 +428,6 @@
                         <input type="hidden" id="customsEnd" value="">
                     </div>
 
-                    <!-- Co-Terminal (conditional) -->
-                    <div class="modifier-question p-2 rounded border-2 border-amber-400 bg-amber-50 transition-all hidden"
-                        id="coTermQuestion">
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="text-[11px] text-gray-700 flex-1">Ending at a <b>different co-terminal</b>?
-                                <button onclick="showInfo('coterm')"
-                                    class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1">
-                                    <i class="fa-solid fa-circle-question"></i>
-                                </button>
-                            </span>
-                            <div class="flex gap-1">
-                                <button type="button" onclick="answerCoTermModifier(false)" id="coTerm_no"
-                                    class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 transition-all">No</button>
-                                <button type="button" onclick="answerCoTermModifier(true)" id="coTerm_yes"
-                                    class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-blue-100 hover:border-blue-400 transition-all">Yes</button>
-                            </div>
-                        </div>
-                        <select id="coTermSelect"
-                            class="hidden mt-2 w-full p-2 text-xs bg-white border border-gray-300 rounded"
-                            onchange="selectCoTerminal()">
-                            <option value="">Select co-terminal...</option>
-                        </select>
-                        <input type="hidden" id="isCoTerm" value="">
-                    </div>
                 </div>
             </div>
 
