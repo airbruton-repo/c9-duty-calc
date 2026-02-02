@@ -68,11 +68,11 @@ label {
     color: #92400E;
 }
 
-/* City code field when manual timezone has been selected - blue to match TZ dropdown */
+/* City code field when manual timezone has been selected - purple to indicate manual entry */
 .manual-city-selected {
-    border-color: #3b82f6 !important;
-    color: #1e40af;
-    background-color: #dbeafe;
+    border-color: #8b5cf6 !important;
+    color: #6b21a8;
+    background-color: #ede9fe;
 }
 
 /* Dynamic Labels */
@@ -177,11 +177,11 @@ body:not(.dark-mode) .opt-pill {
     color: #1f2937;
 }
 
-/* Manually completed timezone - blue to indicate user made the choice */
+/* Manually completed timezone - purple to indicate user made the choice */
 .manual-zone-selected {
-    background-color: #dbeafe;
-    border-color: #3b82f6;
-    color: #1e40af;
+    background-color: #ede9fe;
+    border-color: #8b5cf6;
+    color: #6b21a8;
 }
 
 /* ERROR PULSE ANIMATION */
@@ -298,11 +298,11 @@ body.dark-mode {
     background-color: #451a03;
 }
 
-/* Dark mode blue for manually completed city code */
+/* Dark mode purple for manually completed city code */
 .dark-mode .manual-city-selected {
-    border-color: #3b82f6 !important;
-    color: #93c5fd;
-    background-color: #1e3a8a;
+    border-color: #8b5cf6 !important;
+    color: #c4b5fd;
+    background-color: #4c1d95;
 }
 
 .dark-mode .section-title {
@@ -352,11 +352,11 @@ body.dark-mode {
     color: #fde047;
 }
 
-/* Dark mode blue for manually completed timezone */
+/* Dark mode purple for manually completed timezone */
 .dark-mode .manual-zone-selected {
-    background-color: #1e3a8a;
-    border-color: #3b82f6;
-    color: #93c5fd;
+    background-color: #4c1d95;
+    border-color: #8b5cf6;
+    color: #c4b5fd;
 }
 
 .dark-mode .nudge-btn {
