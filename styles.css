@@ -350,37 +350,35 @@ body.dark-mode {
 }
 
 .dark-mode .valid-airport {
-    border-color: #059669 !important;
-    color: #34d399;
-    background-color: #064e3b;
+    border-color: #10B981 !important;
+    color: #6ee7b7;
+    /* green-300 - matches valid-field */
 }
 
 .dark-mode .invalid-airport {
-    border-color: #b45309 !important;
-    color: #fbbf24;
-    background-color: #451a03;
+    border-color: #fbbf24 !important;
+    /* amber-400 */
+    color: #fcd34d;
+    /* amber-300 - matches amber-pending */
 }
 
 /* Dark mode purple for manually completed city code */
 .dark-mode .manual-city-selected {
     border-color: #8b5cf6 !important;
     color: #c4b5fd;
-    background-color: #4c1d95;
 }
 
-/* Dark mode amber for input field pending entry */
+/* Dark mode amber for input field pending entry - dark bg with bright border/text */
 .dark-mode .amber-pending {
     border-color: #fbbf24 !important;
     /* amber-400 */
-    background-color: #451a03 !important;
     color: #fcd34d !important;
     /* amber-300 */
 }
 
-/* Dark mode green for valid field */
+/* Dark mode green for valid field - dark bg with bright border/text */
 .dark-mode .valid-field {
     border-color: #10B981 !important;
-    background-color: #064e3b !important;
     color: #6ee7b7 !important;
     /* green-300 */
 }
