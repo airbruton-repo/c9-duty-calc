@@ -368,21 +368,27 @@ body.dark-mode {
 
 .dark-mode .valid-airport {
     border-color: #10B981 !important;
-    color: #6ee7b7;
-    /* green-300 - matches valid-field */
+    background-color: #374151 !important;
+    /* gray-700 - matches valid-field */
+    color: #6ee7b7 !important;
+    /* green-300 */
 }
 
 .dark-mode .invalid-airport {
     border-color: #fbbf24 !important;
     /* amber-400 */
-    color: #fcd34d;
-    /* amber-300 - matches amber-pending */
+    background-color: #374151 !important;
+    /* gray-700 */
+    color: #fcd34d !important;
+    /* amber-300 */
 }
 
 /* Dark mode purple for manually completed city code */
 .dark-mode .manual-city-selected {
     border-color: #8b5cf6 !important;
-    color: #c4b5fd;
+    background-color: #374151 !important;
+    /* gray-700 */
+    color: #c4b5fd !important;
 }
 
 /* Dark mode amber for input field pending entry - dark bg with bright border/text */
