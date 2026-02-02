@@ -25,6 +25,24 @@ body {
 input:focus,
 select:focus {
     outline: none;
+}
+
+/* Preserve amber/green verification borders on focus for date and base fields */
+#dutyDate:focus,
+#homeBase:focus {
+    box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.3);
+}
+
+#dutyDate.border-green-500:focus,
+#homeBase.border-green-500:focus {
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3);
+}
+
+/* Other inputs can use blue focus */
+#reportAirport:focus,
+#reportTime:focus,
+#depAirport:focus,
+#flightTimeInput:focus {
     border-color: #005DAA;
     box-shadow: 0 0 0 2px rgba(0, 93, 170, 0.1);
 }
