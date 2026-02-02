@@ -262,7 +262,7 @@
                         <input type="text" id="reportTime" inputmode="numeric" placeholder="HHMM" maxlength="11"
                             class="input-bg amber-pending w-full px-2 bg-white border border-gray-200 rounded text-xs font-medium text-gray-900 font-mono tracking-wider h-8 placeholder-gray-400 text-center transition-colors duration-300"
                             oninput="formatTimeInput(this); resetResult(); updateLiveCalc();"
-                            onblur="padTimeInput(this)">
+                            onblur="padTimeInput(this); formatTimeInput(this);">
                     </div>
                 </div>
 
@@ -343,7 +343,7 @@
                         <input type="text" id="flightTimeInput" inputmode="numeric" placeholder="HHMM" maxlength="5"
                             class="input-bg amber-pending w-full px-2 bg-white border border-gray-200 rounded text-xs font-medium text-gray-900 font-mono tracking-wider h-8 placeholder-gray-400 text-center transition-colors duration-300"
                             oninput="formatTimeInput(this); resetResult(); updateLiveCalc();"
-                            onblur="padTimeInput(this)">
+                            onblur="padTimeInput(this); formatTimeInput(this);">
                     </div>
                 </div>
 

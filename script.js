@@ -78,6 +78,10 @@ function answerModifier(fieldId, isYes) {
         yesBtn.classList.add('bg-white', 'border-gray-300');
     }
 
+    // Blur button to clear focus state on mobile
+    if (isYes) yesBtn.blur();
+    else noBtn.blur();
+
     resetResult();
 }
 
