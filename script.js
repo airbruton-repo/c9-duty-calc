@@ -1103,7 +1103,7 @@ function init() {
 
     const pZ = (id) => {
         const s = document.getElementById(id);
-        s.innerHTML = '<option value="" disabled selected>Select Zone</option>';
+        s.innerHTML = '<option value="" disabled selected>SELECT</option>';
         Object.keys(MANUAL_ZONES).forEach(group => {
             const grp = document.createElement('optgroup');
             grp.label = group;

@@ -241,12 +241,14 @@
                             <input type="text" id="repZoneAuto" readonly tabindex="-1" value="--"
                                 class="info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300">
                         </div>
-                        <div id="repManualContainer" class="hidden w-full">
+                        <div id="repManualContainer" class="hidden w-full relative">
                             <select id="repManualZone"
-                                class="manual-zone-select w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold"
+                                class="manual-zone-select w-full px-1 pr-5 border rounded text-[10px] h-8 appearance-none text-center font-bold"
                                 onchange="updateManualZoneStyle(this); resetResult(); updateLiveCalc();">
-                                <option value="" disabled selected>Select</option>
+                                <option value="" disabled selected>SELECT</option>
                             </select>
+                            <i
+                                class="fa-solid fa-chevron-down absolute right-1.5 top-1/2 -translate-y-1/2 text-[8px] text-gray-500 pointer-events-none"></i>
                         </div>
                     </div>
 
@@ -308,12 +310,14 @@
                             <input type="text" id="depZoneAuto" readonly tabindex="-1" value="--"
                                 class="info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300">
                         </div>
-                        <div id="depManualContainer" class="hidden w-full">
+                        <div id="depManualContainer" class="hidden w-full relative">
                             <select id="depManualZone"
                                 onchange="updateManualZoneStyle(this); resetResult(); updateLiveCalc();"
-                                class="manual-zone-select w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold">
-                                <option value="" disabled selected>Select</option>
+                                class="manual-zone-select w-full px-1 pr-5 border rounded text-[10px] h-8 appearance-none text-center font-bold">
+                                <option value="" disabled selected>SELECT</option>
                             </select>
+                            <i
+                                class="fa-solid fa-chevron-down absolute right-1.5 top-1/2 -translate-y-1/2 text-[8px] text-gray-500 pointer-events-none"></i>
                         </div>
                     </div>
 
