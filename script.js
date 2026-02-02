@@ -602,7 +602,7 @@ function validateAirport(el) {
     if (code.length === 3) {
         if (ALL_CODES[code]) {
             el.classList.add('valid-airport');
-            el.classList.remove('invalid-airport');
+            el.classList.remove('invalid-airport', 'manual-city-selected');
 
             // Dynamic Label Logic
             if (el.id === 'reportAirport') {
