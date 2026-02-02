@@ -243,7 +243,8 @@
                         </div>
                         <div id="repManualContainer" class="hidden w-full">
                             <select id="repManualZone"
-                                class="manual-zone-select w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold">
+                                class="manual-zone-select w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold"
+                                onchange="updateManualZoneStyle(this); resetResult(); updateLiveCalc();">
                                 <option value="" disabled selected>Select</option>
                             </select>
                         </div>
@@ -308,7 +309,8 @@
                                 class="info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300">
                         </div>
                         <div id="depManualContainer" class="hidden w-full">
-                            <select id="depManualZone" onchange="resetResult();"
+                            <select id="depManualZone"
+                                onchange="updateManualZoneStyle(this); resetResult(); updateLiveCalc();"
                                 class="manual-zone-select w-full px-1 border rounded text-[10px] h-8 appearance-none text-center font-bold">
                                 <option value="" disabled selected>Select</option>
                             </select>
