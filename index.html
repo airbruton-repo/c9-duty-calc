@@ -103,48 +103,7 @@
             </div>
         </div>
 
-        <!-- CO-TERMINAL SPLASH -->
-        <div id="coTermSplash" class="welcome-overlay hidden">
-            <div class="welcome-card">
-                <div class="text-center mb-3">
-                    <i class="fa-solid fa-shuffle text-3xl text-[#005DAA] mb-2"></i>
-                    <h2 class="text-lg font-bold text-[#002244]">Co-Terminal Pairing?</h2>
-                </div>
-                <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-4 text-left">
-                    <p class="text-xs text-gray-700 leading-relaxed">
-                        Your home base (<span id="coTermHomeBase" class="font-bold"></span>) has co-terminals.
-                    </p>
-                    <p class="text-xs text-gray-700 leading-relaxed mt-2">
-                        Is this the <b>final duty period</b> of your pairing <b>AND</b> does it terminate at a
-                        <b>different co-terminal</b> than where your pairing began?
-                    </p>
-                    <p class="text-xs text-gray-500 mt-2 italic">
-                        (Example: Pairing started at <b>EWR</b> but ends at <b>LGA</b>)
-                    </p>
-                </div>
-                <div id="coTermStep1" class="flex gap-3">
-                    <button onclick="answerCoTermSplash(false)"
-                        class="welcome-btn flex-1 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition-all">
-                        NO
-                    </button>
-                    <button onclick="answerCoTermSplash(true)"
-                        class="welcome-btn flex-1 bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold py-3 px-4 rounded-lg transition-all">
-                        YES
-                    </button>
-                </div>
-                <div id="coTermStep2" class="hidden">
-                    <p class="text-sm text-gray-700 mb-3 font-semibold">Which co-terminal does your pairing end at?</p>
-                    <select id="coTermSplashSelect"
-                        class="w-full p-3 text-sm bg-white border-2 border-blue-200 rounded-lg text-gray-700 mb-3">
-                        <option value="0">Select Terminal...</option>
-                    </select>
-                    <button onclick="confirmCoTermSelection()"
-                        class="w-full bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold py-3 px-4 rounded-lg transition-all">
-                        CONFIRM
-                    </button>
-                </div>
-            </div>
-        </div>
+
 
         <!-- MAIN CONTENT AREA -->
         <div class="p-2 space-y-2">
@@ -397,48 +356,96 @@
                 <div class="flex items-center gap-1 mb-1.5 border-b border-gray-200 pb-1 section-title">
                     <i class="fa-solid fa-sliders text-[#005DAA] text-xs section-icon"></i>
                     <h3 class="text-[11px] font-bold text-[#002244] uppercase tracking-widest section-title">Modifiers
-                        <span class="normal-case font-normal">(Select ALL that apply)</span>
+                        <span class="normal-case font-normal">(Answer all)</span>
                     </h3>
                 </div>
 
                 <div class="space-y-2">
                     <!-- HVT -->
-                    <div class="flex items-center gap-2" id="hvtContainer">
-                        <label class="flex items-center gap-2 cursor-pointer flex-1">
-                            <input type="checkbox" id="isHVT" class="w-4 h-4 text-[#005DAA] rounded"
-                                onchange="resetResult()">
-                            <span class="text-[11px] text-gray-700">Is this a <b>High Value Trip</b> (HVT)?</span>
-                        </label>
-                        <button onclick="showInfo('hvt')" class="icon-blue text-[#005DAA] text-[12px] hover:underline">
-                            <i class="fa-solid fa-circle-question"></i>
-                        </button>
+                    <div class="modifier-question p-2 rounded border-2 border-amber-400 bg-amber-50 transition-all"
+                        id="hvtQuestion">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[11px] text-gray-700 flex-1">Is this a <b>High Value Trip</b> (HVT)?
+                                <button onclick="showInfo('hvt')"
+                                    class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                </button>
+                            </span>
+                            <div class="flex gap-1">
+                                <button type="button" onclick="answerModifier('isHVT', false)" id="isHVT_no"
+                                    class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 transition-all">No</button>
+                                <button type="button" onclick="answerModifier('isHVT', true)" id="isHVT_yes"
+                                    class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-blue-100 hover:border-blue-400 transition-all">Yes</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="isHVT" value="">
                     </div>
 
                     <!-- DHD -->
-                    <div class="flex items-center gap-2">
-                        <label class="flex items-center gap-2 cursor-pointer flex-1">
-                            <input type="checkbox" id="isDHD" class="w-4 h-4 text-[#005DAA] rounded"
-                                onchange="resetResult()">
-                            <span class="text-[11px] text-gray-700">Is your door close segment a <b>deadhead</b>
-                                (DHD)?</span>
-                        </label>
-                        <button onclick="showInfo('dhd')" class="icon-blue text-[#005DAA] text-[12px] hover:underline">
-                            <i class="fa-solid fa-circle-question"></i>
-                        </button>
+                    <div class="modifier-question p-2 rounded border-2 border-amber-400 bg-amber-50 transition-all"
+                        id="dhdQuestion">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[11px] text-gray-700 flex-1">Is your door close segment a <b>deadhead</b>
+                                (DHD)?
+                                <button onclick="showInfo('dhd')"
+                                    class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                </button>
+                            </span>
+                            <div class="flex gap-1">
+                                <button type="button" onclick="answerModifier('isDHD', false)" id="isDHD_no"
+                                    class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 transition-all">No</button>
+                                <button type="button" onclick="answerModifier('isDHD', true)" id="isDHD_yes"
+                                    class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-blue-100 hover:border-blue-400 transition-all">Yes</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="isDHD" value="">
                     </div>
 
                     <!-- Customs at End -->
-                    <div class="flex items-center gap-2">
-                        <label class="flex items-center gap-2 cursor-pointer flex-1">
-                            <input type="checkbox" id="customsEnd" class="w-4 h-4 text-[#005DAA] rounded"
-                                onchange="resetResult()">
-                            <span class="text-[11px] text-gray-700">Clearing <b>customs</b> after arrival of door close
-                                flight?</span>
-                        </label>
-                        <button onclick="showInfo('custEnd')"
-                            class="icon-blue text-[#005DAA] text-[12px] hover:underline">
-                            <i class="fa-solid fa-circle-question"></i>
-                        </button>
+                    <div class="modifier-question p-2 rounded border-2 border-amber-400 bg-amber-50 transition-all"
+                        id="customsQuestion">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[11px] text-gray-700 flex-1">Clearing <b>customs</b> after arrival of door
+                                close flight?
+                                <button onclick="showInfo('custEnd')"
+                                    class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                </button>
+                            </span>
+                            <div class="flex gap-1">
+                                <button type="button" onclick="answerModifier('customsEnd', false)" id="customsEnd_no"
+                                    class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 transition-all">No</button>
+                                <button type="button" onclick="answerModifier('customsEnd', true)" id="customsEnd_yes"
+                                    class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-blue-100 hover:border-blue-400 transition-all">Yes</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="customsEnd" value="">
+                    </div>
+
+                    <!-- Co-Terminal (conditional) -->
+                    <div class="modifier-question p-2 rounded border-2 border-amber-400 bg-amber-50 transition-all hidden"
+                        id="coTermQuestion">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[11px] text-gray-700 flex-1">Ending at a <b>different co-terminal</b>?
+                                <button onclick="showInfo('coterm')"
+                                    class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                </button>
+                            </span>
+                            <div class="flex gap-1">
+                                <button type="button" onclick="answerCoTermModifier(false)" id="coTerm_no"
+                                    class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 transition-all">No</button>
+                                <button type="button" onclick="answerCoTermModifier(true)" id="coTerm_yes"
+                                    class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-blue-100 hover:border-blue-400 transition-all">Yes</button>
+                            </div>
+                        </div>
+                        <select id="coTermSelect"
+                            class="hidden mt-2 w-full p-2 text-xs bg-white border border-gray-300 rounded"
+                            onchange="selectCoTerminal()">
+                            <option value="">Select co-terminal...</option>
+                        </select>
+                        <input type="hidden" id="isCoTerm" value="">
                     </div>
                 </div>
             </div>
