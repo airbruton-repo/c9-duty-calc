@@ -370,14 +370,19 @@ body.dark-mode {
 
 /* Dark mode amber for input field pending entry */
 .dark-mode .amber-pending {
-    border-color: #b45309 !important;
-    background-color: #78350f;
+    border-color: #fbbf24 !important;
+    /* amber-400 */
+    background-color: #451a03 !important;
+    color: #fcd34d !important;
+    /* amber-300 */
 }
 
 /* Dark mode green for valid field */
 .dark-mode .valid-field {
     border-color: #10B981 !important;
-    background-color: #064e3b;
+    background-color: #064e3b !important;
+    color: #6ee7b7 !important;
+    /* green-300 */
 }
 
 .dark-mode .section-title {
