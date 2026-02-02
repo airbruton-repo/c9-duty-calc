@@ -125,6 +125,17 @@ label {
     transition: color 0.3s;
 }
 
+/* TZ mode labels - AUTO is green, MANUAL is purple */
+.tz-label-auto {
+    color: #059669;
+    /* green-600 for light mode */
+}
+
+.tz-label-manual {
+    color: #7c3aed;
+    /* violet-600 for light mode */
+}
+
 /* Verify button missing - needs to be clicked */
 .verify-missing {
     animation: pulse-amber 1s ease-in-out 3;
@@ -386,6 +397,17 @@ body.dark-mode {
 .dark-mode .section-title {
     color: #e5e7eb;
     border-color: #4b5563;
+}
+
+/* Dark mode TZ mode labels - bright colors for high contrast */
+.dark-mode .tz-label-auto {
+    color: #6ee7b7;
+    /* green-300 */
+}
+
+.dark-mode .tz-label-manual {
+    color: #c4b5fd;
+    /* violet-300 */
 }
 
 .dark-mode .section-icon {

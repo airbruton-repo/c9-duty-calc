@@ -641,9 +641,12 @@ function validateAirport(el) {
             } else {
                 zoneAuto.className = isDark ? "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-sky-900/50 border border-sky-700 text-sky-200" : "w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300 bg-sky-100 border border-sky-300 text-sky-800";
             }
-            // Update TZ mode label to AUTO
+            // Update TZ mode label to AUTO (green)
             const tzModeLabel = document.getElementById(pfx + 'TzModeLabel');
-            if (tzModeLabel) tzModeLabel.textContent = '(AUTO)';
+            if (tzModeLabel) {
+                tzModeLabel.textContent = '(AUTO)';
+                tzModeLabel.className = 'text-[8px] font-bold tz-label-auto';
+            }
         } else {
             el.classList.remove('valid-airport');
             el.classList.add('invalid-airport');
@@ -656,9 +659,12 @@ function validateAirport(el) {
             zoneManualCont.classList.remove('hidden');
             if (nudgeWest) nudgeWest.classList.remove('invisible');
             if (nudgeEast) nudgeEast.classList.remove('invisible');
-            // Update TZ mode label to MANUAL
+            // Update TZ mode label to MANUAL (purple)
             const tzModeLabel = document.getElementById(pfx + 'TzModeLabel');
-            if (tzModeLabel) tzModeLabel.textContent = '(MANUAL)';
+            if (tzModeLabel) {
+                tzModeLabel.textContent = '(MANUAL)';
+                tzModeLabel.className = 'text-[8px] font-bold tz-label-manual';
+            }
         }
     } else {
         el.classList.remove('valid-airport', 'invalid-airport');
@@ -675,7 +681,10 @@ function validateAirport(el) {
         zoneAuto.className = "info-field w-full px-2 rounded text-xs font-bold text-center h-8 pointer-events-none transition-colors duration-300";
         // Reset TZ mode label to AUTO for empty/partial
         const tzModeLabel = document.getElementById(pfx + 'TzModeLabel');
-        if (tzModeLabel) tzModeLabel.textContent = '(AUTO)';
+        if (tzModeLabel) {
+            tzModeLabel.textContent = '(AUTO)';
+            tzModeLabel.className = 'text-[8px] text-gray-400';
+        }
     }
 }
 
