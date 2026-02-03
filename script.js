@@ -329,6 +329,10 @@ function resetMultiSegButtons() {
         container.classList.add('border-amber-400', 'bg-amber-50');
     }
 
+    // Hide summary section
+    const summaryEl = document.getElementById('multiSegSummary');
+    if (summaryEl) summaryEl.classList.add('hidden');
+
     // Reset answered state
     multiSegAnswered = false;
 }
@@ -381,6 +385,8 @@ function answerMultiSeg(isYes) {
         // Reset multi-segment values - use single flight time
         multiSegTotalMins = 0;
         multiSegSelectedMins = 0;
+        // Hide the summary section
+        hideMultiSegSummary();
     }
 
     // Update container styling to green (answered)
@@ -1347,11 +1353,68 @@ function applyMultiSegTotal() {
     // If direct total was entered, use that; otherwise use calculated total
     if (directTotalMins > 0) {
         multiSegTotalMins = directTotalMins;
+        // Show summary for direct entry
+        updateMultiSegSummary(directTotalMins, null);
     } else {
         multiSegTotalMins = thisSegMins + additionalMins;
+        // Show summary with breakdown
+        const segments = [];
+        segments.push({ label: 'Door Close Seg', mins: thisSegMins });
+        ['addSegA', 'addSegB', 'addSegC', 'addSegD'].forEach(id => {
+            const inp = document.getElementById(id);
+            if (inp && inp.value) {
+                segments.push({ label: '+ Add Seg', mins: parseTimeToMins(inp.value) });
+            }
+        });
+        updateMultiSegSummary(multiSegTotalMins, segments);
     }
     closeMultiSegModal();
     resetResult();
+}
+
+// Update and show the multi-segment summary section
+function updateMultiSegSummary(totalMins, segments) {
+    const summaryEl = document.getElementById('multiSegSummary');
+    const breakdownEl = document.getElementById('multiSegBreakdown');
+    const totalSummaryEl = document.getElementById('multiSegTotalSummary');
+    const dutyMaxEl = document.getElementById('multiSegDutyMax');
+
+    if (!summaryEl) return;
+
+    // Build breakdown HTML
+    let breakdownHtml = '';
+    if (segments && segments.length > 0) {
+        segments.forEach((seg, i) => {
+            const prefix = i === 0 ? '' : '';
+            breakdownHtml += `<div class="flex justify-between"><span>${seg.label}:</span><span>${formatMinsToTime(seg.mins)}</span></div>`;
+        });
+    } else {
+        // Direct entry - just show the total
+        breakdownHtml = `<div class="text-center italic text-gray-500">Direct total entered</div>`;
+    }
+    breakdownEl.innerHTML = breakdownHtml;
+
+    // Update total
+    totalSummaryEl.textContent = formatMinsToTime(totalMins);
+
+    // Determine and show applicable duty max
+    const totalHours = totalMins / 60;
+    let dutyMaxText = '';
+    if (totalHours >= 8) {
+        dutyMaxText = 'Duty Max: 16:30 (Sched FTM ≥ 8:00)';
+    } else {
+        dutyMaxText = 'Duty Max: 16:00 (Sched FTM < 8:00)';
+    }
+    dutyMaxEl.textContent = dutyMaxText;
+
+    // Show the summary section
+    summaryEl.classList.remove('hidden');
+}
+
+// Hide the multi-segment summary
+function hideMultiSegSummary() {
+    const summaryEl = document.getElementById('multiSegSummary');
+    if (summaryEl) summaryEl.classList.add('hidden');
 }
 
 // Legacy function name mappings for compatibility
