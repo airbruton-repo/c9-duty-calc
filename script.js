@@ -69,7 +69,7 @@ function answerModifier(fieldId, isYes) {
     if (isYes) {
         yesBtn.classList.remove('bg-white', 'border-gray-300');
         yesBtn.classList.add('bg-blue-500', 'text-white', 'border-blue-500');
-        noBtn.classList.remove('bg-gray-200', 'border-gray-400');
+        noBtn.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
         noBtn.classList.add('bg-white', 'border-gray-300');
     } else {
         noBtn.classList.remove('bg-white', 'border-gray-300');
@@ -99,7 +99,7 @@ function answerCoTermModifier(isYes) {
         // Update button styling
         yesBtn.classList.remove('bg-white', 'border-gray-300');
         yesBtn.classList.add('bg-blue-500', 'text-white', 'border-blue-500');
-        noBtn.classList.remove('bg-gray-200', 'border-gray-400');
+        noBtn.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
         noBtn.classList.add('bg-white', 'border-gray-300');
         // Don't mark green yet - needs select
     } else {
