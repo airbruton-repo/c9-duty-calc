@@ -1243,9 +1243,11 @@ function updateCalcTotal() {
     document.getElementById('calcTotalDisplay').textContent = formatMinsToTime(total);
 
     const msgEl = document.getElementById('calcLimitMsg');
-    const limitInfo = getLimitMessage(total);
-    msgEl.textContent = limitInfo.text;
-    msgEl.className = limitInfo.className;
+    if (msgEl) {
+        const limitInfo = getLimitMessage(total);
+        msgEl.textContent = limitInfo.text;
+        msgEl.className = limitInfo.className;
+    }
 }
 
 // Handle mutual exclusion between direct total and calculator sections
