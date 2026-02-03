@@ -211,7 +211,26 @@ function toggleMode() {
 
     if (isDom) {
         // Enable HVT question for domestic
-        if (hvtQuestion) hvtQuestion.style.opacity = "1";
+        if (hvtQuestion) {
+            hvtQuestion.style.opacity = "1";
+            // Restore HVT buttons to Yes/No
+            const hvtYes = document.getElementById('isHVT_yes');
+            const hvtNo = document.getElementById('isHVT_no');
+            const hvtHidden = document.getElementById('isHVT');
+            if (hvtYes) {
+                hvtYes.textContent = 'Yes';
+                hvtYes.disabled = false;
+            }
+            if (hvtNo) {
+                hvtNo.textContent = 'No';
+                hvtNo.disabled = false;
+            }
+            // Reset hidden value so user must answer again
+            if (hvtHidden) hvtHidden.value = '';
+            // Reset question styling to amber (unanswered)
+            hvtQuestion.classList.remove('border-gray-300', 'bg-gray-100', 'border-green-500', 'bg-green-50');
+            hvtQuestion.classList.add('border-amber-400', 'bg-amber-50');
+        }
         // Hide multi-segment for domestic
         if (multiSegCont) multiSegCont.classList.add('hidden');
         multiSegTotalMins = 0;
@@ -220,7 +239,29 @@ function toggleMode() {
         resetMultiSegButtons();
     } else {
         // Disable/dim HVT question for international (HVT doesn't apply)
-        if (hvtQuestion) hvtQuestion.style.opacity = "0.5";
+        if (hvtQuestion) {
+            hvtQuestion.style.opacity = "0.5";
+            // Reset HVT buttons to unselected state
+            const hvtYes = document.getElementById('isHVT_yes');
+            const hvtNo = document.getElementById('isHVT_no');
+            const hvtHidden = document.getElementById('isHVT');
+            if (hvtYes) {
+                hvtYes.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
+                hvtYes.classList.add('bg-white', 'border-gray-300');
+                hvtYes.textContent = 'N/A';
+                hvtYes.disabled = true;
+            }
+            if (hvtNo) {
+                hvtNo.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
+                hvtNo.classList.add('bg-white', 'border-gray-300');
+                hvtNo.textContent = 'N/A';
+                hvtNo.disabled = true;
+            }
+            if (hvtHidden) hvtHidden.value = 'false'; // Set to false for intl
+            // Reset question styling to neutral gray
+            hvtQuestion.classList.remove('border-amber-400', 'bg-amber-50', 'border-green-500', 'bg-green-50', 'modifier-missing');
+            hvtQuestion.classList.add('border-gray-300', 'bg-gray-100');
+        }
         // Show multi-segment question for international (no gating)
         if (multiSegCont) multiSegCont.classList.remove('hidden');
         resetMultiSegButtons();
