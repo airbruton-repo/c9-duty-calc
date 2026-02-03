@@ -869,8 +869,9 @@ function calculateDuty() {
     for (let mod of modifiers) {
         const question = document.getElementById(mod.questionId);
         const hidden = document.getElementById(mod.id);
-        // Check if question is visible and not answered
-        if (question && !question.classList.contains('hidden') && hidden && hidden.value === '') {
+        // Check if question is visible, not disabled (opacity), and not answered
+        const isHiddenOrDisabled = question.classList.contains('hidden') || question.style.opacity === '0.5';
+        if (question && !isHiddenOrDisabled && hidden && hidden.value === '') {
             question.classList.add('modifier-missing');
             missingItems.push(mod.name);
             hasError = true;
