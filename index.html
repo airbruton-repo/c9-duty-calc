@@ -342,7 +342,7 @@
                         </label>
                         <input type="text" id="flightTimeInput" inputmode="numeric" placeholder="HHMM" maxlength="5"
                             class="input-bg amber-pending w-full px-2 bg-white border border-gray-200 rounded text-xs font-bold text-gray-900 h-8 placeholder-gray-400 text-center transition-colors duration-300"
-                            oninput="formatTimeInput(this); resetResult(); updateLiveCalc();"
+                            oninput="formatTimeInput(this); resetResult(); updateLiveCalc(); checkMultiSegVisibility();"
                             onblur="padTimeInput(this); formatTimeInput(this);">
                     </div>
                 </div>

@@ -262,8 +262,8 @@ function toggleMode() {
             hvtQuestion.classList.remove('border-amber-400', 'bg-amber-50', 'border-green-500', 'bg-green-50', 'modifier-missing');
             hvtQuestion.classList.add('border-gray-300', 'bg-gray-100');
         }
-        // Show multi-segment question for international (no gating)
-        if (multiSegCont) multiSegCont.classList.remove('hidden');
+        // Keep multi-segment question hidden initially - shown when flight time is entered
+        if (multiSegCont) multiSegCont.classList.add('hidden');
         resetMultiSegButtons();
     }
     resetResult();
@@ -320,6 +320,23 @@ function resetMultiSegButtons() {
     if (yesBtn) {
         yesBtn.classList.remove('active');
         yesBtn.textContent = 'Multi';
+    }
+}
+
+// Show multi-segment question only when: Intl mode AND flight time has value
+function checkMultiSegVisibility() {
+    const isInt = document.getElementById('modeInt').checked;
+    const flightTime = document.getElementById('flightTimeInput').value;
+    const multiSegCont = document.getElementById('multiSegContainer');
+
+    if (isInt && flightTime && flightTime.trim() !== '') {
+        // Show multi-segment question in Intl mode when flight time is entered
+        if (multiSegCont) multiSegCont.classList.remove('hidden');
+    } else {
+        // Hide multi-segment question
+        if (multiSegCont) multiSegCont.classList.add('hidden');
+        // Reset multi-seg state when hiding
+        resetMultiSegButtons();
     }
 }
 
@@ -1221,6 +1238,7 @@ function applyDirectTotal() {
 
 function applyCalcTotal() {
     const flightInput = document.getElementById('flightTimeInput');
+    const directInput = document.getElementById('directTotalInput');
     const thisSegMins = flightInput ? parseTimeToMins(flightInput.value) : 0;
 
     let additionalMins = 0;
@@ -1231,13 +1249,21 @@ function applyCalcTotal() {
         }
     });
 
-    // Require at least one additional segment to be entered
-    if (additionalMins === 0) {
-        alert('Please enter at least one additional segment time.');
+    // Check if direct total was entered (use that instead)
+    const directTotalMins = directInput ? parseTimeToMins(directInput.value) : 0;
+
+    // Require either: direct total entered OR at least one additional segment
+    if (directTotalMins === 0 && additionalMins === 0) {
+        alert('Please enter a total flight time or at least one additional segment.');
         return;
     }
 
-    multiSegTotalMins = thisSegMins + additionalMins;
+    // If direct total was entered, use that; otherwise use calculated total
+    if (directTotalMins > 0) {
+        multiSegTotalMins = directTotalMins;
+    } else {
+        multiSegTotalMins = thisSegMins + additionalMins;
+    }
     closeMultiSegModal();
     resetResult();
 }
@@ -1365,6 +1391,7 @@ function init() {
     window.applyCalcTotal = applyCalcTotal;
     window.answerMultiSeg = answerMultiSeg;
     window.resetMultiSegButtons = resetMultiSegButtons;
+    window.checkMultiSegVisibility = checkMultiSegVisibility;
     window.setFormDisabledState = setFormDisabledState;
     window.selectModeFromSplash = selectModeFromSplash;
     window.answerCoTermSplash = answerCoTermSplash;
