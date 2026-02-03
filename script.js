@@ -313,14 +313,24 @@ function setFormDisabledState(disabled) {
 function resetMultiSegButtons() {
     const noBtn = document.getElementById('multiSegNo');
     const yesBtn = document.getElementById('multiSegYes');
-    if (noBtn) {
-        noBtn.classList.remove('active');
-        noBtn.textContent = 'Single';
+    const container = document.getElementById('multiSegContainer');
+
+    // Reset button styling
+    [noBtn, yesBtn].forEach(btn => {
+        if (btn) {
+            btn.classList.remove('bg-blue-500', 'text-white', 'border-blue-500', 'active');
+            btn.classList.add('bg-white', 'border-gray-300');
+        }
+    });
+
+    // Reset container to amber (unanswered) state
+    if (container) {
+        container.classList.remove('border-green-500', 'bg-green-50');
+        container.classList.add('border-amber-400', 'bg-amber-50');
     }
-    if (yesBtn) {
-        yesBtn.classList.remove('active');
-        yesBtn.textContent = 'Multi';
-    }
+
+    // Reset answered state
+    multiSegAnswered = false;
 }
 
 // Show multi-segment question only when: Intl mode AND flight time has value
@@ -343,6 +353,7 @@ function checkMultiSegVisibility() {
 function answerMultiSeg(isYes) {
     const noBtn = document.getElementById('multiSegNo');
     const yesBtn = document.getElementById('multiSegYes');
+    const container = document.getElementById('multiSegContainer');
 
     multiSegAnswered = true;
 
@@ -350,22 +361,32 @@ function answerMultiSeg(isYes) {
     if (noBtn) noBtn.classList.remove('seg-missing');
     if (yesBtn) yesBtn.classList.remove('seg-missing');
 
-    // Update button states with checkmarks
+    // Reset both buttons first
+    [noBtn, yesBtn].forEach(btn => {
+        if (btn) {
+            btn.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
+            btn.classList.add('bg-white', 'border-gray-300');
+        }
+    });
+
+    // Update button states with blue highlight for selected
     if (isYes) {
-        yesBtn.classList.add('active');
-        yesBtn.textContent = 'Multi ✓';
-        noBtn.classList.remove('active');
-        noBtn.textContent = 'Single';
+        yesBtn.classList.remove('bg-white', 'border-gray-300');
+        yesBtn.classList.add('bg-blue-500', 'text-white', 'border-blue-500');
         // Open the multi-segment modal (will pre-fill from existing flight time)
         openMultiSegModal();
     } else {
-        noBtn.classList.add('active');
-        noBtn.textContent = 'Single ✓';
-        yesBtn.classList.remove('active');
-        yesBtn.textContent = 'Multi';
+        noBtn.classList.remove('bg-white', 'border-gray-300');
+        noBtn.classList.add('bg-blue-500', 'text-white', 'border-blue-500');
         // Reset multi-segment values - use single flight time
         multiSegTotalMins = 0;
         multiSegSelectedMins = 0;
+    }
+
+    // Update container styling to green (answered)
+    if (container) {
+        container.classList.remove('border-amber-400', 'bg-amber-50');
+        container.classList.add('border-green-500', 'bg-green-50');
     }
 
     resetResult();
@@ -1227,16 +1248,80 @@ function updateCalcTotal() {
     msgEl.className = limitInfo.className;
 }
 
-function applyDirectTotal() {
-    const input = document.getElementById('directTotalInput');
-    if (input && input.value) {
-        multiSegTotalMins = parseTimeToMins(input.value);
-        closeMultiSegModal();
-        resetResult();
+// Handle mutual exclusion between direct total and calculator sections
+function handleMultiSegInput(source) {
+    const directSection = document.getElementById('directTotalSection');
+    const calcSection = document.getElementById('calcSection');
+    const directInput = document.getElementById('directTotalInput');
+    const applyBtn = document.getElementById('applyTotalBtn');
+
+    // Check if any segment inputs have values
+    let hasSegmentInput = false;
+    ['addSegA', 'addSegB', 'addSegC', 'addSegD'].forEach(id => {
+        const inp = document.getElementById(id);
+        if (inp && inp.value && inp.value.trim() !== '') {
+            hasSegmentInput = true;
+        }
+    });
+
+    const hasDirectInput = directInput && directInput.value && directInput.value.trim() !== '';
+
+    if (source === 'direct' && hasDirectInput) {
+        // User is typing in direct total - disable calc section
+        calcSection.style.opacity = '0.4';
+        calcSection.style.pointerEvents = 'none';
+        directSection.style.opacity = '1';
+        directSection.style.pointerEvents = 'auto';
+        if (applyBtn) applyBtn.textContent = 'Apply Total';
+    } else if (source === 'calc' && hasSegmentInput) {
+        // User is typing in calculator - disable direct section
+        directSection.style.opacity = '0.4';
+        directSection.style.pointerEvents = 'none';
+        calcSection.style.opacity = '1';
+        calcSection.style.pointerEvents = 'auto';
+        if (applyBtn) applyBtn.textContent = 'Apply Calculated Total';
+    } else if (!hasDirectInput && !hasSegmentInput) {
+        // Both are empty - enable both
+        directSection.style.opacity = '1';
+        directSection.style.pointerEvents = 'auto';
+        calcSection.style.opacity = '1';
+        calcSection.style.pointerEvents = 'auto';
+        if (applyBtn) applyBtn.textContent = 'Apply Total';
     }
+
+    // Also update the calculated total display
+    updateCalcTotal();
 }
 
-function applyCalcTotal() {
+// Clear all fields in the mini calc
+function clearMultiSegFields() {
+    const directInput = document.getElementById('directTotalInput');
+    const directSection = document.getElementById('directTotalSection');
+    const calcSection = document.getElementById('calcSection');
+    const applyBtn = document.getElementById('applyTotalBtn');
+
+    // Clear direct total
+    if (directInput) directInput.value = '';
+
+    // Clear all segment inputs
+    ['addSegA', 'addSegB', 'addSegC', 'addSegD'].forEach(id => {
+        const inp = document.getElementById(id);
+        if (inp) inp.value = '';
+    });
+
+    // Reset section states
+    directSection.style.opacity = '1';
+    directSection.style.pointerEvents = 'auto';
+    calcSection.style.opacity = '1';
+    calcSection.style.pointerEvents = 'auto';
+    if (applyBtn) applyBtn.textContent = 'Apply Total';
+
+    // Update display
+    updateCalcTotal();
+}
+
+// Unified apply function for the single Apply button
+function applyMultiSegTotal() {
     const flightInput = document.getElementById('flightTimeInput');
     const directInput = document.getElementById('directTotalInput');
     const thisSegMins = flightInput ? parseTimeToMins(flightInput.value) : 0;
@@ -1249,7 +1334,6 @@ function applyCalcTotal() {
         }
     });
 
-    // Check if direct total was entered (use that instead)
     const directTotalMins = directInput ? parseTimeToMins(directInput.value) : 0;
 
     // Require either: direct total entered OR at least one additional segment
@@ -1269,8 +1353,10 @@ function applyCalcTotal() {
 }
 
 // Legacy function name mappings for compatibility
+function applyDirectTotal() { applyMultiSegTotal(); }
+function applyCalcTotal() { applyMultiSegTotal(); }
 function updateMultiSegTotal() { updateCalcTotal(); }
-function applyMultiSegment() { applyCalcTotal(); }
+function applyMultiSegment() { applyMultiSegTotal(); }
 function addSegmentRow() { addMoreSegment(); }
 
 function checkTestTrigger() {
@@ -1389,6 +1475,9 @@ function init() {
     window.applyMultiSegment = applyMultiSegment;
     window.applyDirectTotal = applyDirectTotal;
     window.applyCalcTotal = applyCalcTotal;
+    window.applyMultiSegTotal = applyMultiSegTotal;
+    window.handleMultiSegInput = handleMultiSegInput;
+    window.clearMultiSegFields = clearMultiSegFields;
     window.answerMultiSeg = answerMultiSeg;
     window.resetMultiSegButtons = resetMultiSegButtons;
     window.checkMultiSegVisibility = checkMultiSegVisibility;

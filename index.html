@@ -348,19 +348,23 @@
                 </div>
 
                 <!-- Multi-Segment Gated Question (International Only) -->
-                <div id="multiSegContainer" class="hidden mt-3 p-2 bg-blue-50 border border-blue-200 rounded">
-                    <p class="text-[11px] font-medium text-[#002244] mb-2">
-                        Is this duty period scheduled for more than one segment?
-                        <button onclick="showInfo('multiSegment')"
-                            class="icon-blue text-[#005DAA] hover:underline ml-1"><i
-                                class="fa-solid fa-circle-question"></i></button>
-                    </p>
-                    <div class="flex gap-2">
-                        <button id="multiSegNo" onclick="answerMultiSeg(false)"
-                            class="flex-1 py-1.5 rounded text-[11px] font-bold border transition-all multiseg-btn">Single</button>
-                        <button id="multiSegYes" onclick="answerMultiSeg(true)"
-                            class="flex-1 py-1.5 rounded text-[11px] font-bold border transition-all multiseg-btn">Multi</button>
+                <div id="multiSegContainer"
+                    class="modifier-question hidden mt-3 p-2 rounded border-2 border-amber-400 bg-amber-50 transition-all">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] text-gray-700 flex-1">Is this duty period scheduled for <b>more than
+                                one segment</b>?
+                            <button onclick="showInfo('multiSegment')"
+                                class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1"><i
+                                    class="fa-solid fa-circle-question"></i></button>
+                        </span>
+                        <div class="flex gap-1">
+                            <button id="multiSegNo" onclick="answerMultiSeg(false)"
+                                class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-gray-100 transition-all">Single</button>
+                            <button id="multiSegYes" onclick="answerMultiSeg(true)"
+                                class="px-3 py-1 text-[10px] font-bold rounded border border-gray-300 bg-white hover:bg-blue-100 hover:border-blue-400 transition-all">Multi</button>
+                        </div>
                     </div>
+                    <input type="hidden" id="isMultiSeg" value="">
                 </div>
             </div>
 
@@ -559,16 +563,16 @@
                 <!-- Body -->
                 <div class="modal-body p-4 space-y-3">
                     <!-- Option 1: Direct Total Entry -->
-                    <div class="multi-seg-direct bg-blue-50 border border-blue-200 rounded p-3">
+                    <div id="directTotalSection"
+                        class="multi-seg-direct bg-blue-50 border border-blue-200 rounded p-3 transition-opacity">
                         <p class="text-xs font-bold text-gray-700 mb-2">Already know your total?</p>
                         <div class="flex items-center gap-2">
                             <span class="text-xs font-bold text-gray-600 whitespace-nowrap">TOTAL:</span>
                             <input type="text" id="directTotalInput" inputmode="numeric" placeholder="HHMM"
                                 maxlength="5"
                                 class="input-bg w-20 px-2 bg-white border border-gray-200 rounded text-sm font-mono h-8 text-center"
-                                oninput="formatTimeInput(this); updateDirectTotal()" onblur="padTimeInput(this)">
-                            <button onclick="applyDirectTotal()"
-                                class="bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold px-3 py-1.5 rounded text-xs transition-colors">Apply</button>
+                                oninput="formatTimeInput(this); handleMultiSegInput('direct')"
+                                onblur="padTimeInput(this)">
                         </div>
                     </div>
 
@@ -580,7 +584,8 @@
                     </div>
 
                     <!-- Option 2: Helper Calculator -->
-                    <div class="multi-seg-calc bg-gray-50 border border-gray-200 rounded p-3">
+                    <div id="calcSection"
+                        class="multi-seg-calc bg-gray-50 border border-gray-200 rounded p-3 transition-opacity">
                         <p class="text-xs font-bold text-gray-700 mb-2">Let us add it up for you:</p>
 
                         <!-- This Segment (locked display) -->
@@ -598,25 +603,29 @@
                                 <span class="multi-seg-plus text-sm font-bold text-gray-500">+</span>
                                 <input type="text" id="addSegA" inputmode="numeric" placeholder="HHMM" maxlength="5"
                                     class="input-bg flex-1 px-2 bg-white border border-gray-200 rounded text-sm font-mono h-8 text-center"
-                                    oninput="formatTimeInput(this); updateCalcTotal()" onblur="padTimeInput(this)">
+                                    oninput="formatTimeInput(this); handleMultiSegInput('calc')"
+                                    onblur="padTimeInput(this)">
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="multi-seg-plus text-sm font-bold text-gray-500">+</span>
                                 <input type="text" id="addSegB" inputmode="numeric" placeholder="HHMM" maxlength="5"
                                     class="input-bg flex-1 px-2 bg-white border border-gray-200 rounded text-sm font-mono h-8 text-center"
-                                    oninput="formatTimeInput(this); updateCalcTotal()" onblur="padTimeInput(this)">
+                                    oninput="formatTimeInput(this); handleMultiSegInput('calc')"
+                                    onblur="padTimeInput(this)">
                             </div>
                             <div id="addSegCRow" class="hidden flex items-center gap-2">
                                 <span class="multi-seg-plus text-sm font-bold text-gray-500">+</span>
                                 <input type="text" id="addSegC" inputmode="numeric" placeholder="HHMM" maxlength="5"
                                     class="input-bg flex-1 px-2 bg-white border border-gray-200 rounded text-sm font-mono h-8 text-center"
-                                    oninput="formatTimeInput(this); updateCalcTotal()" onblur="padTimeInput(this)">
+                                    oninput="formatTimeInput(this); handleMultiSegInput('calc')"
+                                    onblur="padTimeInput(this)">
                             </div>
                             <div id="addSegDRow" class="hidden flex items-center gap-2">
                                 <span class="multi-seg-plus text-sm font-bold text-gray-500">+</span>
                                 <input type="text" id="addSegD" inputmode="numeric" placeholder="HHMM" maxlength="5"
                                     class="input-bg flex-1 px-2 bg-white border border-gray-200 rounded text-sm font-mono h-8 text-center"
-                                    oninput="formatTimeInput(this); updateCalcTotal()" onblur="padTimeInput(this)">
+                                    oninput="formatTimeInput(this); handleMultiSegInput('calc')"
+                                    onblur="padTimeInput(this)">
                             </div>
                         </div>
 
@@ -633,13 +642,18 @@
                                     Total:</span>
                                 <span id="calcTotalDisplay" class="text-sm font-bold text-[#002244]">0:00</span>
                             </div>
-                            <div id="calcLimitMsg" class="text-xs text-gray-500 mt-1 text-center italic hidden"></div>
                         </div>
+                    </div>
 
-                        <!-- Apply Calculated Button -->
-                        <button onclick="applyCalcTotal()"
-                            class="w-full mt-3 bg-[#059669] hover:bg-[#047857] text-white font-bold py-2 rounded text-sm transition-colors">
-                            Apply Calculated Total
+                    <!-- Bottom Buttons -->
+                    <div class="flex gap-2 mt-3">
+                        <button onclick="clearMultiSegFields()"
+                            class="flex-1 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded text-xs transition-colors">
+                            Clear Fields
+                        </button>
+                        <button id="applyTotalBtn" onclick="applyMultiSegTotal()"
+                            class="flex-1 py-2 bg-[#059669] hover:bg-[#047857] text-white font-bold rounded text-sm transition-colors">
+                            Apply Total
                         </button>
                     </div>
                 </div>
