@@ -968,9 +968,9 @@ function calculateDuty() {
         }
     }
 
-    const debrief = document.getElementById('isDHD').checked ? 0 : 15;
-    let cust = document.getElementById('customsEnd').checked ? 15 : 0;
-    let coTermDed = 0; const isCoTerm = document.getElementById('isCoTerm').checked; if (isCoTerm && !document.getElementById('coTermContainer').classList.contains('hidden')) { coTermDed = parseInt(document.getElementById('coTermSelect').value) || 0; }
+    const debrief = document.getElementById('isDHD').value === 'true' ? 0 : 15;
+    let cust = document.getElementById('customsEnd').value === 'true' ? 15 : 0;
+    let coTermDed = 0; const isCoTerm = document.getElementById('isCoTerm').value !== ''; if (isCoTerm && !document.getElementById('coTermQuestion').classList.contains('hidden')) { coTermDed = parseInt(document.getElementById('coTermSelect').value) || 0; }
     const flightMs = schedFlightMins * 60000;
     const deductionsMs = (debrief + cust + coTermDed) * 60000;
     const maxDutyMs = maxDutyMins * 60000;
