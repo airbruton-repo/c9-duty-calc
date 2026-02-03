@@ -73,7 +73,7 @@ function answerModifier(fieldId, isYes) {
         noBtn.classList.add('bg-white', 'border-gray-300');
     } else {
         noBtn.classList.remove('bg-white', 'border-gray-300');
-        noBtn.classList.add('bg-gray-200', 'border-gray-400');
+        noBtn.classList.add('bg-blue-500', 'text-white', 'border-blue-500');
         yesBtn.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
         yesBtn.classList.add('bg-white', 'border-gray-300');
     }
@@ -108,7 +108,7 @@ function answerCoTermModifier(isYes) {
         hiddenInput.value = 'false';
         // Update button styling
         noBtn.classList.remove('bg-white', 'border-gray-300');
-        noBtn.classList.add('bg-gray-200', 'border-gray-400');
+        noBtn.classList.add('bg-blue-500', 'text-white', 'border-blue-500');
         yesBtn.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
         yesBtn.classList.add('bg-white', 'border-gray-300');
         // Mark green, clear any missing state
