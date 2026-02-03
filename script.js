@@ -1231,6 +1231,12 @@ function applyCalcTotal() {
         }
     });
 
+    // Require at least one additional segment to be entered
+    if (additionalMins === 0) {
+        alert('Please enter at least one additional segment time.');
+        return;
+    }
+
     multiSegTotalMins = thisSegMins + additionalMins;
     closeMultiSegModal();
     resetResult();
