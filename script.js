@@ -148,7 +148,7 @@ function resetModifiers() {
             questionDiv.classList.add('border-amber-400', 'bg-amber-50');
         }
         if (noBtn) {
-            noBtn.classList.remove('bg-gray-200', 'border-gray-400');
+            noBtn.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
             noBtn.classList.add('bg-white', 'border-gray-300');
         }
         if (yesBtn) {
