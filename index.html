@@ -550,7 +550,7 @@
             <div class="modal-bg bg-white dark:bg-gray-900 rounded-lg shadow-2xl w-full max-w-xs overflow-hidden">
                 <!-- Header -->
                 <div class="bg-[#005DAA] text-white px-4 py-2 flex items-center justify-between">
-                    <h3 class="text-sm font-bold">Sched FTM in this Duty Period</h3>
+                    <h3 class="text-sm font-bold">Scheduled FTM this Duty Period</h3>
                     <button onclick="closeMultiSegModal()" class="text-white/70 hover:text-white">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
@@ -567,7 +567,7 @@
                                 class="text-xs font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap">TOTAL:</span>
                             <input type="text" id="directTotalInput" inputmode="numeric" placeholder="HHMM"
                                 maxlength="5"
-                                class="input-bg flex-1 px-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-sm font-mono h-8 text-center dark:text-white"
+                                class="input-bg w-20 px-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-sm font-mono h-8 text-center dark:text-white"
                                 oninput="formatTimeInput(this); updateDirectTotal()" onblur="padTimeInput(this)">
                             <button onclick="applyDirectTotal()"
                                 class="bg-[#005DAA] hover:bg-[#004c8c] text-white font-bold px-3 py-1.5 rounded text-xs transition-colors">Apply</button>
@@ -577,7 +577,7 @@
                     <!-- Divider -->
                     <div class="flex items-center gap-2">
                         <div class="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-                        <span class="text-xs text-gray-400 dark:text-gray-500 font-medium">OR</span>
+                        <span class="text-xs text-gray-600 dark:text-gray-300 font-bold">OR</span>
                         <div class="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
                     </div>
 
@@ -640,8 +640,7 @@
                                     class="text-sm font-bold text-[#002244] dark:text-white">0:00</span>
                             </div>
                             <div id="calcLimitMsg"
-                                class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center italic">Enter
-                                additional segment times</div>
+                                class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center italic hidden"></div>
                         </div>
 
                         <!-- Apply Calculated Button -->
