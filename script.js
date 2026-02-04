@@ -9,6 +9,9 @@ let multiSegAnswered = false;
 let verifiedFields = { dutyDate: false, homeBase: false };
 
 function verifyField(fieldId) {
+    // Guard against double-execution (especially on iOS with touch + click)
+    if (verifiedFields[fieldId]) return;
+
     const field = document.getElementById(fieldId);
     const btn = document.getElementById(fieldId + 'OkBtn');
 
@@ -26,8 +29,12 @@ function verifyField(fieldId) {
         // Use Unicode checkmark instead of Font Awesome for iOS compatibility
         btn.textContent = '✓';
         btn.style.fontSize = '14px';
-        btn.disabled = true;
+        // Don't use disabled - causes iOS Safari visibility issues
+        // Instead, use pointer-events and remove handlers
+        btn.style.pointerEvents = 'none';
         btn.classList.add('cursor-default');
+        btn.removeAttribute('onclick');
+        btn.removeAttribute('ontouchend');
     }
 }
 
@@ -47,8 +54,12 @@ function resetVerifyFields() {
             // Reset button styling
             btn.classList.remove('bg-green-500', 'text-white', 'border-green-500', 'cursor-default');
             btn.classList.add('bg-amber-100', 'text-amber-700', 'border-amber-400');
-            btn.innerHTML = 'Verify';
-            btn.disabled = false;
+            btn.textContent = 'Verify';
+            btn.style.fontSize = '';
+            btn.style.pointerEvents = '';
+            // Restore event handlers
+            btn.setAttribute('onclick', `verifyField('${fieldId}')`);
+            btn.setAttribute('ontouchend', `verifyField('${fieldId}'); event.preventDefault();`);
         }
     });
 }
