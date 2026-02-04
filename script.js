@@ -1365,7 +1365,8 @@ function applyMultiSegTotal() {
 
     // Require either: direct total entered OR at least one additional segment
     if (directTotalMins === 0 && additionalMins === 0) {
-        alert('Max says: Please enter a total flight time or at least one additional segment! ✈️');
+        // Show error message in the modal instead of browser alert
+        showMultiSegError('Please enter a total flight time or at least one additional segment.');
         return;
     }
 
@@ -1434,6 +1435,25 @@ function updateMultiSegSummary(totalMins, segments) {
 function hideMultiSegSummary() {
     const summaryEl = document.getElementById('multiSegSummary');
     if (summaryEl) summaryEl.classList.add('hidden');
+}
+
+// Show error message in the modal
+function showMultiSegError(message) {
+    const errorEl = document.getElementById('multiSegError');
+    if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.remove('hidden');
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            errorEl.classList.add('hidden');
+        }, 3000);
+    }
+}
+
+// Hide error message
+function hideMultiSegError() {
+    const errorEl = document.getElementById('multiSegError');
+    if (errorEl) errorEl.classList.add('hidden');
 }
 
 // Legacy function name mappings for compatibility
