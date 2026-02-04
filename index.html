@@ -143,36 +143,24 @@
                 <div>
                     <div class="flex justify-between items-baseline mb-0.5 min-h-[14px]">
                         <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase">Duty Period
-                            Date</label>
+                            Date <span id="dutyDateCheck" class="text-green-500 hidden">✓</span></label>
                     </div>
-                    <div class="flex gap-1">
-                        <input type="date" id="dutyDate"
-                            class="input-bg flex-1 px-2 bg-gray-50 border-2 border-amber-400 rounded text-xs font-medium text-gray-900 h-8 transition-colors duration-300"
-                            onchange="updateAllLabels(); resetResult(); verifyField('dutyDate');">
-                        <button type="button" onclick="verifyField('dutyDate')"
-                            ontouchend="verifyField('dutyDate'); event.preventDefault();" id="dutyDateOkBtn"
-                            class="px-2.5 h-8 text-[10px] font-bold rounded border-2 border-amber-400 bg-amber-100 text-amber-700 transition-colors duration-300 cursor-pointer"
-                            title="Confirm date is correct">Verify</button>
-                    </div>
+                    <input type="date" id="dutyDate"
+                        class="input-bg w-full px-2 bg-gray-50 border-2 border-gray-300 rounded text-xs font-medium text-gray-900 h-8 transition-colors duration-300"
+                        onchange="updateAllLabels(); resetResult(); checkFieldVerification('dutyDate');">
                 </div>
                 <div>
                     <div class="flex justify-between items-baseline mb-0.5 min-h-[14px]">
                         <label class="text-sub block text-[10px] font-bold text-gray-500 uppercase">Pairing
-                            Origination</label>
+                            Origination <span id="homeBaseCheck" class="text-green-500 hidden">✓</span></label>
                     </div>
-                    <div class="flex gap-1">
-                        <div class="relative flex-1">
-                            <select id="homeBase"
-                                class="input-bg w-full px-2 bg-gray-50 border-2 border-amber-400 rounded text-xs font-bold text-[#002244] appearance-none h-8 transition-colors duration-300"
-                                onchange="checkCoTerminal(); resetResult(); verifyField('homeBase');">
-                            </select>
-                            <i
-                                class="fa-solid fa-chevron-down absolute right-2 top-2.5 text-[8px] text-gray-400 pointer-events-none"></i>
-                        </div>
-                        <button type="button" onclick="verifyField('homeBase')"
-                            ontouchend="verifyField('homeBase'); event.preventDefault();" id="homeBaseOkBtn"
-                            class="px-2.5 h-8 text-[10px] font-bold rounded border-2 border-amber-400 bg-amber-100 text-amber-700 transition-colors duration-300 cursor-pointer"
-                            title="Confirm pairing origin is correct">Verify</button>
+                    <div class="relative">
+                        <select id="homeBase"
+                            class="input-bg w-full px-2 bg-gray-50 border-2 border-gray-300 rounded text-xs font-bold text-[#002244] appearance-none h-8 transition-colors duration-300"
+                            onchange="checkCoTerminal(); resetResult(); checkFieldVerification('homeBase');">
+                        </select>
+                        <i
+                            class="fa-solid fa-chevron-down absolute right-2 top-2.5 text-[8px] text-gray-400 pointer-events-none"></i>
                     </div>
                 </div>
             </div>

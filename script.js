@@ -8,69 +8,45 @@ let multiSegAnswered = false;
 // Field verification state for prefilled fields
 let verifiedFields = { dutyDate: false, homeBase: false };
 
-function verifyField(fieldId) {
-    // Guard against double-execution (especially on iOS with touch + click)
-    if (verifiedFields[fieldId]) return;
-
+function checkFieldVerification(fieldId) {
     const field = document.getElementById(fieldId);
-    const btn = document.getElementById(fieldId + 'OkBtn');
+    const check = document.getElementById(fieldId + 'Check');
 
-    if (field && btn) {
-        // Mark as verified
-        verifiedFields[fieldId] = true;
+    if (field && check) {
+        const hasValue = field.value && field.value.trim() !== '';
 
-        // Update field styling - green border and background for unified look
-        field.classList.remove('border-amber-400', 'bg-gray-50');
-        field.classList.add('border-green-500', 'bg-green-50');
-
-        // Update button styling - green confirmed state
-        btn.classList.remove('bg-amber-100', 'text-amber-700', 'border-amber-400');
-        btn.classList.add('bg-green-500', 'text-white', 'border-green-500');
-        // Use Unicode checkmark instead of Font Awesome for iOS compatibility
-        btn.textContent = '✓';
-        btn.style.fontSize = '14px';
-        // Don't use disabled - causes iOS Safari visibility issues
-        // Instead, use pointer-events and remove handlers
-        btn.style.pointerEvents = 'none';
-        btn.classList.add('cursor-default');
-        btn.removeAttribute('onclick');
-        btn.removeAttribute('ontouchend');
-
-        // Force iOS Safari to repaint the button
-        requestAnimationFrame(() => {
-            btn.style.transform = 'translateZ(0)';
-            void btn.offsetHeight; // Force layout recalculation
-            setTimeout(() => {
-                btn.style.transform = '';
-            }, 50);
-        });
+        if (hasValue) {
+            verifiedFields[fieldId] = true;
+            check.classList.remove('hidden');
+            field.classList.remove('border-gray-300');
+            field.classList.add('border-green-500');
+        } else {
+            verifiedFields[fieldId] = false;
+            check.classList.add('hidden');
+            field.classList.remove('border-green-500');
+            field.classList.add('border-gray-300');
+        }
     }
 }
 
 function resetVerifyFields() {
-    // Reset verification state but keep values
+    // Reset verification state
     ['dutyDate', 'homeBase'].forEach(fieldId => {
         const field = document.getElementById(fieldId);
-        const btn = document.getElementById(fieldId + 'OkBtn');
+        const check = document.getElementById(fieldId + 'Check');
 
-        if (field && btn) {
+        if (field && check) {
             verifiedFields[fieldId] = false;
-
-            // Reset field styling to amber/gray
-            field.classList.remove('border-green-500', 'bg-green-50');
-            field.classList.add('border-amber-400', 'bg-gray-50');
-
-            // Reset button styling
-            btn.classList.remove('bg-green-500', 'text-white', 'border-green-500', 'cursor-default');
-            btn.classList.add('bg-amber-100', 'text-amber-700', 'border-amber-400');
-            btn.textContent = 'Verify';
-            btn.style.fontSize = '';
-            btn.style.pointerEvents = '';
-            // Restore event handlers
-            btn.setAttribute('onclick', `verifyField('${fieldId}')`);
-            btn.setAttribute('ontouchend', `verifyField('${fieldId}'); event.preventDefault();`);
+            check.classList.add('hidden');
+            field.classList.remove('border-green-500');
+            field.classList.add('border-gray-300');
         }
     });
+}
+
+// Legacy function mapping for any remaining calls
+function verifyField(fieldId) {
+    checkFieldVerification(fieldId);
 }
 
 // Handle Yes/No modifier answers
