@@ -1145,13 +1145,11 @@ function toggleMultiSegment() {
 function openMultiSegModal() {
     const modal = document.getElementById('multiSegModal');
     const flightInput = document.getElementById('flightTimeInput');
+    const directSection = document.getElementById('directTotalSection');
+    const calcSection = document.getElementById('calcSection');
 
     if (modal) {
-        // Clear direct total input
-        const directInput = document.getElementById('directTotalInput');
-        if (directInput) directInput.value = '';
-
-        // Display "This Segment" from main flight time field
+        // Display "This Segment" from main flight time field (always update this)
         const thisSegDisplay = document.getElementById('thisSegmentDisplay');
         if (thisSegDisplay && flightInput && flightInput.value) {
             thisSegDisplay.textContent = flightInput.value;
@@ -1159,18 +1157,39 @@ function openMultiSegModal() {
             thisSegDisplay.textContent = '--:--';
         }
 
-        // Clear additional segment inputs
+        // DON'T clear inputs - retain values for editing
+        // Just ensure section states are correct based on current content
+        const directInput = document.getElementById('directTotalInput');
+        const hasDirectInput = directInput && directInput.value && directInput.value.trim() !== '';
+
+        let hasSegmentInput = false;
         ['addSegA', 'addSegB', 'addSegC', 'addSegD'].forEach(id => {
             const inp = document.getElementById(id);
-            if (inp) inp.value = '';
+            if (inp && inp.value && inp.value.trim() !== '') {
+                hasSegmentInput = true;
+            }
         });
 
-        // Hide extra rows
-        document.getElementById('addSegCRow')?.classList.add('hidden');
-        document.getElementById('addSegDRow')?.classList.add('hidden');
-        document.getElementById('addMoreSegBtn')?.classList.remove('hidden');
+        // Set section states based on existing content
+        if (hasDirectInput) {
+            calcSection.style.opacity = '0.4';
+            calcSection.style.pointerEvents = 'none';
+            directSection.style.opacity = '1';
+            directSection.style.pointerEvents = 'auto';
+        } else if (hasSegmentInput) {
+            directSection.style.opacity = '0.4';
+            directSection.style.pointerEvents = 'none';
+            calcSection.style.opacity = '1';
+            calcSection.style.pointerEvents = 'auto';
+        } else {
+            // Both empty - enable both
+            directSection.style.opacity = '1';
+            directSection.style.pointerEvents = 'auto';
+            calcSection.style.opacity = '1';
+            calcSection.style.pointerEvents = 'auto';
+        }
 
-        // Reset calculator display
+        // Update calculator display
         updateCalcTotal();
 
         modal.classList.remove('hidden');
@@ -1346,7 +1365,7 @@ function applyMultiSegTotal() {
 
     // Require either: direct total entered OR at least one additional segment
     if (directTotalMins === 0 && additionalMins === 0) {
-        alert('Please enter a total flight time or at least one additional segment.');
+        alert('Max says: Please enter a total flight time or at least one additional segment! ✈️');
         return;
     }
 
