@@ -1478,12 +1478,13 @@ function checkTestTrigger() {
 }
 
 function init() {
-    const d = new Date();
-    const denverDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Denver', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
-    document.getElementById('dutyDate').value = denverDate;
+    // Don't prefill date - leave empty for user to select
+    // document.getElementById('dutyDate').value = '';  // Already empty by default
+
+    // Populate homeBase with placeholder and options (no default selection)
     const bs = document.getElementById('homeBase');
-    bs.innerHTML = '';
-    BASES.sort((a, b) => a.c.localeCompare(b.c)).forEach(b => { const o = document.createElement('option'); o.value = b.c; o.text = `${b.c} Pairing`; if (b.c === 'DEN') o.selected = true; bs.appendChild(o); });
+    bs.innerHTML = '<option value="" disabled selected>Select Origin</option>';
+    BASES.sort((a, b) => a.c.localeCompare(b.c)).forEach(b => { const o = document.createElement('option'); o.value = b.c; o.text = `${b.c} Pairing`; bs.appendChild(o); });
     const dl = document.getElementById('airportList');
     dl.innerHTML = '';
     Object.keys(ALL_CODES).sort().forEach(c => { const o = document.createElement('option'); o.value = c; dl.appendChild(o); });
