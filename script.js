@@ -378,6 +378,7 @@ function answerMultiSeg(isYes) {
         yesBtn.classList.remove('bg-white', 'border-gray-300');
         yesBtn.classList.add('bg-blue-500', 'text-white', 'border-blue-500');
         // Open the multi-segment modal (will pre-fill from existing flight time)
+        // Container stays AMBER until Apply is clicked
         openMultiSegModal();
     } else {
         noBtn.classList.remove('bg-white', 'border-gray-300');
@@ -387,12 +388,11 @@ function answerMultiSeg(isYes) {
         multiSegSelectedMins = 0;
         // Hide the summary section
         hideMultiSegSummary();
-    }
-
-    // Update container styling to green (answered)
-    if (container) {
-        container.classList.remove('border-amber-400', 'bg-amber-50');
-        container.classList.add('border-green-500', 'bg-green-50');
+        // Turn GREEN when Single is selected (confirmed answer)
+        if (container) {
+            container.classList.remove('border-amber-400', 'bg-amber-50');
+            container.classList.add('border-green-500', 'bg-green-50');
+        }
     }
 
     resetResult();
@@ -613,6 +613,19 @@ function resetForm() {
     const multiSegCont = document.getElementById('multiSegContainer');
     if (multiSegCont) multiSegCont.classList.add('hidden');
     resetMultiSegButtons();
+
+    // Clear mini calc values on reset
+    const directInput = document.getElementById('directTotalInput');
+    if (directInput) directInput.value = '';
+    ['addSegA', 'addSegB', 'addSegC', 'addSegD'].forEach(id => {
+        const inp = document.getElementById(id);
+        if (inp) inp.value = '';
+    });
+    multiSegTotalMins = 0;
+    multiSegSelectedMins = 0;
+
+    // Hide the summary section
+    hideMultiSegSummary();
 
     resetVerifyFields();
     resetModifiers();
@@ -1388,6 +1401,14 @@ function applyMultiSegTotal() {
         });
         updateMultiSegSummary(multiSegTotalMins, segments);
     }
+
+    // Turn container GREEN now that values are applied
+    const container = document.getElementById('multiSegContainer');
+    if (container) {
+        container.classList.remove('border-amber-400', 'bg-amber-50');
+        container.classList.add('border-green-500', 'bg-green-50');
+    }
+
     closeMultiSegModal();
     resetResult();
 }
