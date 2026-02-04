@@ -174,13 +174,16 @@ function copyReceipt() {
 function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     const icon = document.getElementById('darkModeIcon');
+    const label = document.getElementById('darkModeLabel');
     const themeMeta = document.getElementById('themeColor');
 
     if (document.body.classList.contains('dark-mode')) {
         icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
+        if (label) label.textContent = 'Light';
         themeMeta.content = "#1f2937";
     } else {
         icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
+        if (label) label.textContent = 'Dark';
         themeMeta.content = "#002244";
     }
     validateAirport(document.getElementById('reportAirport'));

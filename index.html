@@ -45,7 +45,7 @@
 
         <!-- HEADER -->
         <div
-            class="header-bg bg-[#002244] text-white px-3 py-2 relative shrink-0 flex justify-between items-center transition-colors duration-300">
+            class="header-bg bg-[#002244] text-white px-3 py-2 relative shrink-0 flex justify-between items-center transition-colors duration-300 sticky top-0 z-40">
             <div class="flex items-center gap-3">
                 <a href="https://sites.google.com/unitedafa.org/c9-infolinks/calculators/c9-duty-max-calculator?authuser=0"
                     target="_blank" class="hover:opacity-80 transition-opacity">
@@ -62,9 +62,10 @@
 
             <div class="flex items-center gap-4">
                 <button onclick="toggleDarkMode()"
-                    class="text-white/70 hover:text-white transition-colors flex items-center gap-1.5"
+                    class="text-white/70 hover:text-white transition-colors flex items-center gap-1.5 p-2 -m-2"
                     title="Toggle Theme">
                     <i id="darkModeIcon" class="fa-solid fa-moon text-[16px]"></i>
+                    <span id="darkModeLabel" class="text-[10px] uppercase font-medium">Dark</span>
                 </button>
                 <div class="w-px h-3 bg-white/20"></div>
                 <button onclick="resetForm()"
@@ -131,7 +132,7 @@
             <div id="liveCalcText" class="text-[10px] text-gray-500 text-center px-1 leading-tight"></div>
 
             <!-- MIXED PAIRING HELPER -->
-            <div class="flex justify-center mb-1 px-1">
+            <div class="flex justify-center mb-3 px-1">
                 <button onclick="showInfo('mixed')"
                     class="definitions-link text-[#005DAA] text-[12px] font-semibold hover:underline flex items-center gap-1">
                     Not sure? See Definitions <i class="fa-solid fa-circle-question"></i>
@@ -434,7 +435,7 @@
                     <div class="modifier-question p-2 rounded border-2 border-amber-400 bg-amber-50 transition-all"
                         id="customsQuestion">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="text-[11px] text-gray-700 flex-1">Clearing <b>customs</b> after arrival of door
+                            <span class="text-[11px] text-gray-700 flex-1">Clearing <b>customs after arrival</b> of door
                                 close flight?
                                 <button onclick="showInfo('custEnd')"
                                     class="icon-blue text-[#005DAA] text-[10px] hover:underline ml-1">
