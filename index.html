@@ -491,6 +491,11 @@
                         <span id="resultTime"
                             class="text-5xl font-bold text-white leading-none tracking-tight my-1">--:--</span>
                         <span id="resultZone" class="text-blue-300 text-sm font-medium mt-1">Local Time</span>
+                        <!-- What Now? Link -->
+                        <button onclick="showWhatNowPopup()"
+                            class="mt-3 text-green-400 hover:text-green-300 text-sm font-bold flex items-center gap-1 transition-colors">
+                            <i class="fa-solid fa-circle-question"></i> What Now?
+                        </button>
                     </div>
                 </div>
 
@@ -683,6 +688,51 @@
                             Apply Total
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WHAT NOW? POPUP MODAL -->
+        <div id="whatNowModal" onclick="if(event.target === this) hideWhatNowPopup()"
+            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div class="modal-bg bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden">
+                <!-- Header -->
+                <div class="bg-green-600 text-white px-4 py-3 flex items-center justify-between">
+                    <h3 class="text-base font-bold"><i class="fa-solid fa-circle-question mr-2"></i>What Now?</h3>
+                    <button onclick="hideWhatNowPopup()" class="text-white/70 hover:text-white">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                <!-- Body -->
+                <div class="modal-body p-4 text-sm text-gray-700 max-h-[70vh] overflow-y-auto">
+                    <p class="font-bold text-gray-900 mb-3">If you are projected over duty max for this flight, follow
+                        these steps:</p>
+                    <ul class="space-y-3 list-disc pl-5">
+                        <li>Once you reach your FA Door Closure time, if on board with passengers and the boarding door
+                            is still open, put in the EZ Chat that <span class="font-semibold text-blue-700">"Flight
+                                Attendant/s (include names) have timed out for max duty and are no longer legal to
+                                operate this flight"</span></li>
+                        <li>Advise flight deck and CSR</li>
+                        <li>Attempt to contact Crew Scheduling via call or chat</li>
+                        <li>You may be required to stay with pax until your replacements arrive</li>
+                        <li><strong>Do not "walk off"</strong> the aircraft if passengers are onboard</li>
+                        <li>While you are not legal to work this flight, you are still legal to be on duty until you
+                            reach your actual max and may be legal to operate another, shorter flight, and/or remain
+                            onboard with passengers until the replacement crew arrives.</li>
+                    </ul>
+                    <div class="mt-4 p-3 bg-amber-50 border border-amber-300 rounded">
+                        <p class="font-bold text-amber-800"><i
+                                class="fa-solid fa-triangle-exclamation mr-1"></i>IMPORTANT</p>
+                        <p class="text-amber-700">Never "refuse" to work a flight — inform and wait for reassignment
+                            from Crew Scheduling.</p>
+                    </div>
+                </div>
+                <!-- Footer -->
+                <div class="p-3 border-t border-gray-200 bg-gray-50">
+                    <button onclick="hideWhatNowPopup()"
+                        class="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded text-sm transition-colors">
+                        Got it!
+                    </button>
                 </div>
             </div>
         </div>

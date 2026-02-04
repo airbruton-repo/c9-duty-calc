@@ -1483,6 +1483,17 @@ function updateMultiSegTotal() { updateCalcTotal(); }
 function applyMultiSegment() { applyMultiSegTotal(); }
 function addSegmentRow() { addMoreSegment(); }
 
+// What Now? popup functions
+function showWhatNowPopup() {
+    const modal = document.getElementById('whatNowModal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function hideWhatNowPopup() {
+    const modal = document.getElementById('whatNowModal');
+    if (modal) modal.classList.add('hidden');
+}
+
 function checkTestTrigger() {
     const city = document.getElementById('reportAirport').value.toUpperCase();
     validateAirport(document.getElementById('reportAirport'));
