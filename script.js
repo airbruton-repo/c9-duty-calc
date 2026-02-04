@@ -1440,10 +1440,10 @@ function updateMultiSegSummary(totalMins, segments) {
     // Determine and show applicable duty max
     const totalHours = totalMins / 60;
     let dutyMaxText = '';
-    if (totalHours >= 8) {
-        dutyMaxText = 'Duty Max: 16:30 (Sched FTM ≥ 8:00)';
+    if (totalHours > 8) {
+        dutyMaxText = 'Duty Max: 16:30 (Sched FTM 8:01-12:00)';
     } else {
-        dutyMaxText = 'Duty Max: 16:00 (Sched FTM < 8:00)';
+        dutyMaxText = 'Duty Max: 16:00 (Sched FTM ≤ 8:00)';
     }
     dutyMaxEl.textContent = dutyMaxText;
 
