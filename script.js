@@ -23,7 +23,9 @@ function verifyField(fieldId) {
         // Update button styling - green confirmed state
         btn.classList.remove('bg-amber-100', 'text-amber-700', 'border-amber-400');
         btn.classList.add('bg-green-500', 'text-white', 'border-green-500');
-        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+        // Use Unicode checkmark instead of Font Awesome for iOS compatibility
+        btn.textContent = '✓';
+        btn.style.fontSize = '14px';
         btn.disabled = true;
         btn.classList.add('cursor-default');
     }

@@ -105,12 +105,30 @@ label {
     transform: none !important;
 }
 
-/* Fix date input sizing on iOS to match button height */
+/* Fix date input sizing on iOS to match button height and remove gaps */
 input[type="date"]#dutyDate {
     -webkit-appearance: none;
     appearance: none;
     min-height: 32px;
     line-height: 32px;
+    /* Fix iOS date input width to prevent gap */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure verified state buttons stay visible on iOS */
+#dutyDateOkBtn.bg-green-500,
+#homeBaseOkBtn.bg-green-500 {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-flex !important;
+}
+
+/* Ensure the flex container has no gaps on iOS */
+#dutyDate+#dutyDateOkBtn,
+div.flex>#homeBaseOkBtn {
+    margin-left: 0 !important;
+    flex-shrink: 0;
 }
 
 .font-mono {
