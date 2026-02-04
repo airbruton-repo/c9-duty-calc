@@ -262,9 +262,8 @@ function toggleMode() {
             hvtQuestion.classList.remove('border-amber-400', 'bg-amber-50', 'border-green-500', 'bg-green-50', 'modifier-missing');
             hvtQuestion.classList.add('border-gray-300', 'bg-gray-100');
         }
-        // Keep multi-segment question hidden initially - shown when flight time is entered
-        if (multiSegCont) multiSegCont.classList.add('hidden');
-        resetMultiSegButtons();
+        // Check if multi-segment question should be shown (if flight time already entered)
+        checkMultiSegVisibility();
     }
     resetResult();
 }
