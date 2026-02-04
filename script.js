@@ -18,13 +18,13 @@ function checkFieldVerification(fieldId) {
         if (hasValue) {
             verifiedFields[fieldId] = true;
             check.classList.remove('hidden');
-            field.classList.remove('border-gray-300');
+            field.classList.remove('border-amber-400');
             field.classList.add('border-green-500');
         } else {
             verifiedFields[fieldId] = false;
             check.classList.add('hidden');
             field.classList.remove('border-green-500');
-            field.classList.add('border-gray-300');
+            field.classList.add('border-amber-400');
         }
     }
 }
@@ -39,7 +39,7 @@ function resetVerifyFields() {
             verifiedFields[fieldId] = false;
             check.classList.add('hidden');
             field.classList.remove('border-green-500');
-            field.classList.add('border-gray-300');
+            field.classList.add('border-amber-400');
         }
     });
 }
@@ -897,29 +897,9 @@ function calculateDuty() {
         if (el) el.classList.remove('input-missing');
     });
 
-    // Clear verify button error classes
-    ['dutyDateOkBtn', 'homeBaseOkBtn'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('verify-missing');
-    });
-
     // --- Check ALL Conditions and Collect Errors ---
     let hasError = false;
     let missingItems = [];
-
-    // Check Field Verification (Date and Origin must be verified)
-    if (!verifiedFields.dutyDate) {
-        const dateBtn = document.getElementById('dutyDateOkBtn');
-        if (dateBtn) dateBtn.classList.add('verify-missing');
-        missingItems.push('Date Verify');
-        hasError = true;
-    }
-    if (!verifiedFields.homeBase) {
-        const baseBtn = document.getElementById('homeBaseOkBtn');
-        if (baseBtn) baseBtn.classList.add('verify-missing');
-        missingItems.push('Origin Verify');
-        hasError = true;
-    }
 
     // Check Mode Selection
     if (!modeDom.checked && !modeInt.checked) {
