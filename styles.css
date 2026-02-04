@@ -73,6 +73,46 @@ label {
     touch-action: manipulation;
 }
 
+/* iOS Verify Button Fixes */
+#dutyDateOkBtn,
+#homeBaseOkBtn {
+    /* Prevent iOS tap highlight causing disappearance */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+
+    /* Ensure consistent sizing on iOS */
+    min-width: 52px;
+    min-height: 32px;
+    line-height: 1;
+
+    /* Prevent transform/opacity transitions that cause iOS rendering issues */
+    transform: none !important;
+    opacity: 1 !important;
+
+    /* Explicit display to prevent collapse */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ensure buttons stay visible during active/focus states on iOS */
+#dutyDateOkBtn:active,
+#dutyDateOkBtn:focus,
+#homeBaseOkBtn:active,
+#homeBaseOkBtn:focus {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+/* Fix date input sizing on iOS to match button height */
+input[type="date"]#dutyDate {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 32px;
+    line-height: 32px;
+}
+
 .font-mono {
     font-family: 'JetBrains Mono', monospace;
 }
