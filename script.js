@@ -1036,9 +1036,9 @@ function calculateDuty() {
         }
         maxDutyMins = limit * 60;
     } else {
-        // International mode - check if multi-segment is active (Yes button has 'active' class)
+        // International mode - check if multi-segment is active (Yes button has 'bg-blue-500' class)
         const yesBtn = document.getElementById('multiSegYes');
-        const isMultiSeg = yesBtn?.classList.contains('active') && multiSegTotalMins > 0;
+        const isMultiSeg = yesBtn?.classList.contains('bg-blue-500') && multiSegTotalMins > 0;
         const effectiveFlightMins = isMultiSeg ? multiSegTotalMins : schedFlightMins;
 
         if (effectiveFlightMins <= 480) { maxDutyMins = 16 * 60; expl = "16:00 (Int'l, Flt ≤ 8:00)"; }
