@@ -35,6 +35,15 @@ function verifyField(fieldId) {
         btn.classList.add('cursor-default');
         btn.removeAttribute('onclick');
         btn.removeAttribute('ontouchend');
+
+        // Force iOS Safari to repaint the button
+        requestAnimationFrame(() => {
+            btn.style.transform = 'translateZ(0)';
+            void btn.offsetHeight; // Force layout recalculation
+            setTimeout(() => {
+                btn.style.transform = '';
+            }, 50);
+        });
     }
 }
 
