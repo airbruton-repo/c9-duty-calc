@@ -149,8 +149,9 @@
                         <input type="date" id="dutyDate"
                             class="input-bg flex-1 px-2 bg-gray-50 border-2 border-r-0 border-amber-400 rounded-l text-xs font-medium text-gray-900 h-8 transition-colors duration-300"
                             onchange="updateAllLabels(); resetResult(); verifyField('dutyDate');">
-                        <button type="button" onclick="verifyField('dutyDate')" id="dutyDateOkBtn"
-                            class="px-2.5 h-8 text-[10px] font-bold rounded-r border-2 border-l-0 border-amber-400 bg-amber-100 text-amber-700 transition-colors duration-300"
+                        <button type="button" onclick="verifyField('dutyDate')"
+                            ontouchend="verifyField('dutyDate'); event.preventDefault();" id="dutyDateOkBtn"
+                            class="px-2.5 h-8 text-[10px] font-bold rounded-r border-2 border-l-0 border-amber-400 bg-amber-100 text-amber-700 transition-colors duration-300 cursor-pointer"
                             title="Confirm date is correct">Verify</button>
                     </div>
                 </div>
@@ -168,8 +169,9 @@
                             <i
                                 class="fa-solid fa-chevron-down absolute right-2 top-2.5 text-[8px] text-gray-400 pointer-events-none"></i>
                         </div>
-                        <button type="button" onclick="verifyField('homeBase')" id="homeBaseOkBtn"
-                            class="px-2.5 h-8 text-[10px] font-bold rounded-r border-2 border-l-0 border-amber-400 bg-amber-100 text-amber-700 transition-colors duration-300"
+                        <button type="button" onclick="verifyField('homeBase')"
+                            ontouchend="verifyField('homeBase'); event.preventDefault();" id="homeBaseOkBtn"
+                            class="px-2.5 h-8 text-[10px] font-bold rounded-r border-2 border-l-0 border-amber-400 bg-amber-100 text-amber-700 transition-colors duration-300 cursor-pointer"
                             title="Confirm pairing origin is correct">Verify</button>
                     </div>
                 </div>
@@ -694,13 +696,16 @@
 
         <!-- WHAT NOW? POPUP MODAL -->
         <div id="whatNowModal" onclick="if(event.target === this) hideWhatNowPopup()"
-            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div class="modal-bg bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden">
+            ontouchend="if(event.target === this) hideWhatNowPopup()"
+            class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm cursor-pointer">
+            <div class="modal-bg bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden cursor-default">
                 <!-- Header -->
                 <div class="bg-green-600 text-white px-4 py-3 flex items-center justify-between">
                     <h3 class="text-base font-bold"><i class="fa-solid fa-circle-question mr-2"></i>What Now?</h3>
-                    <button onclick="hideWhatNowPopup()" class="text-white/70 hover:text-white">
-                        <i class="fa-solid fa-xmark text-lg"></i>
+                    <button type="button" onclick="hideWhatNowPopup()"
+                        ontouchend="hideWhatNowPopup(); event.preventDefault();"
+                        class="text-white/70 hover:text-white cursor-pointer p-2">
+                        <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
                     </button>
                 </div>
                 <!-- Body -->
@@ -730,8 +735,9 @@
                 </div>
                 <!-- Footer -->
                 <div class="p-3 border-t border-gray-200 bg-gray-50">
-                    <button onclick="hideWhatNowPopup()"
-                        class="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded text-sm transition-colors">
+                    <button type="button" onclick="hideWhatNowPopup()"
+                        ontouchend="hideWhatNowPopup(); event.preventDefault();"
+                        class="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded text-sm transition-colors cursor-pointer">
                         Got it!
                     </button>
                 </div>
