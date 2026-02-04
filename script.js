@@ -933,8 +933,8 @@ function calculateDuty() {
 
     // Check Segment Selection (International only)
     if (modeInt.checked && multiSegContainer && !multiSegContainer.classList.contains('hidden')) {
-        const singleSelected = multiSegNo?.classList.contains('active');
-        const multiSelected = multiSegYes?.classList.contains('active');
+        const singleSelected = multiSegNo?.classList.contains('bg-blue-500');
+        const multiSelected = multiSegYes?.classList.contains('bg-blue-500');
 
         if (!singleSelected && !multiSelected) {
             if (multiSegNo) multiSegNo.classList.add('seg-missing');
