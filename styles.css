@@ -599,6 +599,50 @@ body.dark-mode {
     border-color: #4b5563;
 }
 
+/* What Now? modal dark mode */
+.dark-mode #whatNowModal .modal-bg {
+    background-color: #1f2937;
+}
+
+.dark-mode #whatNowModal .modal-body {
+    color: #e5e7eb;
+}
+
+.dark-mode #whatNowModal .modal-body p,
+.dark-mode #whatNowModal .modal-body li {
+    color: #e5e7eb;
+}
+
+.dark-mode #whatNowModal .modal-body .text-gray-900 {
+    color: #f9fafb;
+}
+
+.dark-mode #whatNowModal .modal-body .text-blue-700 {
+    color: #93c5fd;
+}
+
+.dark-mode #whatNowModal .modal-body .bg-amber-50 {
+    background-color: #78350f;
+    border-color: #b45309;
+}
+
+.dark-mode #whatNowModal .modal-body .text-amber-800 {
+    color: #fcd34d;
+}
+
+.dark-mode #whatNowModal .modal-body .text-amber-700 {
+    color: #fbbf24;
+}
+
+.dark-mode #whatNowModal .modal-body strong {
+    color: #f9fafb;
+}
+
+.dark-mode #whatNowModal .p-3.border-t {
+    background-color: #374151;
+    border-color: #4b5563;
+}
+
 /* Multi-segment gated question buttons */
 .multiseg-btn {
     background-color: #f3f4f6;
