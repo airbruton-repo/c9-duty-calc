@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retro Pay Calculator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #f8fafc;
+    }
+
+    header p {
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    /* Quick Estimate */
+    .quick-estimate {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .quick-estimate label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .quick-estimate .input-wrap {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .quick-estimate .hint {
+      font-size: 0.78rem;
+      color: #64748b;
+      margin-top: 0.3rem;
+    }
+
+    /* Input styling */
+    .dollar-input {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .dollar-input span {
+      position: absolute;
+      left: 0.75rem;
+      color: #64748b;
+      font-size: 0.95rem;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #f1f5f9;
+      font-size: 0.95rem;
+      padding: 0.55rem 0.75rem 0.55rem 1.6rem;
+      appearance: textfield;
+      -moz-appearance: textfield;
+      transition: border-color 0.15s;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    input[type="number"].manual {
+      border-color: #6366f1;
+      background: #1e1b4b;
+    }
+
+    /* Periods */
+    .periods {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .period-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .period-info {}
+
+    .period-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .period-meta {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 0.15rem;
+    }
+
+    .period-badge {
+      display: inline-block;
+      background: #1d4ed8;
+      color: #bfdbfe;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 99px;
+      letter-spacing: 0.3px;
+    }
+
+    .period-input-wrap {
+      min-width: 140px;
+    }
+
+    .period-result {
+      text-align: right;
+    }
+
+    .period-result .label {
+      font-size: 0.7rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .period-result .amount {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #34d399;
+      margin-top: 0.15rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .period-result .amount.zero {
+      color: #475569;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: #1e293b;
+      margin: 0.25rem 0;
+    }
+
+    /* Total */
+    .total-card {
+      background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+      border: 1px solid #2563eb;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .total-card .total-label {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #93c5fd;
+      letter-spacing: -0.2px;
+    }
+
+    .total-card .total-amount {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #34d399;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -1px;
+    }
+
+    .total-card .total-amount.zero {
+      color: #475569;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #475569;
+      line-height: 1.6;
+      padding-top: 0.5rem;
+      border-top: 1px solid #1e293b;
+    }
+
+    @media (max-width: 520px) {
+      .period-card {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+      }
+      .period-input-wrap {
+        grid-column: 1 / -1;
+        min-width: unset;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Retro Pay Calculator</h1>
+    <p>Estimate your retroactive pay across all contract periods</p>
+  </header>
+
+  <!-- Quick Estimate -->
+  <div class="quick-estimate">
+    <label for="avg-monthly">Quick Estimate</label>
+    <div class="input-wrap">
+      <div class="dollar-input">
+        <span>$</span>
+        <input type="number" id="avg-monthly" placeholder="Avg monthly earnings" min="0" step="0.01" />
+      </div>
+      <div class="hint">Auto-fills each period based on month count &mdash; override any field individually</div>
+    </div>
+  </div>
+
+  <!-- Periods -->
+  <div class="periods" id="periods-container"></div>
+
+  <!-- Grand Total -->
+  <div class="total-card">
+    <div class="total-label">Total Retro Pay</div>
+    <div class="total-amount zero" id="grand-total">$0.00</div>
+  </div>
+
+  <footer>
+    The one-time payment is the sum of each period's percentage applied to eligible earnings for that period.<br />
+    Leave any period blank if you were not active during that time.
+  </footer>
+
+</div>
+
+<script>
+  const PERIODS = [
+    { id: 'p1', name: 'Sept–Dec 2021',  months: 4,  rate: 0.04  },
+    { id: 'p2', name: 'Bid Year 2022',  months: 12, rate: 0.04  },
+    { id: 'p3', name: 'Bid Year 2023',  months: 12, rate: 0.04  },
+    { id: 'p4', name: 'Bid Year 2024',  months: 12, rate: 0.04  },
+    { id: 'p5', name: 'Bid Year 2025',  months: 12, rate: 0.22  },
+    { id: 'p6', name: 'Jan–May 2026',   months: 5,  rate: 0.25  },
+  ];
+
+  // Track which fields have been manually overridden
+  const manualOverrides = new Set();
+
+  function formatCurrency(n) {
+    if (isNaN(n) || n === null) return '$0.00';
+    return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+  }
+
+  function pctLabel(rate) {
+    return (rate * 100).toFixed(0) + '%';
+  }
+
+  // Build period cards
+  const container = document.getElementById('periods-container');
+  PERIODS.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'period-card';
+    card.innerHTML = `
+      <div class="period-info">
+        <div class="period-name">${p.name}</div>
+        <div class="period-meta">
+          <span class="period-badge">${pctLabel(p.rate)}</span>
+          &nbsp;${p.months} month${p.months > 1 ? 's' : ''}
+        </div>
+      </div>
+      <div class="period-input-wrap">
+        <div class="dollar-input">
+          <span>$</span>
+          <input type="number" id="input-${p.id}" placeholder="Eligible earnings" min="0" step="0.01" />
+        </div>
+      </div>
+      <div class="period-result">
+        <div class="label">Retro owed</div>
+        <div class="amount zero" id="result-${p.id}">$0.00</div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  function getAvgMonthly() {
+    const val = parseFloat(document.getElementById('avg-monthly').value);
+    return isNaN(val) ? null : val;
+  }
+
+  function recalculate() {
+    let grandTotal = 0;
+
+    PERIODS.forEach(p => {
+      const input = document.getElementById('input-' + p.id);
+      const resultEl = document.getElementById('result-' + p.id);
+      const rawVal = input.value.trim();
+      const earnings = rawVal === '' ? 0 : parseFloat(rawVal);
+      const retro = isNaN(earnings) ? 0 : earnings * p.rate;
+      grandTotal += retro;
+
+      resultEl.textContent = formatCurrency(retro);
+      resultEl.classList.toggle('zero', retro === 0);
+    });
+
+    const totalEl = document.getElementById('grand-total');
+    totalEl.textContent = formatCurrency(grandTotal);
+    totalEl.classList.toggle('zero', grandTotal === 0);
+  }
+
+  function applyAutoFill() {
+    const avg = getAvgMonthly();
+    PERIODS.forEach(p => {
+      if (manualOverrides.has(p.id)) return;
+      const input = document.getElementById('input-' + p.id);
+      if (avg !== null) {
+        input.value = (avg * p.months).toFixed(2);
+      } else {
+        input.value = '';
+      }
+    });
+    recalculate();
+  }
+
+  // Quick estimate input
+  document.getElementById('avg-monthly').addEventListener('input', applyAutoFill);
+
+  // Per-period inputs
+  PERIODS.forEach(p => {
+    const input = document.getElementById('input-' + p.id);
+
+    input.addEventListener('input', () => {
+      if (input.value.trim() !== '') {
+        manualOverrides.add(p.id);
+        input.classList.add('manual');
+      } else {
+        // Cleared — restore auto-fill
+        manualOverrides.delete(p.id);
+        input.classList.remove('manual');
+        const avg = getAvgMonthly();
+        if (avg !== null) {
+          input.value = (avg * p.months).toFixed(2);
+        }
+      }
+      recalculate();
+    });
+  });
+</script>
+</body>
+</html>
